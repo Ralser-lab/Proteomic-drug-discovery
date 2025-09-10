@@ -4,6 +4,7 @@ data/*
 
 #Ignore everything in figures/ 
 figures/*
+!figures/README.md
 
 #Ignore .DS_Store
 .DS_Store
