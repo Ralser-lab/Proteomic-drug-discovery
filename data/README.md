@@ -1,5 +1,4 @@
-Download source data at Figshare using privately supplied token / URL in 
-data availability statement (total size 420.12 MB)
+Download source data at [Figshare](<https://figshare.com/s/6d164fd50adfdb9a68d7).>) 
+Total size 420.12 MB
 
-Token ends with '___9a68d7'.
 
