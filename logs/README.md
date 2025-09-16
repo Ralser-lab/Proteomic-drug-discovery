@@ -1,1 +1,1 @@
-Output folder for logfiles produced during running code with ../scriptrunner.sh.
+Output folder for logging while executing code with ../scriptrunner.sh.
