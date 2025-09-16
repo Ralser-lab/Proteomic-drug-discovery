@@ -1,3 +1,32 @@
+#!/usr/bin/env Rscript
+# -*- coding: utf-8 -*-
+#'
+#' Script Name: protacs_03_azmetadata_dedrogram_250306a.R
+#' Description: Installs/loads required CRAN and Bioconductor packages, reads one-hot
+#'              encoded AZ compound metadata, computes Euclidean distances on logical
+#'              features, performs Ward.D2 hierarchical clustering, converts the
+#'              hclust to a phylo object, and renders a circular dendrogram with
+#'              heatmap “fruit” tracks for Drug_Type, Target, Ligase, and Cluster.
+#'
+#' Author: Shaon Basu
+#' Date: 2025-09-16
+#'
+#' Inputs
+#' ------
+#' - data/AZcompound_metadata_onehotencoded_240611a.tsv
+#'
+#' Outputs
+#' -------
+#' - figures/protacs_03_ChemicalSeries_dendrogram_plot.pdf
+#'
+#' Requirements
+#' ------------
+#' R >= 4.2
+#' CRAN Packages: ape, ggplot2, RColorBrewer, ggnewscale
+#' Bioconductor Packages: ggtree, ggtreeExtra
+#' Other: BiocManager (for installing Bioconductor packages)
+#'
+
 # Define required CRAN and Bioconductor packages
 cran_packages <- c("ape", "ggplot2", "RColorBrewer", "ggnewscale")
 bioc_packages <- c("ggtree", "ggtreeExtra")
@@ -33,65 +62,45 @@ lapply(required_packages, library, character.only = TRUE)
 
 message("All required packages are installed and loaded successfully!")
 
-# set absolute path to /data folder in clone github repo in local dir
-abspath = '/Users/shaon/Desktop/PROTACS/github_deposition/data/'
-setwd(abspath)
+# Set up relative paths
+data_dir <- file.path(getwd(), "data")
+fig_dir  <- file.path(getwd(), "figures")
+setwd(data_dir)
 
 ## Plots dendrogram of AZ molecules using hierarchical clusters from cleaned AZ metadata
 encoded_data = read.csv2('AZcompound_metadata_onehotencoded_240611a.tsv', sep = ',', row.names = 1, 
                         check.names = FALSE) 
 
 # Split metadata into chemical labels and one hot encoded features
-
 chemvars <- names(encoded_data) %in% c('Cluster', 'Drug_Type', "Ligase", 'Target')
-
 logical_data <- encoded_data[!chemvars]
-
 label_data <- encoded_data[chemvars]
-
 logical_data <- as.data.frame(lapply(logical_data, function(column) column == 'True'))
-
 row.names(logical_data) = row.names(encoded_data)
-
 row.names(label_data) = row.names(encoded_data)
 
 
 # Convert into matrix form , cluster
-
 logical_matrix <- as.matrix(logical_data)
-
 dist_matrix <- dist(logical_matrix, method = "euclidean")
-
 hc <- hclust(dist_matrix, method = "ward.D2")
-
 phylo_tree <- as.phylo(hc)
 
 # Heatmap label
-
 mapdata <- as.data.frame(sapply(label_data, as.character))
-
 mapdata$AZ <- rownames(label_data)
-
 mapdata$Drug_Type <- factor(mapdata$Drug_Type, levels = c('AR-PROTAC', 'Non-PROTAC', 'Txn-PROTAC'))
-
 mapdata$Ligase <- factor(mapdata$Ligase, levels = c('CRBN_lenalidomide_5N', 'CRBN_thalidomide_5N', 'CRBN_dihydrouracil', 'CRBN_thalidomide_6N', 'VHL_amide_tBu', 'Other', 'None'))
-
 mapdata$Ligase <- factor(mapdata$Ligase, levels = c('CRBN_lenalidomide_5N', 'CRBN_dihydrouracil', 'CRBN_thalidomide_6N','CRBN_thalidomide_5N',  'VHL_amide_tBu', 'Other', 'None'))
-
 mapdata$Target <- factor(mapdata$Target, levels = c('AR_piperidine','AR_indole','Other','None'))
 
-# Plot
+# Plot the dedrogram
+setwd(fig_dir)
 
-figout = paste(abspath, '../figures/', sep = '')
-
-setwd(figout)
-
-pdf("ChemicalSeries_dendrogram_plot.pdf", width = 20, height = 10)
-
+pdf("protacs_03_ChemicalSeries_dendrogram_plot.pdf", width = 20, height = 10)
 options(repr.plot.width = 20, repr.plot.height =10) 
 
 p <- ggtree(phylo_tree, layout = 'circular', size = 0.5)
-
 w = 0.5
 
 p1 <- p + new_scale_fill() + geom_fruit(mapdata, geom = geom_tile, mapping = aes(fill = Drug_Type, y = AZ),
@@ -118,8 +127,6 @@ p3 <- p2 + new_scale_fill() + geom_fruit(mapdata, geom = geom_tile, mapping = ae
 
 
 custom_spectral <- c('darkblue','blue3','blue2','blue','lightblue','aquamarine','aquamarine2','darkseagreen2','greenyellow','darkolivegreen1','yellow2','darkgoldenrod1','orange','darkorange','red')
-
-
 mapdata$Cluster <- factor(mapdata$Cluster, levels = c('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15'))
 
 p4 <- p3 + new_scale_fill() + geom_fruit(mapdata, geom = geom_tile, mapping = aes(fill = Cluster, y = AZ),

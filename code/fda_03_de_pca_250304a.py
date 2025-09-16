@@ -18,12 +18,12 @@ Inputs
 
 Outputs
 -------
-- figures/03_PMF_FDA_full.pdf
-- figures/03_PMF_FDA_conditioned.pdf
-- figures/03_PDF_FDA_stats.pdf
-- figures/03_PDF_all.pdf
-- figures/03_2D_PCA_FDA_tmatrix.pdf
-- figures/03_3D_FDA_PCA_tmatrix.pdf
+- figures/fda_03_PMF_full.pdf
+- figures/fda_03_PMF_conditioned.pdf
+- figures/fda_03_PDF_stats.pdf
+- figures/fda_03_PDF_all.pdf
+- figures/fda_03_2D_PCA_tmatrix.pdf
+- figures/fda_03_3D_PCA_tmatrix.pdf
 - data/FDA_proba_250304.tsv
 - data/NCB_ProteomeGuidedDiscovery_TableS1_250606a.csv
 
@@ -146,15 +146,15 @@ def pmf(df, saveout):
     #plt.show()
     return discretized
 
-pmf(counter, '03_PMF_FDA_full.pdf') # save probability mass function plot on FDA dataset
+pmf(counter, 'fda_03_PMF_full.pdf') # save probability mass function plot on FDA dataset
 counter.to_csv(os.path.join(data_out, 'FDA_proba_250304.tsv')) 
-pmf(conditioned, '03_PMF_FDA_conditioned.pdf') # save probability mass function plot on FDA dataset
+pmf(conditioned, 'fda_03_PMF_conditioned.pdf') # save probability mass function plot on FDA dataset
 
 sns.kdeplot(counter, fill = True, clip = (0, None))
 sns.kdeplot(counter, fill = True, clip = (0, counter.mean()), color = 'Green')
 sns.kdeplot(counter, fill = True, clip = (counter.max(),None), color = 'Orange')
 plt.axvline(counter.mean(), color = 'red', linestyle = '--')
-plt.savefig(os.path.join(figure_out, '03_PDF_FDA_stats.pdf')) # save probability density function plot on FDA dataset
+plt.savefig(os.path.join(figure_out, 'fda_03_PDF_stats.pdf')) # save probability density function plot on FDA dataset
 
 # %% Plot PDF 
 # set target frame
@@ -169,7 +169,7 @@ plt.axvline(0)
 plt.axvline(df1['Clotrimazole'])
 
 # Save the probability density function plot with sample stats as a PDF
-plt.savefig(filepath2 + '03_PDF_all.pdf')
+plt.savefig(filepath2 + 'fda_03_PDF_all.pdf')
 #plt.show()
 
 # %% Sort drug labels on t-Matrix
@@ -222,7 +222,7 @@ handles, labels = scatter.legend_elements(prop="colors", alpha=1, size = 20)
 labels = fivecounts
 legend = ax.legend(handles, labels, bbox_to_anchor=(1.05, 1), loc='upper left', title = 'Drug Target', title_fontsize = 26, fontsize = 26)
 #plt.show()
-fig.savefig(filepath2 + '03_2D_PCA_FDA_tmatrix.pdf') # save 2 Dimensional PCA on DE of FDA library vs DMSO
+fig.savefig(filepath2 + 'fda_03_2D_PCA_tmatrix.pdf') # save 2 Dimensional PCA on DE of FDA library vs DMSO
 
 # %% 3D PCA
 
@@ -255,7 +255,7 @@ labels = fivecounts
 legend = ax.legend(handles, labels, bbox_to_anchor=(1.05, 1), loc='upper left', title = 'Drug Target', title_fontsize = 26, fontsize = 26)
 plt.title('Principal Component Analysis')
 #plt.show()
-fig.savefig(filepath2 + '03_3D_FDA_PCA_tmatrix.pdf') # save 2 Dimensional PCA on DE of FDA library vs DMSO
+fig.savefig(filepath2 + 'fda_03_3D_PCA_tmatrix.pdf') # save 2 Dimensional PCA on DE of FDA library vs DMSO
 
 # %% Export datasets and supplementary tables
 

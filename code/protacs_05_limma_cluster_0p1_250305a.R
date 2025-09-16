@@ -1,3 +1,34 @@
+#!/usr/bin/env Rscript
+# -*- coding: utf-8 -*-
+
+#'
+#' Script Name: protacs_05_limma_cluster_0p1_250305a.R
+#' Description: Differential expression analysis of PROTAC dataset (0.1 µM) 
+#'              using limma (chemical series vs DMSO), followed by visualization.
+#'
+#' Author: Shaon Basu
+#' Date: 2025-09-16
+#'
+#' Inputs
+#' ------
+#' - data/SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_forlimma_240611a.tsv
+#' - data/SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_metaforlimma_240611a.tsv
+#'
+#' Outputs
+#' -------
+#' - data/Cluster_LFC_0p1uM_250305a.csv
+#' - data/Cluster_LFCxPval_0p1uM_250305a.csv
+#' - data/Cluster_LFCxadjPval_0p1uM_250305a.csv
+#' - data/Cluster*_0p1uM_Limma_250305a.csv (per-series [cluster] DE results)
+#' - figures/protacs_05_volcanoes_0p1uM.png
+#'
+#' Requirements
+#' ------------
+#' R >= 4.2
+#' Packages: BiocManager, limma, EnhancedVolcano, ggplot2, dplyr, tidyr, 
+#'           pheatmap, grid, cowplot
+#' 
+
 # Define required CRAN and Bioconductor packages
 cran_packages <- c("ggplot2", "dplyr", "tidyr", "pheatmap", "grid", "cowplot")
 bioc_packages <- c("limma", "EnhancedVolcano")
@@ -33,13 +64,12 @@ lapply(required_packages, library, character.only = TRUE)
 
 message("All required packages are installed and loaded successfully!")
 
+# Set up relative paths
+data_dir <- file.path(getwd(), "data")
+fig_dir  <- file.path(getwd(), "figures")
+setwd(data_dir)
 
-# Performs Limma to generate DE matrices by Cluster ID in PROTAC dataset 0.1 micromolar
-
-# Performs Limma to generate DE matrices by Cluster ID in PROTAC dataset at 10 micromolar
-filepath = '/Users/shaon/Desktop/PROTACS/github_deposition/data/'
-setwd(filepath)
-
+# Load metadata and expression data (limma formatted proteomes) from HBD screen
 metadata <- read.csv2('SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_metaforlimma_240611a.tsv', sep = ',', dec = '.', row.names = 1)
 
 expressionmatrix <- read.csv2('SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_forlimma_240611a.tsv', 
@@ -48,19 +78,14 @@ expressionmatrix <- read.csv2('SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_b
 
 test <- subset(expressionmatrix, expressionmatrix[,1]!='')
 
+# Format expression and metadata
 row.names(test) <- test[,1]
-
 expressionmatrix <- test
-
 test[,1] <- NULL
-
 expressionmatrix <- test
-
 colnames(metadata) <- c('Compound_', 'Concentration_', 'Plate_', 'Check_', 'SpRep_', 'SpBatch_', 'SpPosition_', 'Annotation_', "IC50_Glu_", "IC50_Gal_",
                         'E3_ligase_', 'Target_', 'Drug_Type_', 'Binned_Ligase_', 'Binned_Target_', 'Cluster_', 'Dend_','Cluster2_')
-
 metadata[is.na(metadata)] <- 0
-
 metadata[] <- lapply(metadata, function(col) {
   if (is.factor(col)) {
     as.factor(gsub("-", "_", as.character(col)))
@@ -69,71 +94,56 @@ metadata[] <- lapply(metadata, function(col) {
   } else {
     col
   }
+
 })
 
+# Model and format contrasts on 0.1 micromolar subset vs DMSO with limma
 metadata_10_DMSO <- subset(metadata, metadata$Concentration_ == 0.1 | metadata$Concentration_ == 1 |
                          metadata$Concentration_ == 10 | metadata$Concentration_ == 0)
-
 metadata_10_DMSO <- subset(metadata, metadata$Concentration_ == 0.1 | metadata$Concentration_ == 0)
-
-#metadata_10_DMSO <- subset(metadata, metadata$Concentration_ == 1 | metadata$Concentration_ == 0)
-
-#metadata_10_DMSO <- subset(metadata, metadata$Concentration_ == 10 | metadata$Concentration_ == 0)
-
 expression_10_DMSO <- expressionmatrix[, colnames(expressionmatrix) %in% rownames(metadata_10_DMSO)]
-
 z <- t(table(metadata_10_DMSO$Compound_, metadata_10_DMSO$Cluster2_))
-z
-
 metadata_10_DMSO$Cluster2_ <- as.factor(metadata_10_DMSO$Cluster2_)
-
 metadata_10_DMSO$Plate_ <- as.factor(metadata_10_DMSO$Plate_)
-
 metadata_10_DMSO$Concentration_ <- as.numeric(metadata_10_DMSO$Concentration_)
-
 design <- model.matrix(~0+Cluster2_,metadata_10_DMSO)
-
 fit <- lmFit(expression_10_DMSO, design)
-
 drugs <- levels(metadata_10_DMSO$Cluster2_)[levels(metadata_10_DMSO$Cluster2_) != "DMSO"]
 drugs <- paste0("Cluster2_", drugs)
-
 contrast_formulas <- setNames(sapply(drugs, function(drug) paste0(drug, " - Cluster2_DMSO"), USE.NAMES = FALSE), 
                               sapply(drugs, function(drug) paste0(drug, "vsCluster2_DMSO")))
-
 contrast_formulas <- contrast_formulas[names(contrast_formulas) != "Cluster2_vsCluster2_DMSO"]
-
 contrasts <- makeContrasts(contrasts = as.list(contrast_formulas), levels = design)
-
 fit2 <- contrasts.fit(fit, contrasts)
-
 fit3 <- eBayes(fit2, trend = TRUE)
 
-plotSA(fit3, main="Mean-variance trend")
-plotMA(fit3, main="Mean-variance trend")
-plotMDS(fit3, main="Mean-variance trend")
+# Assess limma fit
+# plotSA(fit3)
+# plotMA(fit3)
+# plotMDS(fit3)
 
+# Extract summary statistics and probabilities as matrices
 pval <- fit3$p.value
-
 adj_pval <- apply(pval, 2, function(x) p.adjust(x, method = "BH"))
-
 logFC_matrix1 <- fit3$coefficients
-
 logFC_matrix2 <- -log10(pval) * sign(logFC_matrix1)
-
 logFC_matrix3 <- -log10(adj_pval) * sign(logFC_matrix1)
 
+# Save limma matrices
 write.csv2(logFC_matrix1, 'Cluster_LFC_0p1uM_250305a.csv')
-
 write.csv2(logFC_matrix2, 'Cluster_LFCxPval_0p1uM_250305a.csv')
-
 write.csv2(logFC_matrix3, 'Cluster_LFCxadjPval_0p1uM_250305a.csv')
 
+# Clean up for volcano projections
 colnames(pval) <- gsub("Cluster2_", "", colnames(pval))
 colnames(pval) <- gsub("- DMSO", "", colnames(pval))
 colnames(logFC_matrix2) <- gsub("Cluster2_", "", colnames(logFC_matrix2))
 colnames(logFC_matrix2) <- gsub("- DMSO", "", colnames(logFC_matrix2))
 
+#' Plot ranked logFC values and volcano plot
+#'
+#' @param x Data frame with logFC and adj.P.Val
+#' @param color Highlight color
 plot <- function(x, color){
   ordered <- x[order(x$logFC,decreasing=TRUE),]
   ordered$rank <- 1:nrow(ordered)
@@ -189,6 +199,8 @@ plot <- function(x, color){
 }
 
 
+#' Same as plot() with extra styling
+#'
 plot2 <- function(x, color){
   p <- plot(x, color)
   p <- p + theme(axis.ticks = element_line(size = 0.2))
@@ -198,13 +210,12 @@ plot2 <- function(x, color){
   return(p)
 }
 
-
-  
-result_table1 <- topTable(fit3, coef="Cluster2_1.0 - Cluster2_DMSO", number=Inf) # good
-result_table2 <- topTable(fit3, coef="Cluster2_2.0 - Cluster2_DMSO", number=Inf) # good
-result_table3 <- topTable(fit3, coef="Cluster2_3.0 - Cluster2_DMSO", number=Inf) # good
-result_table4 <- topTable(fit3, coef="Cluster2_4.0 - Cluster2_DMSO", number=Inf) # good
-result_table5 <- topTable(fit3, coef="Cluster2_5.0 - Cluster2_DMSO", number=Inf) # good
+# Extract differential expression tables for each contrast (chemical series vs DMSO) in HBD screen
+result_table1 <- topTable(fit3, coef="Cluster2_1.0 - Cluster2_DMSO", number=Inf) 
+result_table2 <- topTable(fit3, coef="Cluster2_2.0 - Cluster2_DMSO", number=Inf) 
+result_table3 <- topTable(fit3, coef="Cluster2_3.0 - Cluster2_DMSO", number=Inf) 
+result_table4 <- topTable(fit3, coef="Cluster2_4.0 - Cluster2_DMSO", number=Inf) 
+result_table5 <- topTable(fit3, coef="Cluster2_5.0 - Cluster2_DMSO", number=Inf) 
 result_table6 <- topTable(fit3, coef="Cluster2_6.0 - Cluster2_DMSO", number=Inf)
 result_table7 <- topTable(fit3, coef="Cluster2_7.0 - Cluster2_DMSO", number=Inf)
 result_table8 <- topTable(fit3, coef="Cluster2_8.0 - Cluster2_DMSO", number=Inf)
@@ -216,9 +227,9 @@ result_table13 <- topTable(fit3, coef="Cluster2_13.0 - Cluster2_DMSO", number=In
 result_table14 <- topTable(fit3, coef="Cluster2_14.0 - Cluster2_DMSO", number=Inf)
 result_table15 <- topTable(fit3, coef="Cluster2_15.0 - Cluster2_DMSO", number=Inf)
 
-
-p1 <- plot2(result_table1, 'darkblue') + labs(title = 'Cluster 1, AR-PROTAC: \nVHL-Other') # good
-p2 <- plot2(result_table2, 'blue3') + labs(title = 'Cluster 2, AR-PROTAC: \nThalidomide 6N-indole') # good
+# Plot volcano plots for each chemical series
+p1 <- plot2(result_table1, 'darkblue') + labs(title = 'Cluster 1, AR-PROTAC: \nVHL-Other') 
+p2 <- plot2(result_table2, 'blue3') + labs(title = 'Cluster 2, AR-PROTAC: \nThalidomide 6N-indole') 
 p3 <- plot2(result_table3, 'blue2') + labs(title = 'Cluster 3, AR-PROTAC: \nOther-Other')
 p4 <- plot2(result_table4, 'blue') + labs(title = 'Cluster 4, TXN-PROTAC: \nVHL/Thalidomide 6N-Other')
 p5 <- plot2(result_table5, 'lightblue') + labs(title = 'Cluster 5, AR-PROTAC: \nVHL-Indole')
@@ -233,6 +244,7 @@ p13 <- plot2(result_table13, 'orange') + labs(title = 'Cluster 13, Not PROTAC')
 p14 <- plot2(result_table14, 'orangered') + labs(title = 'Cluster 14, AR-PROTAC: \nLenalinomide 5N-Other')
 p15 <- plot2(result_table15, 'firebrick') + labs(title = 'Cluster 15, AR-PROTAC: \nLenalinomide 5N-Piperidine')
 
+# Write to csv
 write.csv2(result_table1, 'Cluster1_0p1uM_Limma_250305a.csv', row.names = TRUE)
 write.csv2(result_table2, 'Cluster2_0p1uM_Limma_250305a.csv', row.names = TRUE)
 write.csv2(result_table3, 'Cluster3_0p1uM_Limma_250305a.csv', row.names = TRUE)
@@ -249,10 +261,10 @@ write.csv2(result_table13, 'Cluster13_0p1uM_Limma_250305a.csv', row.names = TRUE
 write.csv2(result_table14, 'Cluster14_0p1uM_Limma_250305a.csv', row.names = TRUE)
 write.csv2(result_table15, 'Cluster15_0p1uM_Limma_250305a.csv', row.names = TRUE)
 
-setwd(paste(filepath, '../figures', sep=""))
+# Plot volcano plot of select series (0.1 micromolar vs DMSO)
+setwd(fig_dir)
 library('cowplot')
-
-png('volcanoes_0p1uM.png', width = 1200, height = 480)
+png('protacs_05_volcanoes_0p1uM.png', width = 1200, height = 480)
 plot_grid(p1, p6, p9, p14, nrow = 1)
 dev.off()
 

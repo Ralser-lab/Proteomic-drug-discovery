@@ -20,7 +20,7 @@
 #' - data/FDA_adjLimmaMatrix_250304a.csv
 #' - data/FDA_LimmaMetadata_250304a.csv
 #' - data/*_DE_250304a.csv (per-drug DE results)
-#' - figures/02_volcanoes_top3_FDA.png
+#' - figures/fda_02_volcanoes_top3.png
 #'
 #' Requirements
 #' ------------
@@ -190,7 +190,7 @@ p11 <- plot2(result_table11, 'grey', targets,4) + labs(title = 'Fluorouracil')
 
 write.csv2(metadata, file.path(data_dir, 'FDA_LimmaMetadata_250304a.csv'))
 write.csv2(result_table1, file.path(data_dir, 'Methotrexate_DE_250304a.csv'))
-png(file.path(fig_dir,'02_volcanoes_top3_FDA.png'), width = 1000, height = 500) # export volcano plots of select contrasts (drug vs DMSO) from FDA test set.
+png(file.path(fig_dir,'fda_02_volcanoes_top3.png'), width = 1000, height = 500) # export volcano plots of select contrasts (drug vs DMSO) from FDA test set.
 plot_grid(p7, p1, p4, p8, nrow = 1)
 dev.off()
 

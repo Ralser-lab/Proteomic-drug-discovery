@@ -17,8 +17,8 @@ Inputs
 
 Outputs
 -------
-- figures/04_gsea_FDA_targets.pdf
-- figures/04_leadingedge_oxdetox_MTX.pdf
+- figures/fda_04_gsea_targets.pdf
+- figures/fda_04_leadingedge_oxdetox_MTX.pdf
 
 Requirements
 ------------
@@ -27,7 +27,7 @@ Dependencies: pandas, numpy, matplotlib, seaborn, gseapy
 
 """
 
-# Import packages
+# %% Import packages
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -127,7 +127,7 @@ plt.rcParams['axes.titlesize'] = '30'
 plt.rcParams['xtick.labelsize'] = '26'  
 plt.rcParams['ytick.labelsize'] = '26' 
 plt.rcParams['ytick.labelsize'] = '26'
-
+ß
 # Create a stripplot (Pythonic dotplot)
 df_store = df_store.rename_axis('C5')
 gseaplot = plt.figure(figsize=(5, 20))
@@ -141,8 +141,8 @@ ax.set_ylabel("Gene Set Enrichment Analysis \nTop " + str(top_pathways) + " up d
 ax.tick_params(axis='x', labelsize=30, rotation=90)  
 ax.tick_params(axis='y', labelsize = 30)  
 ax.set_xlabel('') 
-plt.show()
-gseaplot.savefig(os.path.join(figure_out, '04_gsea_FDA_targets.pdf')) # Export dotplot plot of GSEA on limma contrasts in FDA-test set
+#plt.show()
+gseaplot.savefig(os.path.join(figure_out, 'fda_04_gsea_targets.pdf')) # Export dotplot plot of GSEA on limma contrasts in FDA-test set
 
 # %% Export GSEA protein matrix within leading edge for a target pathway as a heatmap
 mtx = df4.copy()
@@ -151,7 +151,7 @@ mtx = mtx[mtx['Term']==term]['Lead_genes'].iloc[0].split(';')
 qval = str(round(df4[df4['Term']==term]['FDR q-val'].iloc[0],3))
 f_matrix = adj_matrix[mtx]
 tolabel = ['Methotrexate', 'Doxorubicin..Adriamycin..HCl', 'Pirarubicin', 'Epirubicin.HCl', 'Fulvestrant','Clotrimazole']
-f_matrix = f_matrix.loc[tolabel]
+f_matrix = f_matrix.loc[tolabel]ß
 f_matrix = f_matrix.T
 f_matrix.columns = ['Methotrexate', 'Doxorubicin', 'Pirarubicin', 'Epirubicin', 'Fulvestrant','Clotrimazole']
 sns.set(font_scale = 1)
@@ -161,5 +161,5 @@ g.ax_heatmap.set_ylabel('Proteins', fontsize = 16, rotation = 90)
 g.cax.set_title('Moderated t-test \n-log10(adjpval) \nx sign(LFC)')
 plt.setp(g.ax_heatmap.get_yticklabels(), rotation=0, fontsize = 16)
 plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90, fontsize = 16)
-plt.savefig(os.path.join(figure_out, '04_leadingedge_oxdetox_MTX.pdf')) # Export leading edge member protein heatmap (target GO term) for Methotrexate contrast vs DMSO
-plt.show()
+plt.savefig(os.path.join(figure_out, 'fda_04_leadingedge_oxdetox_MTX.pdf')) # Export leading edge member protein heatmap (target GO term) for Methotrexate contrast vs DMSO
+#plt.show()

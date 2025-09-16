@@ -2,29 +2,27 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: fda_01_globalvarianceanalysis_250304a.py
-Description: Perform clustering, heatmaps, PCA, and dispersion plots 
-             on summarized proteomes from the FDA test set.
+Script Name: protacs_01_format_for_limma.py
+Description: Format PROTAC proteome matrix and metadata for compatibility 
+             with the R limma package.
 
 Author: Shaon Basu
 Date: 2025-09-16
 
 Inputs
 ------
-- data/SB_FDA_prmatrix_filtered_50_imputed_50_ltrfm_batched_summarized_250304.tsv
-- data/SB_FDA_metadata_250304a.tsv
+- data/SB_PROTACs_prmatrix_filtered_5_imputed_50_ltrfm_batched_summarized_240314.tsv
+- data/SB_PROTACs_metadata_240611a.tsv
 
 Outputs
 -------
-- figures/01_heatmap_FDA.pdf
-- figures/01_global_PCA_scree_FDA.pdf
-- figures/01_global_PCA_FDA.pdf
-- figures/01_dispersion_kde_FDA.pdf
+- data/SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_forlimma_240611a.tsv
+- data/SB_PROTACs_metadata_clustered_240611a.tsv
 
 Requirements
 ------------
 Python >= 3.8
-Dependencies: pandas, numpy, matplotlib, seaborn, scikit-learn, scipy
+Dependencies: pandas, os
 
 """
 # %% Import packages
@@ -111,7 +109,7 @@ ax2.set_title('Batch', fontsize = 24)
 sns.heatmap(metadata_encoded, cmap='Greys', ax=ax3, cbar=False, yticklabels=False)
 ax3.set_xticks(np.arange(len(metadata_encoded.columns)))
 ax3.set_xticklabels(metadata_encoded.columns.values, rotation = 45, fontsize = 24)
-plt.savefig(os.path.join(figure_out, '01_heatmap_FDA.pdf')) # Export clustered heatmap on proteomes (all samples in FDA testing set)
+plt.savefig(os.path.join(figure_out, 'fda_01_heatmap.pdf')) # Export clustered heatmap on proteomes (all samples in FDA testing set)
 
 # %% Extract PCA loadings
 output = pasef_summarized_clustered.copy()
@@ -138,7 +136,7 @@ plt.xlabel('Principal Component')
 plt.ylabel('Explained Variance Ratio (%)')
 plt.xticks(n_components)
 plt.legend(loc='upper left')
-plt.savefig(os.path.join(figure_out, '01_global_PCA_scree_FDA.pdf')) # Export screeplot on proteomes (all samples in FDA testing set)
+plt.savefig(os.path.join(figure_out, 'fda_01_global_PCA_scree.pdf')) # Export screeplot on proteomes (all samples in FDA testing set)
 
 #  %% PCA with drug targets
 x = pca_result[:, 0]
@@ -177,7 +175,7 @@ for i, label in enumerate(df_pca['Target']):
 plt.xlabel('PC1')
 plt.ylabel('PC2')
 plt.title('PCA Scatter Plot')
-plt.savefig(os.path.join(figure_out, '01_global_PCA_FDA.pdf')) # Export PCA on proteomes (all samples in FDA testing set)
+plt.savefig(os.path.join(figure_out, 'fda_01_global_PCA.pdf')) # Export PCA on proteomes (all samples in FDA testing set)
 
 # %% Dispersion plots (Kernal Density Estimations, DMSO vs Controls)
 pasef_summarized = pd.read_csv(os.path.join(data_out, 'SB_FDA_prmatrix_filtered_50_imputed_50_ltrfm_batched_summarized_250304.tsv'),
@@ -206,4 +204,4 @@ plt.ylim(-0.05, 0.45)
 plt.legend(fontsize = '26')
 plt.xlabel('Mean Protein Abundance (' + str(pasef_summarized_clustered.columns.size) + ')')
 plt.ylabel('Standard Deviation (' + str(pasef_summarized_clustered.columns.size) + ')')
-plt.savefig(os.path.join(figure_out, '01_dispersion_kde_FDA.pdf')) # Export dispersion plot on proteomes (all samples in FDA testing set)
+plt.savefig(os.path.join(figure_out, 'fda_01_dispersion_kde.pdf')) # Export dispersion plot on proteomes (all samples in FDA testing set)
