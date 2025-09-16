@@ -5,6 +5,9 @@ mkdir -p logs
 SCRIPTS=()
 STATUS=()
 
+# run(): function to execute a script
+# Detects the correct interpreter (python3 or Rscript) based on file extension,
+# runs the script, logs output (stdout/stderr) with timestamps, and reports status.
 run() {
   local runner="$1"
   local script="$2"
@@ -28,13 +31,12 @@ run() {
   fi
 }
 
-# Execute scripts
-# TODO: remove timestamp from script names
-# run python3 code/fda_01_globalvarianceanalysis_250304a.py
-# run Rscript code/fda_02_limma_drug_250304a.R
-# run python3 code/fda_03_de_pca_250304a.py
-# run python3 code/fda_04_de_gsea_250304a.py
-# run python3 code/protacs_01_globalvarianceanalysis_250304a.py
+# Execute scripts with run()
+run python3 code/fda_01_globalvarianceanalysis_250304a.py
+run Rscript code/fda_02_limma_drug_250304a.R
+run python3 code/fda_03_de_pca_250304a.py
+run python3 code/fda_04_de_gsea_250304a.py
+run python3 code/protacs_01_globalvarianceanalysis_250304a.py
 run python3 code/protacs_02_azmetadata_cluster_250306a.py
 run Rscript code/protacs_03_azmetadata_dendrogram_250306a.R
 run python3 code/protacs_04_limma_metadataconstructor_250304a.py
@@ -43,7 +45,7 @@ run Rscript code/protacs_06_limma_cluster_1p0_250305a.R
 run Rscript code/protacs_07_limma_cluster_10_250305a.R
 run Rscript code/protacs_08_limma_drug_250305a.R
 
-# Summary
+# Print Summary
 echo
 echo "===================== SUMMARY ====================="
 for i in "${!SCRIPTS[@]}"; do
