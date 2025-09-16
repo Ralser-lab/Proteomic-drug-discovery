@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_01_format_for_limma.py
+Script Name: fda_01_globalvarianceanalysis_250304.py
 Description: Format PROTAC proteome matrix and metadata for compatibility 
              with the R limma package.
 

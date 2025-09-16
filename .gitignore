@@ -9,6 +9,8 @@ figures/*
 #Ignore .DS_Store
 .DS_Store
 
+#Ignore everything in log/
+log/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

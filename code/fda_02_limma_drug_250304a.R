@@ -84,12 +84,10 @@ design <- model.matrix(~0+Drug_,metadata)
 # Make target labels compatible with R row annotation
 colnames(design) = make.names(colnames(design))
 metadata$Drug_ <- make.names(metadata$Drug_)
+metadata$Drug_ <- as.factor(metadata$Drug_)
 
 # Linear models by design matrix
 fit <- lmFit(expressionmatrix, design)
-
-# Linear models by contrast matrix
-metadata$Drug_ <- as.factor(metadata$Drug_)
 
 # Drop DMSO self contrast
 drugs <- levels(metadata$Drug_)[levels(metadata$Drug_) != "DMSO"]
@@ -102,9 +100,13 @@ contrast_formulas <- contrast_formulas[names(contrast_formulas) != "Drug_vsDrug_
 contrasts <- makeContrasts(contrasts = as.list(contrast_formulas), levels = design)
 fit2 <- contrasts.fit(fit, contrasts)
 fit3 <- eBayes(fit2, trend = TRUE)
-#plotSA(fit2, main="Mean-variance trend")
-#plotMA(fit2, main="Mean-variance trend")
-#plotMDS(fit2, main="Mean-variance trend")
+
+# Assess limma fit
+# plotSA(fit2, main="Mean-variance trend")
+# plotMA(fit2, main="Mean-variance trend")
+# plotMDS(fit2, main="Mean-variance trend")
+
+# Extract summary statistics and probabilities as matrices
 pval <- fit3$p.value
 adjpval <- apply(pval, 2, function(x) p.adjust(x, method = "BH"))
 logFC_matrix2 <- fit3$coefficients
@@ -188,9 +190,12 @@ p9 <- plot2(result_table9, 'grey',targets, 4) + labs(title = 'Doripenem')
 p10 <- plot2(result_table10, 'grey', targets,4) + labs(title = 'Amonafide')
 p11 <- plot2(result_table11, 'grey', targets,4) + labs(title = 'Fluorouracil')
 
+# Save limma matrices and formatted metadata for FDA test set
 write.csv2(metadata, file.path(data_dir, 'FDA_LimmaMetadata_250304a.csv'))
 write.csv2(result_table1, file.path(data_dir, 'Methotrexate_DE_250304a.csv'))
-png(file.path(fig_dir,'fda_02_volcanoes_top3.png'), width = 1000, height = 500) # export volcano plots of select contrasts (drug vs DMSO) from FDA test set.
+
+# Save volcano plots of select contrasts (drug vs DMSO) from FDA test set.
+png(file.path(fig_dir,'fda_02_volcanoes_top3.png'), width = 1000, height = 500) 
 plot_grid(p7, p1, p4, p8, nrow = 1)
 dev.off()
 

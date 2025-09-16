@@ -1,58 +1,53 @@
 #!/usr/bin/env bash
+set -euo pipefail
+mkdir -p logs
 
-DATA_DIR="data"
-FIG_DIR="figures"
+SCRIPTS=()
+STATUS=()
 
-## TO DO:
-# Remove timestamps from all codes 
-# Remove directory stuff, as scripts run relative now
+run() {
+  local runner="$1"
+  local script="$2"
+  local log="logs/$(basename "${script%.*}").log"
+  local start=$(date '+%Y-%m-%d %H:%M:%S')
 
-# SCRIPT="code/fda_01_globalvarianceanalysis_250304a.py"
-# echo ">>> Running $SCRIPT"
-# time python3 "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR"
+  echo "[$start] >>> Running $script"
+  {
+    echo "[$start] >>> START $script"
+    time "$runner" "$script"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] >>> FINISH $script"
+  } >"$log" 2>&1
 
-# SCRIPT="code/fda_02_limma_drug_250304a.R"
-# echo ">>> Running $SCRIPT"
-# time Rscript "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR" --install-deps false
+  if [[ $? -eq 0 ]]; then
+    SCRIPTS+=("$script")
+    STATUS+=("OK ($log)")
+  else
+    SCRIPTS+=("$script")
+    STATUS+=("FAIL ($log)")
+    exit 1
+  fi
+}
 
-# SCRIPT="code/fda_03_de_pca_250304a.py"
-# echo ">>> Running $SCRIPT"
-# time python3 "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR"
+# Execute scripts
+# TODO: remove timestamp from script names
+# run python3 code/fda_01_globalvarianceanalysis_250304a.py
+# run Rscript code/fda_02_limma_drug_250304a.R
+# run python3 code/fda_03_de_pca_250304a.py
+# run python3 code/fda_04_de_gsea_250304a.py
+# run python3 code/protacs_01_globalvarianceanalysis_250304a.py
+run python3 code/protacs_02_azmetadata_cluster_250306a.py
+run Rscript code/protacs_03_azmetadata_dendrogram_250306a.R
+run python3 code/protacs_04_limma_metadataconstructor_250304a.py
+run Rscript code/protacs_05_limma_cluster_0p1_250305a.R
+run Rscript code/protacs_06_limma_cluster_1p0_250305a.R
+run Rscript code/protacs_07_limma_cluster_10_250305a.R
+run Rscript code/protacs_08_limma_drug_250305a.R
 
-# SCRIPT="code/fda_04_de_gsea_250304a.py"
-# echo ">>> Running $SCRIPT"
-# time python3 "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR"
-
-# SCRIPT="code/protacs_01_globalvarianceanalysis_250304a.py"
-# echo ">>> Running $SCRIPT"
-# time python3 "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR"
-
-# SCRIPT="code/protacs_02_azmetadata_cluster_250306a.py"
-# echo ">>> Running $SCRIPT"
-# time python3 "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR"
-
-# SCRIPT="code/protacs_03_azmetadata_dendrogram_250306a.R"
-# echo ">>> Running $SCRIPT"
-# time Rscript "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR" --install-deps false
-
-# SCRIPT="code/protacs_04_limma_metadataconstructor_250304a.py"
-# echo ">>> Running $SCRIPT"
-# time python3 "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR"
-
-# SCRIPT="code/protacs_05_limma_cluster_0p1_250305a.R"
-# echo ">>> Running $SCRIPT"
-# time Rscript "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR" --install-deps false
-
-# SCRIPT="code/protacs_06_limma_cluster_1p0_250305a.R"
-# echo ">>> Running $SCRIPT"
-# time Rscript "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR" --install-deps false
-
-# SCRIPT="code/protacs_07_limma_cluster_10_250305a.R"
-# echo ">>> Running $SCRIPT"
-# time Rscript "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR" --install-deps false
-
-SCRIPT="code/protacs_08_limma_drug_250305a.R"
-echo ">>> Running $SCRIPT"
-time Rscript "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR" --install-deps false
-
-echo ">>> Done"
+# Summary
+echo
+echo "===================== SUMMARY ====================="
+for i in "${!SCRIPTS[@]}"; do
+  printf "%-50s %s\n" "${SCRIPTS[$i]}" "${STATUS[$i]}"
+done
+echo "==================================================="
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] >>> All tasks complete"

@@ -348,7 +348,7 @@ gsea_redux.columns = ['PC1_NES', 'PC1_FDR',
                       'PC2_NES', 'PC2_FDR',
                       'PC3_NES', 'PC3_FDR']
 top20_redux = gsea_redux.copy()
-top20_redux.to_csv(filepath3 + 'PCA_GSEA_C5.csv')
+top20_redux.to_csv(filepath3 + '/PCA_GSEA_C5.csv')
 top20_redux
 
 # %% Plot NES of top 6 enriched pathways (PC1, PC2, PC3)
@@ -379,7 +379,6 @@ for i, (pc, pos) in enumerate(zip(pcs, x_positions)):
   
     # Filter out NaN values
     subset_df = df.dropna(subset=[nes_column, fdr_column])
-
 
     # edit pathway labels to be readable
     subset_df.index = [idx.split('_', 1)[1] if '_' in idx else idx for idx in subset_df.index]

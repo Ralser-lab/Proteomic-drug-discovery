@@ -127,7 +127,6 @@ plt.rcParams['axes.titlesize'] = '30'
 plt.rcParams['xtick.labelsize'] = '26'  
 plt.rcParams['ytick.labelsize'] = '26' 
 plt.rcParams['ytick.labelsize'] = '26'
-ß
 # Create a stripplot (Pythonic dotplot)
 df_store = df_store.rename_axis('C5')
 gseaplot = plt.figure(figsize=(5, 20))
@@ -151,7 +150,7 @@ mtx = mtx[mtx['Term']==term]['Lead_genes'].iloc[0].split(';')
 qval = str(round(df4[df4['Term']==term]['FDR q-val'].iloc[0],3))
 f_matrix = adj_matrix[mtx]
 tolabel = ['Methotrexate', 'Doxorubicin..Adriamycin..HCl', 'Pirarubicin', 'Epirubicin.HCl', 'Fulvestrant','Clotrimazole']
-f_matrix = f_matrix.loc[tolabel]ß
+f_matrix = f_matrix.loc[tolabel]
 f_matrix = f_matrix.T
 f_matrix.columns = ['Methotrexate', 'Doxorubicin', 'Pirarubicin', 'Epirubicin', 'Fulvestrant','Clotrimazole']
 sns.set(font_scale = 1)
