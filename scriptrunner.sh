@@ -1,15 +1,22 @@
-#!/usr/bin/env bash 
+#!/usr/bin/env bash
 
-echo ">>> Running fda_01_globalvarianceanalysis_250304a.py"
-time python3 code/fda_01_globalvarianceanalysis_250304a.py
+DATA_DIR="data"
+FIG_DIR="figures"
 
-echo ">>> Running fda_02_limma_drug_250304a.R"
-time Rscript code/fda_02_limma_drug_250304a.R
+SCRIPT="code/fda_01_globalvarianceanalysis_250304a.py"
+echo ">>> Running $SCRIPT"
+time python3 "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR"
 
-echo ">>> Running fda_03_de_pca_250304a.py"
-time python3 code/fda_03_de_pca_250304a.py
+SCRIPT="code/fda_02_limma_drug_250304a.R"
+echo ">>> Running $SCRIPT"
+time Rscript "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR" --install-deps false
 
-echo ">>> Running fda_04_de_gsea_250304a.py"
-time python3 code/fda_04_de_gsea_250304a.py
+SCRIPT="code/fda_03_de_pca_250304a.py"
+echo ">>> Running $SCRIPT"
+time python3 "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR"
+
+SCRIPT="code/fda_04_de_gsea_250304a.py"
+echo ">>> Running $SCRIPT"
+time python3 "$SCRIPT" --data-dir "$DATA_DIR" --fig-dir "$FIG_DIR"
 
 echo ">>> Done"

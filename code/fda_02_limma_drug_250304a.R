@@ -1,3 +1,33 @@
+#!/usr/bin/env Rscript
+# -*- coding: utf-8 -*-
+
+#'
+#' Script Name: fda_02_limma_drug_250304.R
+#' Description: Differential expression analysis of FDA test-set proteomes using 
+#'              limma, followed by visualization (heatmaps, PCA, and volcano plots).
+#'
+#' Author: Shaon Basu
+#' Date: 2025-09-16
+#'
+#' Inputs
+#' ------
+#' - data/SB_FDA_prmatrix_filtered_50_imputed_50_ltrfm_batched_summarized_250304.tsv
+#' - data/SB_FDA_metadata_250304a.tsv
+#'
+#' Outputs
+#' -------
+#' - data/FDA_LimmaMatrix_250304a.csv
+#' - data/FDA_adjLimmaMatrix_250304a.csv
+#' - data/FDA_LimmaMetadata_250304a.csv
+#' - data/*_DE_250304a.csv (per-drug DE results)
+#' - figures/02_volcanoes_top3_FDA.png
+#'
+#' Requirements
+#' ------------
+#' R >= 4.2
+#' Packages: BiocManager, limma, EnhancedVolcano, factoextra, ggplot2,
+#'           dplyr, tidyr, pheatmap, grid, cowplot, stats, ggfortify, renv
+#'
 
 # Define required packages
 required_packages <- c(
@@ -37,12 +67,15 @@ lapply(required_packages, library, character.only = TRUE)
 
 message("All required packages are installed and loaded successfully!")
 
-# setwd to correct relative path
-setwd('/Users/shaon/Desktop/PROTACS/github_deposition/data')
+# Set up relative paths
 
-metadata <- read.csv2('SB_FDA_metadata_250304a.tsv', sep = ',', row.names = 1)
+data_dir <- file.path(getwd(), "data")
+fig_dir  <- file.path(getwd(), "figures")
+metadata <- read.csv2(file.path(data_dir,'SB_FDA_metadata_250304a.tsv'), sep = ',', row.names = 1)
 
-expressionmatrix <- read.csv2('SB_FDA_prmatrix_filtered_50_imputed_50_ltrfm_batched_summarized_250304.tsv', sep = ',', dec = '.', row.names = 1)
+# Read in proteomes and metadata from FDA test set
+
+expressionmatrix <- read.csv2(file.path(data_dir,'SB_FDA_prmatrix_filtered_50_imputed_50_ltrfm_batched_summarized_250304.tsv'), sep = ',', dec = '.', row.names = 1)
 
 expressionmatrix <- t(expressionmatrix)
 
@@ -98,8 +131,8 @@ logFC_matrix2 <- fit3$coefficients
 signedpval <- -log10(pval) * sign(logFC_matrix2)
 signed_adjpval<- -log10(adjpval) * sign(logFC_matrix2)
 
-write.csv2(signedpval, 'FDA_LimmaMatrix_250304a.csv')
-write.csv2(signed_adjpval, 'FDA_adjLimmaMatrix_250304a.csv')
+write.csv2(signedpval, file.path(data_dir,'FDA_LimmaMatrix_250304a.csv'))
+write.csv2(signed_adjpval, file.path(data_dir,'FDA_adjLimmaMatrix_250304a.csv'))
 
 pheatmap(logFC_matrix2, scale = 'row',
          clustering_distance_rows = "euclidean", 
@@ -110,10 +143,10 @@ pheatmap(logFC_matrix2, scale = 'row',
           
          show_colnames = FALSE)
 
+#' Volcano plot with custom coloring
 plot <- function(x, color, ID, plim_y){
   
   rownames(x)[rownames(x)=='CYP3A7.CYP3A7.CYP3A51P']<- 'CYP3A7'
-  
   
   keyvals <- ifelse(
     x$logFC < -0.58 & x$adj.P.Val < 0.05, 'blue',
@@ -150,7 +183,7 @@ plot <- function(x, color, ID, plim_y){
   return(p) 
 }
 
-
+#' Volcano plot wrapper with styling tweaks
 plot2 <- function(x, color, ID, plim_y){
   p <- plot(x, color, ID, plim_y)
   p <- p + theme(axis.ticks = element_line(size = 0.2))
@@ -160,12 +193,13 @@ plot2 <- function(x, color, ID, plim_y){
   return(p)
 }
 
-result_table1 <- topTable(fit3, coef="Drug_Methotrexate - Drug_DMSO", number=Inf) # good
-result_table2 <- topTable(fit3, coef="Drug_Fulvestrant - Drug_DMSO", number=Inf) # good
-result_table3 <- topTable(fit3, coef="Drug_Asenapine.maleate - Drug_DMSO", number=Inf) # good
-result_table4 <- topTable(fit3, coef="Drug_Doxorubicin..Adriamycin..HCl - Drug_DMSO", number=Inf) # good
+# Extract contrast tables
+result_table1 <- topTable(fit3, coef="Drug_Methotrexate - Drug_DMSO", number=Inf) 
+result_table2 <- topTable(fit3, coef="Drug_Fulvestrant - Drug_DMSO", number=Inf)
+result_table3 <- topTable(fit3, coef="Drug_Asenapine.maleate - Drug_DMSO", number=Inf) 
+result_table4 <- topTable(fit3, coef="Drug_Doxorubicin..Adriamycin..HCl - Drug_DMSO", number=Inf) 
 result_table5 <- topTable(fit3, coef='Drug_Epirubicin.HCl - Drug_DMSO', number = Inf)
-result_table6 <- topTable(fit3, coef="Drug_Tamoxifen - Drug_DMSO", number=Inf) # good
+result_table6 <- topTable(fit3, coef="Drug_Tamoxifen - Drug_DMSO", number=Inf)
 result_table7 <- topTable(fit3, coef="Drug_Ibuprofen. - Drug_DMSO", number = Inf) 
 result_table8 <- topTable(fit3, coef="Drug_Clotrimazole - Drug_DMSO", number = Inf)
 result_table9 <- topTable(fit3, coef='Drug_Doripenem.Hydrate - Drug_DMSO', number = Inf)
@@ -174,8 +208,9 @@ result_table11 <- topTable(fit3, coef='Drug_Fluorouracil..5.Fluoracil..5.FU. - D
 
 targets <- c('DHFR', 'TK1', 'CYP3A7', 'COX2')
 
-p1 <- plot2(result_table1, 'grey', targets, 4) + labs(title = 'Methotrexate \n(DHFR)') # good
-p2 <- plot2(result_table2, 'grey', targets, 4) + labs(title = 'Fulvestrant') # good
+# Custom volcano plot with target selection overlay
+p1 <- plot2(result_table1, 'grey', targets, 4) + labs(title = 'Methotrexate \n(DHFR)') 
+p2 <- plot2(result_table2, 'grey', targets, 4) + labs(title = 'Fulvestrant')
 p3 <- plot2(result_table3, 'grey', targets, 4) + labs(title = 'Asenapine')
 p4 <- plot2(result_table4, 'grey', targets, 4) + labs(title = 'Doxorubicin \n(TK1)')
 p5 <- plot2(result_table5, 'grey', targets, 4) + labs(title = 'Epirubicin')
@@ -186,13 +221,11 @@ p9 <- plot2(result_table9, 'grey',targets, 4) + labs(title = 'Doripenem')
 p10 <- plot2(result_table10, 'grey', targets,4) + labs(title = 'Amonafide')
 p11 <- plot2(result_table11, 'grey', targets,4) + labs(title = 'Fluorouracil')
 
-write.csv2(metadata, 'FDA_LimmaMetadata_250304a.csv')
+write.csv2(metadata, file.path(data_dir, 'FDA_LimmaMetadata_250304a.csv'))
 
-write.csv2(result_table1, 'Methotrexate_DE_250304a.csv')
+write.csv2(result_table1, file.path(data_dir, 'Methotrexate_DE_250304a.csv'))
 
-setwd('/Users/shaon/Desktop/PROTACS/github_deposition/figures')
-
-png('volcanoes_top3_FDA.png', width = 1000, height = 500)
+png(file.path(fig_dir,'02_volcanoes_top3_FDA.png'), width = 1000, height = 500) # export volcano plots of select contrasts (drug vs DMSO) from FDA test set.
 plot_grid(p7, p1, p4, p8, nrow = 1)
 dev.off()
 
