@@ -64,90 +64,58 @@ for (pkg in bioc_packages) {
 
 # Load all libraries
 lapply(required_packages, library, character.only = TRUE)
-
 message("All required packages are installed and loaded successfully!")
 
 # Set up relative paths
-
 data_dir <- file.path(getwd(), "data")
 fig_dir  <- file.path(getwd(), "figures")
 metadata <- read.csv2(file.path(data_dir,'SB_FDA_metadata_250304a.tsv'), sep = ',', row.names = 1)
 
 # Read in proteomes and metadata from FDA test set
-
 expressionmatrix <- read.csv2(file.path(data_dir,'SB_FDA_prmatrix_filtered_50_imputed_50_ltrfm_batched_summarized_250304.tsv'), sep = ',', dec = '.', row.names = 1)
-
 expressionmatrix <- t(expressionmatrix)
-
 rownames(expressionmatrix)[rownames(expressionmatrix)=='CYP3A7.CYP3A7.CYP3A51P']<- 'CYP3A7'
-
 metadata[metadata==''] <- 'DMSO'
-
 colnames(metadata) <- c('Plate_Well_', 'Batch_','Plate_','Well_','Content_','Drug_','Cat_','Cas_','Target_')
 
 # Create design contrasts
-
 design <- model.matrix(~0+Drug_,metadata)
 
 # Make target labels compatible with R row annotation
-
 colnames(design) = make.names(colnames(design))
-
 metadata$Drug_ <- make.names(metadata$Drug_)
 
 # Linear models by design matrix
-
 fit <- lmFit(expressionmatrix, design)
 
 # Linear models by contrast matrix
-
 metadata$Drug_ <- as.factor(metadata$Drug_)
 
 # Drop DMSO self contrast
 drugs <- levels(metadata$Drug_)[levels(metadata$Drug_) != "DMSO"]
 
-# Define contrasts
+# Define contrasts, perform differential expression, and extract statistics & probabilities as a matrix
 drugs <- paste0("Drug_", drugs)
-
 contrast_formulas <- setNames(sapply(drugs, function(drug) paste0(drug, " - Drug_DMSO"), USE.NAMES = FALSE), 
                               sapply(drugs, function(drug) paste0(drug, "vsDrug_DMSO")))
-
 contrast_formulas <- contrast_formulas[names(contrast_formulas) != "Drug_vsDrug_DMSO"]
-
 contrasts <- makeContrasts(contrasts = as.list(contrast_formulas), levels = design)
-
 fit2 <- contrasts.fit(fit, contrasts)
-
 fit3 <- eBayes(fit2, trend = TRUE)
-
-plotSA(fit2, main="Mean-variance trend")
-plotMA(fit2, main="Mean-variance trend")
-plotMDS(fit2, main="Mean-variance trend")
-
+#plotSA(fit2, main="Mean-variance trend")
+#plotMA(fit2, main="Mean-variance trend")
+#plotMDS(fit2, main="Mean-variance trend")
 pval <- fit3$p.value
 adjpval <- apply(pval, 2, function(x) p.adjust(x, method = "BH"))
 logFC_matrix2 <- fit3$coefficients
-
 signedpval <- -log10(pval) * sign(logFC_matrix2)
 signed_adjpval<- -log10(adjpval) * sign(logFC_matrix2)
-
 write.csv2(signedpval, file.path(data_dir,'FDA_LimmaMatrix_250304a.csv'))
 write.csv2(signed_adjpval, file.path(data_dir,'FDA_adjLimmaMatrix_250304a.csv'))
 
-pheatmap(logFC_matrix2, scale = 'row',
-         clustering_distance_rows = "euclidean", 
-         clustering_distance_cols = "euclidean",
-        color=colorRampPalette(c("navy","blue", "lightblue", "white", "pink", "red", "darkred"))(50),
-         annotation_col = NULL,  # If you have additional metadata for contrasts, you can add it here
-         show_rownames = FALSE,
-          
-         show_colnames = FALSE)
-
 #' Volcano plot with custom coloring
 plot <- function(x, color, ID, plim_y){
-  
   rownames(x)[rownames(x)=='CYP3A7.CYP3A7.CYP3A51P']<- 'CYP3A7'
-  
   keyvals <- ifelse(
     x$logFC < -0.58 & x$adj.P.Val < 0.05, 'blue',
     ifelse(x$logFC > 0.58 & x$adj.P.Val < 0.05, 'red',
@@ -156,7 +124,6 @@ plot <- function(x, color, ID, plim_y){
   names(keyvals)[keyvals == 'red'] <- '+ 50%'
   names(keyvals)[keyvals == color] <- ''
   names(keyvals)[keyvals == 'blue'] <- '- 50%'
-  
   
   p <- EnhancedVolcano(x,lab = rownames(x),
                        x = 'logFC',
@@ -222,9 +189,7 @@ p10 <- plot2(result_table10, 'grey', targets,4) + labs(title = 'Amonafide')
 p11 <- plot2(result_table11, 'grey', targets,4) + labs(title = 'Fluorouracil')
 
 write.csv2(metadata, file.path(data_dir, 'FDA_LimmaMetadata_250304a.csv'))
-
 write.csv2(result_table1, file.path(data_dir, 'Methotrexate_DE_250304a.csv'))
-
 png(file.path(fig_dir,'02_volcanoes_top3_FDA.png'), width = 1000, height = 500) # export volcano plots of select contrasts (drug vs DMSO) from FDA test set.
 plot_grid(p7, p1, p4, p8, nrow = 1)
 dev.off()
