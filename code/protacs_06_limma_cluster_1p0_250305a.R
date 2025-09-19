@@ -262,7 +262,7 @@ write.csv2(result_table15, 'Cluster15_1p0uM_Limma_250305a.csv', row.names = TRUE
 # Plot volcano plot of select series (1 micromolar vs DMSO)
 setwd(fig_dir)
 library('cowplot')
-png('protacs_05_volcanoes_1uM.png', width = 1200, height = 480)
+png('protacs_06_volcanoes_1uM.png', width = 1200, height = 480)
 plot_grid(p1, p6, p9, p14, nrow = 1)
 dev.off()
 

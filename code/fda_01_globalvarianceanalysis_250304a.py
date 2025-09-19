@@ -3,21 +3,23 @@
 
 """
 Script Name: fda_01_globalvarianceanalysis_250304.py
-Description: Format PROTAC proteome matrix and metadata for compatibility 
-             with the R limma package.
+Description: Format FDA proteome matrix and metadata for compatibility
+             with the R limma package and generate clustering/PCA/dispersion plots.
 
 Author: Shaon Basu
 Date: 2025-09-16
 
 Inputs
 ------
-- data/SB_PROTACs_prmatrix_filtered_5_imputed_50_ltrfm_batched_summarized_240314.tsv
-- data/SB_PROTACs_metadata_240611a.tsv
+- data/SB_FDA_prmatrix_filtered_50_imputed_50_ltrfm_batched_summarized_250304.tsv
+- data/SB_FDA_metadata_250304a.tsv
 
 Outputs
 -------
-- data/SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_forlimma_240611a.tsv
-- data/SB_PROTACs_metadata_clustered_240611a.tsv
+- figures/fda_01_heatmap.pdf
+- figures/fda_01_global_PCA_scree.pdf
+- figures/fda_01_global_PCA.pdf
+- figures/fda_01_dispersion_kde.pdf
 
 Requirements
 ------------
@@ -25,6 +27,7 @@ Python >= 3.8
 Dependencies: pandas, os
 
 """
+
 # %% Import packages
 import pandas as pd
 import matplotlib
