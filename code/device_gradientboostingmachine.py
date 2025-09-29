@@ -4,8 +4,12 @@
 """
 Script Name: device_gradientboostingmachine.py
 Description:
-    GBDT utilities for training, tuning, evaluating, calibrating, and 
-    exporting models.
+    End-to-end Gradient Boosted Decision Trees (GBDT) utilities for binary
+    classification using XGBoost. Provides helpers to train a quick baseline,
+    run GridSearchCV, evaluate with ROC/PR curves, classify with threshold
+    tuning, interpret with SHAP, calibrate probabilities, inspect feature
+    importance, generate common plots, and export model outputs for downstream
+    analysis (e.g., R plotting).
 
 Author: Shaon Basu
 Date: 2025-09-29
@@ -16,13 +20,13 @@ Class architecture:
     gbdt_baseline : Train a baseline XGBClassifier.
     gbdt_gridcv : Perform GridSearchCV hyperparameter tuning.
     gbdt_evaluate : Evaluate model with ROC/PR plots.
-    gbdt_classify : Classify samples with adjustable thresholds, confusion matrices, and classification reports.
-    gbdt_SHAP : Explain model predictions with SHAP values and interaction plots.
-    gbdt_calibrate : Calibrate predicted probabilities (isotonic scaling).
-    get_model_features : Retrieve and rank model feature importance.
-    plot_* : Visualization utilities (ROC, PR, F1, confusion, etc.).
-    export_all_predictions : Save predictions and SHAP values for all compounds.
-    export_subset_predictions : Export predictions and feature contributions for a subset of target compounds.
+    gbdt_classify : Classify with adjustable thresholds; report confusion matrices and metrics.
+    gbdt_SHAP : Explain predictions with SHAP values and interaction structure.
+    gbdt_calibrate : Calibrate predicted probabilities (isotonic).
+    get_model_features : Rank and (optionally) plot feature importance.
+    plot_* : Visualization utilities (ROC, PR, F1, confusion, summary bars).
+    export_all_predictions : Save predictions + SHAP features for all samples.
+    export_subset_predictions : Export a focused subset with per-feature barplots.
 
 Outputs
 -------
@@ -45,18 +49,20 @@ import seaborn as sns
 import shap
 import xgboost as xgb
 from sklearn.model_selection import GridSearchCV, KFold
-from sklearn.metrics import (
-    classification_report, confusion_matrix,
-    roc_curve, auc, f1_score, precision_recall_curve,
-    ConfusionMatrixDisplay,
-)
+from sklearn.metrics import (classification_report, 
+                             confusion_matrix, 
+                             roc_curve, auc, 
+                             f1_score, precision_recall_curve, 
+                             ConfusionMatrixDisplay)
 from sklearn.calibration import CalibratedClassifierCV, calibration_curve
 
 class GBDT:
     """
-    GBDT utilities for training, tuning, evaluating, calibrating, and 
-    exporting models.
-    
+    Wrapper around XGBoost classifiers for a binary classification
+    workflow. Encapsulates training, tuning, evaluation, calibration,
+    interpretation (SHAP), visualization, and export steps, while keeping
+    paths and run metadata in one place.
+
     """
     def __init__(self, dpath, prefix, name):
         """
@@ -122,7 +128,8 @@ class GBDT:
     
     def out(self, filename):
         """
-        Join figures folder with an optional filename prefix.
+        Build a full output path under the figures directory, prefixed with the
+        run's prefix and name. Centralizes figure naming to keep artifacts tidy.
 
         Parameters
         ----------
@@ -143,9 +150,8 @@ class GBDT:
 
     def get_model_features(self, plot = True, n = 20):
         """
-        Compute feature importance from the fitted best model and return the
-        top-n features. Optionally generates bar plots for top features by
-        'Gain' and 'Weight'.
+        Extract feature importance (weight, gain, cover) from the fitted best model,
+        return the top-n features, and optionally save bar plots for gain and weight.
 
         Parameters
         ----------
@@ -190,8 +196,8 @@ class GBDT:
 
     def gbdt_baseline(self, Xb_train, Xb_test, yb_train, yb_test):
         """
-        Fit a baseline XGBClassifier and store predictions/probabilities.
-        This serves as a reference comparator for tuned models.
+        Fit a simple, untuned XGBClassifier as a baseline comparator. Stores the
+        model and its test-set predictions/probabilities for side-by-side plots.
 
         Parameters
         ----------
@@ -223,8 +229,8 @@ class GBDT:
 
     def gbdt_gridcv(self, params, X_train, y_train):
         """
-        Hyperparameter tuning via GridSearchCV (5-fold) for an XGBClassifier.
-        Fits the best model on all training data and stores it.
+        Run a 5-fold GridSearchCV over the provided hyperparameter grid, refit
+        the best XGBClassifier on all training data, and store the tuned model.
 
         Parameters
         ----------
@@ -261,8 +267,9 @@ class GBDT:
 
     def gbdt_evaluate(self, X_test, y_test, model):
         """
-        Evaluate a model on test data and plot ROC/PR curves.
-        Also overlays with baseline test metrics and training curves.
+        Evaluate a model on held-out data. Computes predicted probabilities and
+        saves ROC and Precision-Recall curves for test (and optionally train) sets,
+        including an overlay of the baseline model if available.
 
         Parameters
         ----------
@@ -291,9 +298,10 @@ class GBDT:
 
     def gbdt_classify(self, X, y, model='best', threshold='auto'):
         """
-        Produce binary predictions using either the best stored model or a
-        provided model. The decision threshold is selected automatically
-        (max F1-score) unless specified.
+        Generate binary classifications from predicted probabilities using either
+        the stored best model or a provided model. Select a decision boundary
+        automatically (max F1) or use a specified threshold, then save confusion
+        matrices and a compact classification-report summary plot.
 
         Parameters
         ----------
@@ -370,9 +378,9 @@ class GBDT:
 
     def gbdt_SHAP(self, top_interactors=None):
         """
-        Compute SHAP values for the best model, save a summary plot, derive
-        top SHAP features, and visualize pairwise interaction structure
-        among selected 'top_interactors'.
+        Compute SHAP values for the best model to quantify feature influence,
+        save a SHAP summary plot, derive top features, and visualize SHAP
+        interaction structure (overall and within selected 'top_interactors').
 
         Parameters
         ----------
@@ -431,8 +439,9 @@ class GBDT:
 
     def gbdt_calibrate(self):
         """
-        Calibrate probabilities of the best and baseline models using
-        isotonic regression and plot a calibration curve.
+        Calibrate class probabilities for both best and baseline models using
+        isotonic regression on the test set, then plot and save a calibration
+        curve comparing pre- and post-calibration reliability.
 
         Parameters
         ----------
@@ -486,8 +495,9 @@ class GBDT:
 
     def export_all_predictions(self, AZmeta, model):
         """
-        Export predictions and SHAP feature columns for all samples, merged
-        with metadata (Drug ID, Cluster). Output is tailored for R plotting.
+        Export per-sample predictions and probabilities (plus SHAP feature columns)
+        merged with metadata (Drug ID, Cluster). Produces a tidy CSV for R
+        visualization and stores an in-memory table for further use.
 
         Parameters
         ----------
@@ -527,7 +537,7 @@ class GBDT:
         """
         Export predictions for a subset of 'targets' and generate per-feature
         differential expression bar plots for those targets. Also prepares a
-        SHAP-feature–augmented table for R plotting.
+        SHAP-feature-augmented table for R plotting.
 
         Parameters
         ----------
@@ -599,10 +609,8 @@ class GBDT:
 
     def plot_roc(self, y_test, proba, baseline=None, y_train=None, proba2=None):
         """
-        Plot ROC curves for:
-        - test predictions of the evaluated model,
-        - (optional) train predictions of the evaluated model,
-        - (optional) baseline model predictions on test data.
+        Save ROC curves comparing the evaluated model on test (and optional train)
+        data, with an optional overlay of the baseline model evaluated on test.
 
         Parameters
         ----------
@@ -652,7 +660,7 @@ class GBDT:
 
     def plot_pr(self, y_test, proba, baseline=None, y_train=None, proba2=None):
         """
-        Plot Precision–Recall curves for:
+        Save Precision-Recall curves for:
         - test predictions of the evaluated model,
         - (optional) train predictions of the evaluated model,
         - (optional) baseline model predictions on test data.
@@ -705,8 +713,8 @@ class GBDT:
 
     def plot_top_features(self, df_importances_weight, str_out):
         """
-        Bar plot for top features by a specified importance column (e.g., Gain
-        or Weight). Saves a figure with the provided label suffix.
+        Save bar plot for top features by a specified importance column (e.g., Gain
+        or Weight). 
 
         Parameters
         ----------
@@ -740,7 +748,7 @@ class GBDT:
 
     def plot_confusion(self, y_true, proba, name, boundary):
         """
-        Plot a confusion matrix using a specified decision threshold.
+        Save  a confusion matrix plot using a specified decision threshold.
 
         Parameters
         ----------
@@ -821,7 +829,7 @@ class GBDT:
 
     def plot_classification_report(self, report, threshold):
         """
-        Bar plot summarizing precision, recall, and accuracy for baseline/test/train
+        Save bar plot summarizing precision, recall, and accuracy for baseline/test/train
         (as prepared by `gbdt_classify`).
 
         Parameters
