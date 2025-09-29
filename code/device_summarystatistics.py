@@ -1,3 +1,39 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Script Name: device_statistics.py
+Description:
+    Statistical utilities for exploratory analysis, hypothesis testing, and 
+    regression-based IC50 estimation. Includes implementations of summary 
+    statistics, z-tests, t-tests, one-sample tests, geometric mean, and 
+    coefficient of variation.
+
+Author: Shaon Basu
+Date: 2025-09-29
+
+Function architecture:
+--------
+- std_calc : Compute standard deviation using E(X^2) - E(X)^2.
+- summary_stats : Report mean, standard deviation, and sample size for two series.
+- geometric_mean : Calculate the geometric mean of a series.
+- z_test : Perform a two-sample z-test.
+- t_test : Perform Welch's two-sample t-test.
+- linear_IC50 : Estimate IC50 values by linear regression on each DataFrame column.
+- one_test : Perform a one-sample t-test against a population mean.
+- calculate_cv : Compute coefficient of variation (CV) for a DataFrame by index.
+
+Outputs
+-------
+- Console logs of test statistics and p-values
+- pandas.DataFrame or pandas.Series results (depending on function)
+
+Requirements
+------------
+Python >= 3.8  
+Dependencies: pandas, numpy, scipy, statsmodels
+
+"""
 # %%
 import os
 import sys

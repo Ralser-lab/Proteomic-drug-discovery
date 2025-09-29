@@ -121,7 +121,7 @@ path_genes = extract_genes(top5_reactome_enrich_split, pathway_split, expression
 X_train, X_test, y_train, y_test = train_test_split(X[path_genes], y, test_size=0.2, random_state=42) 
 
 # %% Gradient boosting workflow
-workflow = 'protacs_16_yolo'
+workflow = 'protacs_16'
 
 # Hyperparameter space
 params = {
