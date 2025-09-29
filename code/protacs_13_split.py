@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_13_split_250311a.py
+Script Name: protacs_13_split.py
 Description:
     Prepare training and test splits for gradient boosting machine learning 
     models of mitochondrial toxicity. The script cleans drug identifiers, 

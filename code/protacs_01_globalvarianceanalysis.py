@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_01_globalvarianceanalysis_250304a.py
+Script Name: protacs_01_globalvarianceanalysis.py
 Description: Cluster proteomics data from the HBD PROTACs screen, visualize heatmaps
              with metadata, compute dispersion, run PCA, and perform preranked GSEA
              on PC1–PC3 loadings. Exports figures (heatmaps, PCA, GSEA) and tables.

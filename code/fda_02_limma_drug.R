@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #'
-#' Script Name: fda_02_limma_drug_250304.R
+#' Script Name: fda_02_limma_drug.R
 #' Description: Differential expression analysis of FDA test-set proteomes using 
 #'              limma, followed by visualization (heatmaps, PCA, and volcano plots).
 #'

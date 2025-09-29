@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_10_de_gsea_250305.py
+Script Name: protacs_10_de_gsea.py
 Description:
     Perform GSEA on limma differential expression results from the HBD drug
     proteome screen at 1 µM and 10 µM, summarize enriched GO terms, and generate 

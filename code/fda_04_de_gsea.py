@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: fda_04_de_gsea_250304a.py
+Script Name: fda_04_de_gsea.py
 Description: Perform preranked GSEA on FDA test-set limma contrasts vs DMSO, 
              generate enrichment strip plots, and export leading-edge protein heatmaps.
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_15_split_enrich_250306a.py
+Script Name: protacs_15_split_enrich.py
 Description:
     Process differential expression (DE) results and Reactome enrichment
     analyses for HBD chemical series from the split dataset. The script 

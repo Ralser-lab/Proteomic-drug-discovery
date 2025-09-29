@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: fda_01_globalvarianceanalysis_250304.py
+Script Name: fda_01_globalvarianceanalysis.py
 Description: Format FDA proteome matrix and metadata for compatibility
              with the R limma package and generate clustering/PCA/dispersion plots.
 

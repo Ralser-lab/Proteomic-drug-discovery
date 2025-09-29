@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #'
-#' Script Name: protacs_05_limma_cluster_0p1_250305a.R
+#' Script Name: protacs_05_limma_cluster_0p1.R
 #' Description: Differential expression analysis of PROTAC dataset (0.1 µM) 
 #'              using limma (chemical series vs DMSO), followed by visualization.
 #'

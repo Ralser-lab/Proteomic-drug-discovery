@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_11_de_stringnetworkenrich_250305a.py
+Script Name: protacs_11_de_stringnetworkenrich.py
 Description:
     Process STRING network enrichment results (GO pathways) for chemical 
     series 4 and 14, identify the top enriched pathways by false discovery 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #'
-#' Script Name: protacs_14_split_limma_250306a.R
+#' Script Name: protacs_14_split_limma.R
 #'
 #' Description:
 #' Differential expression analysis of PROTAC proteomics at 10 µM using limma on

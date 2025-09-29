@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_gbdt_enrich_train_250305a.py
+Script Name: protacs_gbdt_enrich_train.py
 Description:
     Train and evaluate Gradient Boosted Decision Tree (GBDT) models on 
     proteomic expression data and drug response (IC50) outcomes. The script 

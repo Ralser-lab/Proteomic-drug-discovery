@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 # -*- coding: utf-8 -*-
 #'
-#' Script Name: protacs_03_azmetadata_dedrogram_250306a.R
+#' Script Name: protacs_03_azmetadata_dedrogram.R
 #' Description: Installs/loads required CRAN and Bioconductor packages, reads one-hot
 #'              encoded AZ compound metadata, computes Euclidean distances on logical
 #'              features, performs Ward.D2 hierarchical clustering, converts the

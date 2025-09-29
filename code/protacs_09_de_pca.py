@@ -3,7 +3,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_09_de_pca_250305a.py
+Script Name: protacs_09_de_pca.py
 Description: Perform PCA and probability-based analyses on differential
              expression profiles from PROTAC and FDA drug screening datasets. 
              The script generates 3D PCA plots, probability mass/density plots, 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_12_de_regression_250305.py
+Script Name: protacs_12_de_regression.py
 Description:
     Analyze proteomic log fold change (LFC) profiles from the HBD proteome 
     screen in relation to mitochondrial toxicity (IC50, galactose assay). 

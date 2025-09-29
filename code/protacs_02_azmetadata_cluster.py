@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_02_azmetadata_cluster_240306a.py
+Script Name: protacs_02_azmetadata_cluster.py
 Description: Clean AstraZeneca HBD drug screen metadata, perform 
              hierarchical clustering on one-hot encoded drug features, 
              and generate chemical series labels for downstream analysis 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: fda_03_de_pca_250304a.py
+Script Name: fda_03_de_pca.py
 Description: Analyze FDA test-set proteomes using limma outputs.
              Includes significance counting, probability mass and density
              estimation, PCA (2D and 3D), and export of supplementary tables.

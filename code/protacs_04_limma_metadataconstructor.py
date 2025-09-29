@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_01_format_for_limma.py
+Script Name: protacs_04_limma_metadataconstructor.py
 Description: Format HBD screen proteome matrix and metadata for compatibility 
              with the R limma package.
 
