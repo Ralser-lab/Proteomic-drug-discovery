@@ -50,7 +50,8 @@ run() {
 # run python3 code/protacs_12_de_regression_250305a.py
 # run python3 code/protacs_13_split_250311a.py
 # run Rscript code/protacs_14_split_limma_250306a.R
-run python3 code/protacs_15_split_enrich_250306a.py
+# run python3 code/protacs_15_split_enrich_250306a.py
+run python3 code/protacs_16_ML_brutalgrid_0p01learn_retrain_250306a.py
 
 
 # REDUCE heatmap.pdf -> heatmaps.png

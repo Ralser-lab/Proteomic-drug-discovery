@@ -199,7 +199,7 @@ plt.ylabel('$R^2$', fontsize = 26)
 plt.xlabel('Sorted $R^2$ Scores', fontsize = 26)
 plt.xticks(None)
 plt.ylim(0,0.6)
-plt.savefig(outpath + 'protacs_12_' + str(pathway1[0]) + ' models.pdf')
+plt.savefig(outpath + f"protacs_12_regression_models({pathway1[0].replace(' ','_')}).pdf")
 
 sorted_gene_names_r2  # sorted list of genes by R^2
 
@@ -279,7 +279,7 @@ plt.ylabel('Predicted Mitochondrial Toxicity (pIC50)', fontsize = 26)
 plt.grid(True)
 
 # Save observed vs predicted plot
-plt.savefig(outpath + 'protacs_12_OLS_' + selected_gene + '.pdf')
+plt.savefig(outpath + 'protacs_12_regression_' + selected_gene + '.pdf')
 #plt.show()
 
 # %% Gene expression vs IC50 scatter plot
@@ -307,7 +307,7 @@ plt.ylabel('pIC50')    # negative log IC50 (toxicity)
 plt.grid(True)
 
 # Save gene expression vs IC50 plot
-plt.savefig(outpath + 'protacs_12_OLS_' + selected_gene + '_pred.pdf')
+plt.savefig(outpath + 'protacs_12_regression_' + selected_gene + '_pred.pdf')
 #plt.show()
 
 # %% DEG p-value count extraction

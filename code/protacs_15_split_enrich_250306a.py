@@ -5,10 +5,10 @@
 Script Name: protacs_15_split_enrich_250306a.py
 Description:
     Process differential expression (DE) results and Reactome enrichment
-    analyses for HBD chemical series in a split. The script generates signed
-    ranked gene lists from limma DE outputs, filters pathway enrichment
-    results by false discovery rate (FDR), and assembles a summary of
-    top enriched pathways across chemical clusters.
+    analyses for HBD chemical series from the split dataset. The script 
+    generates signed ranked gene lists from limma DE outputs on the split, 
+    filters pathway enrichment results by false discovery rate (FDR), and
+    assembles a summary of top enriched pathways across chemical clusters.
 
 Author: Shaon Basu
 Date: 2025-09-19
@@ -26,7 +26,7 @@ Inputs
 Outputs
 -------
 - data/DE_VHL.csv, DE_T6N.csv, DE_T5N.csv, DE_L5N.csv, DE_URA.csv, DE_TXN.csv
-  (signed ranked gene scores per chemical series)
+  (signed ranked gene scores per HBD chemical series [recruiter type] vs DMSO)
 - data/top5_FDR_reactome.csv
   (summary of enriched Reactome pathways at FDR < 0.01 across series)
 
@@ -123,7 +123,7 @@ cat_order.reverse()
 dogma = pd.DataFrame()
 filter = 0.01 #FDR cutoff
 
-# Assemble a cross-condition summary table of enriched pathways in split and export it
+# Assemble a cross-condition summary table of enriched pathways in split and export 
 for idx, df in nx_dict.items():
     df_subset = df.loc[df['false discovery rate'] < filter]
     df_subset.index = df_subset['term description']

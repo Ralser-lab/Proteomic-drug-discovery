@@ -22,7 +22,7 @@ Outputs
 Requirements
 ------------
 Python >= 3.8
-
+Dependencies: pandas
 
 """
 # %% Import packages
