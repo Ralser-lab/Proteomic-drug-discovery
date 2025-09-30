@@ -6,7 +6,7 @@
 #'
 #' Description:
 #' Differential expression analysis of PROTAC proteomics at 10 µM using limma on
-#' a predefined split of the data. The script loads required packages, reads metadata 
+#' a subset (split) of the data. The script loads required packages, reads metadata 
 #' and expression matrices, filters to selected compounds at 10 µM with DMSO controls,
 #' builds a design matrix by chemical cluster, fits linear models and contrasts,
 #' applies empirical Bayes moderation, and exports ranked differential expression tables 

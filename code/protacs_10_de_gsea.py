@@ -54,92 +54,64 @@ fig_out = os.path.join(dir_main, '..', 'figures')
 # Extract 10 micromolar values
 DE_1 = pd.read_csv(filepath2 + 'Cluster1_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0, header = 0)
-
 DE_2 = pd.read_csv(filepath2 + 'Cluster2_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_3 = pd.read_csv(filepath2 + 'Cluster3_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_4 = pd.read_csv(filepath2 + 'Cluster4_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_5 = pd.read_csv(filepath2 + 'Cluster5_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_6 = pd.read_csv(filepath2 + 'Cluster6_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_7 = pd.read_csv(filepath2 + 'Cluster7_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0, header = 0)
-
 DE_8 = pd.read_csv(filepath2 + 'Cluster8_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_9 = pd.read_csv(filepath2 + 'Cluster9_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_10 = pd.read_csv(filepath2 + 'Cluster10_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_11 = pd.read_csv(filepath2 + 'Cluster11_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_12 = pd.read_csv(filepath2 + 'Cluster12_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_13 = pd.read_csv(filepath2 + 'Cluster13_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_14 = pd.read_csv(filepath2 + 'Cluster14_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_15 = pd.read_csv(filepath2 + 'Cluster15_10uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
 
 # Extract 1 micromolar values 
 DE_1_1 = pd.read_csv(filepath2 + 'Cluster1_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0, header = 0)
-
 DE_1_2 = pd.read_csv(filepath2 + 'Cluster2_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_1_3 = pd.read_csv(filepath2 + 'Cluster3_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_1_4 = pd.read_csv(filepath2 + 'Cluster4_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_1_5 = pd.read_csv(filepath2 + 'Cluster5_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_1_6 = pd.read_csv(filepath2 + 'Cluster6_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_1_7 = pd.read_csv(filepath2 + 'Cluster7_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0, header = 0)
-
 DE_1_8 = pd.read_csv(filepath2 + 'Cluster8_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_1_9 = pd.read_csv(filepath2 + 'Cluster9_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_1_10 = pd.read_csv(filepath2 + 'Cluster10_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_1_11 = pd.read_csv(filepath2 + 'Cluster11_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_1_12 = pd.read_csv(filepath2 + 'Cluster12_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_1_13 = pd.read_csv(filepath2 + 'Cluster13_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_1_14 = pd.read_csv(filepath2 + 'Cluster14_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-
 DE_1_15 = pd.read_csv(filepath2 + 'Cluster15_1p0uM_Limma_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
 
