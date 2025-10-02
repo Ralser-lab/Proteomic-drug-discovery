@@ -127,7 +127,7 @@ ax2.set_xticklabels(metadata_encoded.columns.values, rotation = 45)
 sns.heatmap(batch.to_frame(), cmap = 'jet_r', ax = ax3, cbar = False, yticklabels = False, xticklabels = False)
 ax3.set_title('Batch')
 plt.savefig(os.path.join(figure_out, 'protacs_01_heatmap.pdf'))
-#plt.show()
+# plt.show()
 
 # %% Dispersion plot of summarized proteins
 DMSO_frame = device_summarystatistics.calculate_cv(pasef_summarized_clustered[metadata_encoded['dmso\n']==True], 'dmso')
@@ -177,7 +177,7 @@ plt.ylabel('Explained Variance Ratio (%)')
 plt.xticks(n_components)
 plt.legend(loc='upper left')
 plt.savefig(os.path.join(figure_out, 'protacs_01_global_PCA_scree.pdf'))
-#plt.show()
+# plt.show()
 
 # %% Plot 3D PCA with drug concentration
 x = pca_result[:, 0]
@@ -217,7 +217,7 @@ ax.legend(handles=legend_patches, bbox_to_anchor=(1.05, 1), loc='upper left')
 # Title for the plot
 plt.title("Principal Component Analysis")
 plt.savefig(os.path.join(figure_out, 'protacs_01_global_PCA_concentration.pdf'))
-#plt.show()
+# plt.show()
 
 # %% Plot 3D PCA with batch effect
 pca_metadata = pd.DataFrame({'Values' : batch}, index = pasef_summarized_clustered.index, dtype = 'string')
@@ -265,7 +265,7 @@ ax.legend(handles=legend_patches, bbox_to_anchor=(1.05, 1), loc='upper left')
 # Title for the plot
 plt.title("Principal Component Analysis")
 plt.savefig(os.path.join(figure_out, 'protacs_01_global_PCA_MSBatch.pdf'))
-#plt.show()
+# plt.show()
 
 # %% Extract loadings for PC1 - 3 from PCA on proteomes in HBD screen
 loadings = pca.components_
@@ -343,13 +343,13 @@ PC3_gsea = gsea_filter(pd.read_csv(filepath3 + '/PC3_GSEA_C5.csv', index_col = '
 gsea_merged1 = pd.merge(PC1_gsea, PC2_gsea, left_index = True, right_index = True, how = 'outer')
 gsea_merged = pd.merge(gsea_merged1, PC3_gsea, left_index = True, right_index = True, how = 'outer')
 gsea_redux = gsea_merged.iloc[:,[3,5,13,15,23,25]]
-#gsea_redux = gsea_merged.iloc[:,[23,25,13,15,3,5]]
+# gsea_redux = gsea_merged.iloc[:,[23,25,13,15,3,5]]
 gsea_redux.columns = ['PC1_NES', 'PC1_FDR', 
                       'PC2_NES', 'PC2_FDR',
                       'PC3_NES', 'PC3_FDR']
 top20_redux = gsea_redux.copy()
 top20_redux.to_csv(filepath3 + '/PCA_GSEA_C5.csv')
-top20_redux
+print(top20_redux)
 
 # %% Plot NES of top 6 enriched pathways (PC1, PC2, PC3)
 df = top20_redux
@@ -404,7 +404,7 @@ ax.set_title(f'GSEA on PC loadings\nTop {top_pathways} Up Down by NES (FDR < {cu
 plt.colorbar(scatter, ax=ax, label='Normalized Enrichment Score')
 plt.tight_layout()
 plt.savefig(os.path.join(figure_out, 'protacs_01_global_PCA_GSEA.pdf'))
-#plt.show()
+# plt.show()
 
 # %% Calculate GSEA curves on PC loadings
 gseaPC1 = gp.prerank(rnk=pc1_loadings, 
@@ -454,7 +454,7 @@ plt.title('GSEA on PC1 loadings', size = 18)
 fig.set_size_inches(5,8)
 plt.tick_params(axis='y', labelsize=14) 
 plt.savefig(os.path.join(figure_out, 'protacs_01_global_PC1_GSEA.pdf'))
-#plt.show()
+# plt.show()
 
 # PC2 enriched pathways
 pc2_targets = ["GOBP_TRICARBOXYLIC_ACID_CYCLE",
@@ -473,7 +473,7 @@ plt.title('GSEA on PC2 loadings', size = 18)
 fig.set_size_inches(5,8)
 plt.tick_params(axis='y', labelsize=14) 
 plt.savefig(os.path.join(figure_out, 'protacs_01_global_PC2_GSEA.pdf'))
-#plt.show()
+# plt.show()
 
 # PC3 enriched pathways
 pc3_targets = ["GOCC_ORGANELLE_INNER_MEMBRANE",
@@ -492,6 +492,6 @@ plt.title('GSEA on PC3 loadings', size = 18)
 fig.set_size_inches(5,8)
 plt.tick_params(axis='y', labelsize=14) 
 plt.savefig(os.path.join(figure_out, 'protacs_01_global_PC3_GSEA.pdf'))
-#plt.show()
+# plt.show()
 
 

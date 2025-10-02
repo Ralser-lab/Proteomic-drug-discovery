@@ -44,6 +44,7 @@ Dependencies: pandas, numpy, scikit-learn, xgboost, shap, seaborn, matplotlib
 import os
 import numpy as np
 import pandas as pd
+import json
 import matplotlib.pyplot as plt
 import seaborn as sns
 import shap
@@ -84,14 +85,22 @@ class GBDT:
             Absolute path to the data directory.
         dout : str
             Absolute path to the figures directory.
+        modelout : str
+            Absolute path to the models directory. 
         dout_prefix : str
             Prefix for figure filenames.
         name : str
             Name identifier string for the model run.
-        best_model : xgboost.XGBClassifier or None
-            Best model found after grid search tuning.
         baseline_model : xgboost.XGBClassifier or None
             Baseline model trained without tuning.
+        best_model : xgboost.XGBClassifier or None
+            Best model found after grid search tuning.
+        params : dict or None
+            Hyperparameter search space for gridCV.
+        best_params : dict or None
+            Final parameters associated with best model.
+        calibrated_model : calibrated xgboost model or None
+            Calibrated model using isotonic regression on test set.  
         X_train, y_train : pd.DataFrame, pd.Series
             Training feature matrix and labels (for tuned model).
         X_test, y_test : pd.DataFrame, pd.Series
@@ -109,12 +118,16 @@ class GBDT:
         # Relative paths
         self.dpath = os.path.join(dpath, '..', 'data')
         self.dout = os.path.join(dpath, '..', 'figures')
+        self.modelout = os.path.join(dpath, '..', 'scoring_models')
         self.dout_prefix = f'{prefix}_'
         self.name = f'{name}_'
 
         # Late bound
-        self.best_model = None
+        self.params = None
         self.baseline_model = None
+        self.best_params = None
+        self.best_model = None
+        self.calibrated_model = None
         self.X_train = self.y_train = None
         self.X_test = self.y_test = None
         self.Xb_train = self.Xb_test = self.yb_train = self.yb_test = None
@@ -126,7 +139,7 @@ class GBDT:
     # Helper functions
     ##############################################################################
     
-    def out(self, filename):
+    def out(self, filename, params = False):
         """
         Build a full output path under the figures directory, prefixed with the
         run's prefix and name. Centralizes figure naming to keep artifacts tidy.
@@ -135,6 +148,8 @@ class GBDT:
         ----------
         filename : str
             File name (with extension) to append to prefix.
+        params : boolean
+            If yes, route outpath to /scoring_models
 
         Returns
         -------
@@ -142,7 +157,10 @@ class GBDT:
             Full path to the output file in the figures directory.
 
         """
-        return os.path.join(self.dout, f"{self.dout_prefix}{self.name}{filename}")
+        if params is False:
+            return os.path.join(self.dout, f"{self.dout_prefix}{self.name}{filename}")
+        else: 
+            return os.path.join(self.modelout, f"{self.dout_prefix}{self.name[:-1]}{filename}")
 
     ##############################################################################
     # Feature importance 
@@ -249,6 +267,7 @@ class GBDT:
         """
         self.X_train = X_train
         self.y_train = y_train
+        self.params = params
         kf = KFold(n_splits=5, shuffle=True, random_state=42)
         grid_search = GridSearchCV(
             estimator=xgb.XGBClassifier(),
@@ -259,10 +278,16 @@ class GBDT:
         )
         grid_search.fit(X_train, y_train)
         best_params = grid_search.best_params_
-        print(best_params)
         best_model = xgb.XGBClassifier(**best_params, random_state=42)
         best_model.fit(X_train, y_train)
         self.best_model = best_model
+        self.best_params = best_params
+        print(params)
+        print(best_params)
+        params_df = pd.DataFrame(list(params.items()), columns = ['parameter', 'values'])
+        params_df.to_csv(self.out('-search_space.csv', params = True))
+        best_params_df = pd.DataFrame(list(best_params.items()), columns = ['parameter', 'value'])
+        best_params_df.to_csv(self.out('-final_metrics.csv', params = True))
         return best_model
 
     def gbdt_evaluate(self, X_test, y_test, model):
@@ -296,7 +321,7 @@ class GBDT:
         self.plot_pr(y_test=y_test, proba=self.proba_test, baseline=self.baseline_proba,
                      y_train=self.y_train, proba2=self.proba_train)
 
-    def gbdt_classify(self, X, y, model='best', threshold='auto'):
+    def gbdt_classify(self, X, y, model='best', threshold='auto', all = False):
         """
         Generate binary classifications from predicted probabilities using either
         the stored best model or a provided model. Select a decision boundary
@@ -311,9 +336,11 @@ class GBDT:
             True labels for evaluation.
         model : {'best'} or xgboost.XGBClassifier, default 'best'
             Which model to use for prediction. If 'best', uses self.best_model.
-        threshold : {'auto'} or float, default 'auto'
+        threshold : {'auto', '} or float, default 'auto'
             If 'auto', selects threshold that maximizes F1 on y vs proba.
             If a float in [0, 1], uses that as the decision boundary.
+        all : boolean
+            If true, use stored decision boundary (F1 score max)
 
         Returns
         -------
@@ -337,20 +364,22 @@ class GBDT:
                 self.threshold = float(threshold)
         else:
             self.proba = model.predict_proba(self.X)[:, 1]
-            if threshold == 'auto':
-                self.threshold = self.plot_f1_and_pick_threshold(self.y, self.proba, xline=0.50)
-            else:
-                self.plot_f1_and_pick_threshold(self.y, self.proba, xline=float(threshold))
-                self.threshold = float(threshold)
+            if all is not True:
+                if threshold == 'auto':
+                    self.threshold = self.plot_f1_and_pick_threshold(self.y, self.proba, xline=0.50)
+                else:
+                    self.plot_f1_and_pick_threshold(self.y, self.proba, xline=float(threshold))
+                    self.threshold = float(threshold)
 
         self.prediction = self.proba >= self.threshold
         self.predict_test = (self.proba_test >= self.threshold)
         self.predict_train = (self.proba_train >= self.threshold)
         self.predict_baseline = (self.baseline_proba >= self.threshold)
 
-        self.plot_confusion(self.y_test, self.proba_test, name='test', boundary=self.threshold)
-        self.plot_confusion(self.y_train, self.proba_train, name='train', boundary=self.threshold)
-        self.plot_confusion(self.y, self.proba, name='all', boundary=self.threshold)
+        if all is not True:
+            self.plot_confusion(self.y_test, self.proba_test, name='test', boundary=self.threshold)
+            self.plot_confusion(self.y_train, self.proba_train, name='train', boundary=self.threshold)
+            self.plot_confusion(self.y, self.proba, name='all', boundary=self.threshold)
 
         print(classification_report(self.y_test, self.predict_test))
 
@@ -418,7 +447,7 @@ class GBDT:
         plt.close()
 
         if top_interactors is None:
-            top_interactors = ['NDUFA5', 'PRKAR2B', 'CYC1', 'PDPR', 'MTIF2', 'PAFAH1B1', 'NDUFA4'] # These are top interators from shap.summary
+            top_interactors = self.X_train.columns
         self.top_interactors = top_interactors
 
         variances = np.std(interaction_values, axis=0)
@@ -434,8 +463,8 @@ class GBDT:
         sns.clustermap(filtered_variance_df, annot=False, cmap='magma_r', linewidths=.5)
         plt.title('SHAP Interactions in Test set')
         plt.savefig(self.out('shap_interactions_heatmap.pdf'))
-        plt.close()
         # plt.show()
+        plt.close()
 
     def gbdt_calibrate(self):
         """
@@ -807,8 +836,12 @@ class GBDT:
         for t in thresholds:
             y_pred = (proba >= t).astype(int)
             f1_scores.append(f1_score(y_true, y_pred))
-        max_f1_index = int(np.argmax(f1_scores))
-        max_f1_threshold = float(thresholds[max_f1_index])
+
+        # get max_f1, with highest threshold (tie-breaker)
+        max_f1 = max(f1_scores)
+        candidate_thresholds = thresholds[np.isclose(f1_scores, max_f1)]
+        max_f1_threshold = float(candidate_thresholds.max())
+
         plt.rcParams['axes.labelsize'] = '20'
         plt.rcParams['axes.titlesize'] = '20'
         plt.rcParams['xtick.labelsize'] = '20'
@@ -825,6 +858,7 @@ class GBDT:
         plt.savefig(self.out('f1thresh.pdf'))
         plt.close()
         # plt.show()
+        self.threshold = max_f1_threshold
         return max_f1_threshold
 
     def plot_classification_report(self, report, threshold):

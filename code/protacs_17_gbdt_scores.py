@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_17_gbdt_toxscores.py
+Script Name: protacs_17_gbdt_scores.py
 Description:
-    Post-hoc analysis of xgb model outputs with a focus on series 15
-    compounds and the AZ14183816 chemical series analogues. The script loads
-    exported model predictions (Rplot_Figure4.csv) and trained XGBoost models,
-    and generates supplementary tables and figures:
+    Post-hoc analysis of xgb model outputs (toxicity scores) with a focus on 
+    series 15 compounds and the lenalidomide 5N series analogues. The script 
+    loads exported model predictions (Rplot_Figure4.csv) and trained XGBoost 
+    models, and generates supplementary tables and figures:
 
 Author: Shaon Basu
 Date: 2025-09-30
@@ -15,8 +15,8 @@ Date: 2025-09-30
 Inputs
 ------
 - data/Rplot_Figure4.csv
-- scoring_models/final_model_250305a.json
-- scoring_models/final_calibrated_model_250305a.pkl
+- scoring_models/protacs_16_xgb_second-pass-model.json
+- scoring_models/protacs_16_xgb_second-pass-calibrated-model.pkl.
 
 Outputs
 -------
@@ -52,8 +52,8 @@ modelvalues = pd.read_csv(os.path.join(inputout,'Rplot_Figure4.csv'), index_col 
 
 # Load trained models
 finalmodel = xgb.XGBClassifier()
-finalmodel.load_model(os.path.join(modelout, 'final_model_250305a.json'))
-calibratedmodel = joblib.load(os.path.join(modelout, 'final_calibrated_model_250305a.pkl'))
+finalmodel.load_model(os.path.join(modelout, 'protacs_16_xgb_second-pass-model.json'))
+calibratedmodel = joblib.load(os.path.join(modelout, 'protacs_16_xgb_second-pass-calibrated-model.pkl'))
 
 # %% Export Table S3
 tableS3 = modelvalues.copy()
@@ -107,16 +107,7 @@ values = list(toplot.index.values)  # keep original indices if needed downstream
 cpd_targets = 'AZ14183816-005, AZ14183816-006, AZ14196658-003, AZ14197166-003, AZ14197166-004, AZ14197166-005'
 cpd_targets = cpd_targets.replace('-', '_').replace(' ', '').split(',')
 cpd_targets = modelvalues.iloc[:, 5:].assign(probability=modelvalues['Probability']).loc[cpd_targets]
-
-# Derive analogue root ID and filter core SHAP interaction panel
 cpd_targets['analogue'] = cpd_targets.index.str.split('_').str[0]
-targets_redux = cpd_targets[['NDUFA5', 'CYC1', 'NDUFA4', 'NDUFB10', 'NDUFA13', 'analogue']]
-
-# Bar plot per-sample signatures
-# plt.figure(figsize=(10, 10))
-# targets_redux.plot(kind='bar')
-# plt.savefig(os.path.join(figout, 'protacs_17_cpd_batch_signatures_barplot.pdf'))
-# plt.close()
 
 # %% PCA on analogues
 analog = cpd_targets.groupby('analogue').mean()          # collapse replicates to analogue means
@@ -175,8 +166,8 @@ plt.close()
 # %% PC2 top features
 # Pick features with strongest PC2 loadings, then plot analogue means
 features = loadings.sort_values(by='PC_2').index[0:4]
-features = ['NDUFA5', 'CYC1', 'NDUFA4', 'NDUFB10', 'NDUFA13']  # override with curated panel
-analog[features].plot(kind='bar', legend=None)
+features = ['NDUFA5', 'CYC1', 'NDUFA4', 'NDUFB10', 'NDUFA13']  # override with Complex I panel
+analog[features].plot(kind='bar')
 plt.savefig(os.path.join(figout, 'protacs_17_analogues_signature_barplot.pdf'))
 # plt.show()
 plt.close()

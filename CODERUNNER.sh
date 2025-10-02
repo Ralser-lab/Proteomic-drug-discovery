@@ -51,12 +51,12 @@ run() {
 # run python3 code/protacs_13_split.py
 # run Rscript code/protacs_14_split_limma.R
 # run python3 code/protacs_15_split_enrich.py
-# run python3 code/protacs_16_gbdt_train_retrain.py
-# run python3 code/protacs_17_gbdt_toxscores.py
+run python3 code/protacs_16_gbdt_train_retrain.py
+run python3 code/protacs_17_gbdt_scores.py
 # run Rscript code/protacs_18_pheatmap_topweights_all.R
 # run Rscript code/protacs_19_pheatmap_topweights_analogs.R
-run python3 code/protacs_20_toxscore_v_degradation.py
-run python3 code/protacs_21_summarystats_wetlab.py
+run python3 code/protacs_20_scores_v_degradation.py
+# run python3 code/protacs_21_summarystats_wetlab.py
 
 # REDUCE heatmap.pdf -> heatmaps.png
 # Add grand run time in logfiles 
@@ -69,3 +69,4 @@ for i in "${!SCRIPTS[@]}"; do
 done
 echo "==================================================="
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] >>> All tasks complete"
+ 

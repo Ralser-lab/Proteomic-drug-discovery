@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_20_toxscore_v_degradation.py
+Script Name: protacs_20_scores_vs_degradation.py
 Description:
-    Analyze model-derived toxicity probabilities across chemical series
+    Analyze model-derived toxicity scores across chemical series
     (clusters), identify bimodal series, export “toxic” and “safe” subsets,
     and generate summary visualizations. Also integrates wet-lab AR
     degradation IC50s to relate efficacy vs. predicted toxicity.

@@ -48,7 +48,7 @@ from device_gradientboostingmachine import GBDT
 
 # Set relative paths
 path = os.path.join(os.path.dirname(__file__), '..', 'data')
-out = os.path.join(os.path.dirname(__file__), '..', 'figures')
+model_out = os.path.join(path, '..' ,'scoring_models')
 dpath = os.path.dirname(__file__)
 
 # Helper function to format DE matrix index when loading
@@ -111,8 +111,7 @@ def extract_genes(df, pathways, matrix, boundary):
         all_genes.update(set(path_genes))
     mask = matrix.mean(axis=0) > boundary
     strong_genes = matrix.columns[mask]
-    selected_genes = strong_genes.intersection(all_genes)
-    print(len(selected_genes))
+    selected_genes = [g for g in matrix.columns if g in strong_genes and g in all_genes]
     pd.Series(selected_genes).to_csv(os.path.join(path, 'enriched_proteins.csv'), index=0)
     return list(selected_genes)
 
@@ -123,7 +122,7 @@ X_train, X_test, y_train, y_test = train_test_split(X[path_genes], y, test_size=
 # %% Gradient boosting workflow
 workflow = 'protacs_16'
 
-# Hyperparameter space
+# Hyperparameter search space
 params = {
                 'learning_rate': [0.01],
                 'n_estimators': [75,100],
@@ -140,7 +139,11 @@ params = {
 round1 = GBDT(path, workflow, 'xgb_first-pass')
 round1.gbdt_baseline(Xb_train, Xb_test, yb_train, yb_test)
 round1.gbdt_gridcv(params, X_train, y_train)
+round1.gbdt_evaluate(X_test, y_test, round1.best_model)
+round1.gbdt_classify(X_test,y_test, round1.best_model)
 top_features = round1.get_model_features(plot = True, n = X_train.shape[0]//10) # Get top features
+round1.gbdt_SHAP(top_features)
+
 print('Round1 top features:')
 print(top_features)
 
@@ -150,7 +153,7 @@ round2.gbdt_baseline(Xb_train, Xb_test, yb_train, yb_test)
 round2.gbdt_gridcv(params, X_train[top_features], y_train)
 round2.gbdt_evaluate(X_test[top_features], y_test, round2.best_model)
 round2.gbdt_classify(X_test[top_features],y_test, round2.best_model)
-round2.gbdt_SHAP(['PRKAR2B','CYC1','NDUFA5','NDUFA4','RPL4','PAFAH1B1','RPL35'])
+round2.gbdt_SHAP(['PRKAR2B', 'CYC1', 'NDUFA5', 'NDUFA4', 'RPL4', 'PAFAH1B1', 'RPL35']) # Top interactors from shap.summary
 
 # Model calibration
 round2.gbdt_calibrate()
@@ -158,16 +161,19 @@ round2.gbdt_evaluate(X_test[top_features], y_test, round2.calibrated_model)
 round2.gbdt_classify(X_test[top_features], y_test, round2.calibrated_model)
 
 # Brier score before and after calibration 
-y_pred = round2.calibrated_model.predict(X_test[top_features])
-print(brier_score_loss(y_test, y_pred, pos_label = 2))
 y_pred = round2.best_model.predict(X_test[top_features])
 print(brier_score_loss(y_test, y_pred, pos_label = 2))
-
+y_pred = round2.calibrated_model.predict(X_test[top_features])
+print(brier_score_loss(y_test, y_pred, pos_label = 2))
+xw
 # Export all predictions
-round2.gbdt_classify(X[top_features], y['IC50'], round2.calibrated_model)
+round2.gbdt_classify(X[top_features], y['IC50'], round2.calibrated_model, all = True)
 round2.export_all_predictions(AZmeta, round2.calibrated_model) 
 
 # Export GBDT models
-model_out = os.path.join(path, '..' ,'scoring_models')
-round2.best_model.get_booster().save_model(os.path.join(model_out, 'final_model_250305a.json')) # final model
-joblib.dump(round2.calibrated_model, os.path.join(model_out, 'final_calibrated_model_250305a.pkl')) # calibrated model
+round1.best_model.get_booster().save_model(os.path.join( # first pass model
+    model_out, f'{round1.dout_prefix}xgb_first-pass-model.json'))
+round2.best_model.get_booster().save_model(os.path.join( # second pass model
+    model_out, f'{round2.dout_prefix}xgb_second-pass-model.json')) 
+joblib.dump(round2.calibrated_model, os.path.join( # calibrated model
+    model_out, f'{round2.dout_prefix}xgb_second-pass-calibrated-model.pkl')) 
