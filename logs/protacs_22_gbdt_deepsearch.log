@@ -1,0 +1,58 @@
+[2025-10-03 13:31:21] >>> START code/protacs_22_gbdt_deepsearch.py with HYPER.json
+[HYPER] Loaded hyperparameters from /Users/shaon/Desktop/Proteomic-drug-discovery/HYPER.json
+[HYPER] Keys: ['alpha', 'colsample_bytree', 'gamma', 'lambda', 'learning_rate', 'max_depth', 'min_child_weight', 'n_estimators', 'subsample']
+{'learning_rate': [0.01, 0.1, 1], 'n_estimators': [50, 75, 100], 'max_depth': [1, 2, 3], 'min_child_weight': [4, 5, 6], 'subsample': [0.8], 'colsample_bytree': [0.8], 'gamma': [4, 5], 'alpha': [1, 2, 3], 'lambda': [1, 2, 3]}
+{'alpha': 3, 'colsample_bytree': 0.8, 'gamma': 4, 'lambda': 2, 'learning_rate': 1, 'max_depth': 2, 'min_child_weight': 5, 'n_estimators': 100, 'subsample': 0.8}
+              precision    recall  f1-score   support
+
+           0       0.71      0.63      0.67        19
+           1       0.73      0.79      0.76        24
+
+    accuracy                           0.72        43
+   macro avg       0.72      0.71      0.71        43
+weighted avg       0.72      0.72      0.72        43
+
+Round 1 top features: 4       CYC1
+7    PRKAR2B
+6     NDUFA4
+5     MRPL19
+1     RPL18A
+2       RPL8
+0       RPL4
+3      RPS26
+8     ATP5ME
+Name: Feature, dtype: object
+{'learning_rate': [0.01, 0.1, 1], 'n_estimators': [50, 75, 100], 'max_depth': [1, 2, 3], 'min_child_weight': [4, 5, 6], 'subsample': [0.8], 'colsample_bytree': [0.8], 'gamma': [4, 5], 'alpha': [1, 2, 3], 'lambda': [1, 2, 3]}
+{'alpha': 1, 'colsample_bytree': 0.8, 'gamma': 5, 'lambda': 1, 'learning_rate': 1, 'max_depth': 1, 'min_child_weight': 5, 'n_estimators': 75, 'subsample': 0.8}
+              precision    recall  f1-score   support
+
+           0       0.83      0.26      0.40        19
+           1       0.62      0.96      0.75        24
+
+    accuracy                           0.65        43
+   macro avg       0.73      0.61      0.58        43
+weighted avg       0.72      0.65      0.60        43
+
+              precision    recall  f1-score   support
+
+           0       1.00      0.21      0.35        19
+           1       0.62      1.00      0.76        24
+
+    accuracy                           0.65        43
+   macro avg       0.81      0.61      0.55        43
+weighted avg       0.79      0.65      0.58        43
+
+              precision    recall  f1-score   support
+
+           0       1.00      0.21      0.35        19
+           1       0.62      1.00      0.76        24
+
+    accuracy                           0.65        43
+   macro avg       0.81      0.61      0.55        43
+weighted avg       0.79      0.65      0.58        43
+
+
+real	1m21.242s
+user	14m25.616s
+sys	0m34.554s
+[2025-10-03 13:32:43] >>> FINISH code/protacs_22_gbdt_deepsearch.py

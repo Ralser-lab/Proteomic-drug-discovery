@@ -1,0 +1,78 @@
+[2025-10-03 13:23:41] >>> START code/protacs_03_azmetadata_dendrogram.R
+ggtree v3.10.1 For help: https://yulab-smu.top/treedata-book/
+
+If you use the ggtree package suite in published research, please cite
+the appropriate paper(s):
+
+Guangchuang Yu, David Smith, Huachen Zhu, Yi Guan, Tommy Tsan-Yuk Lam.
+ggtree: an R package for visualization and annotation of phylogenetic
+trees with their covariates and other associated data. Methods in
+Ecology and Evolution. 2017, 8(1):28-36. doi:10.1111/2041-210X.12628
+
+S Xu, Z Dai, P Guo, X Fu, S Liu, L Zhou, W Tang, T Feng, M Chen, L
+Zhan, T Wu, E Hu, Y Jiang, X Bo, G Yu. ggtreeExtra: Compact
+visualization of richly annotated phylogenetic data. Molecular Biology
+and Evolution. 2021, 38(9):4039-4042. doi: 10.1093/molbev/msab166
+
+LG Wang, TTY Lam, S Xu, Z Dai, L Zhou, T Feng, P Guo, CW Dunn, BR
+Jones, T Bradley, H Zhu, Y Guan, Y Jiang, G Yu. treeio: an R package
+for phylogenetic tree input and output with richly annotated and
+associated data. Molecular Biology and Evolution. 2020, 37(2):599-603.
+doi: 10.1093/molbev/msz240
+
+Attaching package: ‘ggtree’
+
+The following object is masked from ‘package:ape’:
+
+    rotate
+
+ggtreeExtra v1.12.0 For help: https://yulab-smu.top/treedata-book/
+
+If you use the ggtree package suite in published research, please cite
+the appropriate paper(s):
+
+S Xu, Z Dai, P Guo, X Fu, S Liu, L Zhou, W Tang, T Feng, M Chen, L
+Zhan, T Wu, E Hu, Y Jiang, X Bo, G Yu. ggtreeExtra: Compact
+visualization of richly annotated phylogenetic data. Molecular Biology
+and Evolution. 2021, 38(9):4039-4042. doi: 10.1093/molbev/msab166
+[[1]]
+[1] "ape"       "stats"     "graphics"  "grDevices" "utils"     "datasets" 
+[7] "methods"   "base"     
+
+[[2]]
+[1] "ggplot2"   "ape"       "stats"     "graphics"  "grDevices" "utils"    
+[7] "datasets"  "methods"   "base"     
+
+[[3]]
+ [1] "RColorBrewer" "ggplot2"      "ape"          "stats"        "graphics"    
+ [6] "grDevices"    "utils"        "datasets"     "methods"      "base"        
+
+[[4]]
+ [1] "ggnewscale"   "RColorBrewer" "ggplot2"      "ape"          "stats"       
+ [6] "graphics"     "grDevices"    "utils"        "datasets"     "methods"     
+[11] "base"        
+
+[[5]]
+ [1] "ggtree"       "ggnewscale"   "RColorBrewer" "ggplot2"      "ape"         
+ [6] "stats"        "graphics"     "grDevices"    "utils"        "datasets"    
+[11] "methods"      "base"        
+
+[[6]]
+ [1] "ggtreeExtra"  "ggtree"       "ggnewscale"   "RColorBrewer" "ggplot2"     
+ [6] "ape"          "stats"        "graphics"     "grDevices"    "utils"       
+[11] "datasets"     "methods"      "base"        
+
+Warning messages:
+1: package ‘ape’ was built under R version 4.3.3 
+2: package ‘ggplot2’ was built under R version 4.3.3 
+3: package ‘RColorBrewer’ was built under R version 4.3.3 
+4: package ‘ggnewscale’ was built under R version 4.3.3 
+5: package ‘ggtree’ was built under R version 4.3.2 
+All required packages are installed and loaded successfully!
+null device 
+          1 
+
+real	0m1.212s
+user	0m1.101s
+sys	0m0.075s
+[2025-10-03 13:23:43] >>> FINISH code/protacs_03_azmetadata_dendrogram.R

@@ -1,0 +1,136 @@
+[2025-10-03 13:24:59] >>> START code/protacs_10_de_gsea.py
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:25:00,001 [WARNING] Duplicated values found in preranked stats: 49.49% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:25:05,798 [WARNING] Duplicated values found in preranked stats: 33.17% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:25:11,456 [WARNING] Duplicated values found in preranked stats: 24.91% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:25:17,216 [WARNING] Duplicated values found in preranked stats: 21.47% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:25:22,897 [WARNING] Duplicated values found in preranked stats: 15.06% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:25:28,800 [WARNING] Duplicated values found in preranked stats: 14.79% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:25:34,822 [WARNING] Duplicated values found in preranked stats: 10.31% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:25:40,684 [WARNING] Duplicated values found in preranked stats: 9.72% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:25:46,612 [WARNING] Duplicated values found in preranked stats: 7.82% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:25:52,434 [WARNING] Duplicated values found in preranked stats: 7.35% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:25:58,304 [WARNING] Duplicated values found in preranked stats: 6.68% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:26:04,245 [WARNING] Duplicated values found in preranked stats: 6.43% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:26:10,194 [WARNING] Duplicated values found in preranked stats: 5.24% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:26:15,926 [WARNING] Duplicated values found in preranked stats: 5.74% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:26:21,619 [WARNING] Duplicated values found in preranked stats: 4.80% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:26:27,404 [WARNING] Duplicated values found in preranked stats: 99.08% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:26:29,165 [WARNING] Duplicated values found in preranked stats: 77.39% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:26:30,689 [WARNING] Duplicated values found in preranked stats: 31.19% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:26:36,065 [WARNING] Duplicated values found in preranked stats: 48.80% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:26:41,474 [WARNING] Duplicated values found in preranked stats: 56.39% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:26:47,154 [WARNING] Duplicated values found in preranked stats: 96.22% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:26:48,897 [WARNING] Duplicated values found in preranked stats: 15.38% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:26:53,751 [WARNING] Duplicated values found in preranked stats: 11.23% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:26:59,578 [WARNING] Duplicated values found in preranked stats: 9.92% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:27:05,257 [WARNING] Duplicated values found in preranked stats: 8.04% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:27:10,945 [WARNING] Duplicated values found in preranked stats: 11.87% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:27:16,661 [WARNING] Duplicated values found in preranked stats: 11.08% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:27:22,368 [WARNING] Duplicated values found in preranked stats: 10.93% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:27:28,055 [WARNING] Duplicated values found in preranked stats: 12.17% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:134: DeprecationWarning: processes is deprecated; use threads
+  gsea_results = gp.prerank(rnk=x,
+2025-10-03 13:27:33,780 [WARNING] Duplicated values found in preranked stats: 11.23% of genes
+The order of those genes will be arbitrary, which may produce unexpected results.
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:319: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  toplot = dogma.loc[title]['Lead_genes'][1].split(';')
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:320: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  toplot = dogma.loc[title]['Lead_genes'][1].split(';')
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_10_de_gsea.py:340: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  t_matrix['conc'] = m['conc']
+
+real	2m41.102s
+user	8m18.392s
+sys	0m14.869s
+[2025-10-03 13:27:40] >>> FINISH code/protacs_10_de_gsea.py

@@ -1,0 +1,70 @@
+[2025-10-03 13:29:17] >>> START code/protacs_21_stats_wetlab.py
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_21_stats_wetlab.py:78: UserWarning: linestyle is redundantly defined by the 'linestyle' keyword argument and the fmt string "o-" (-> linestyle='-'). The keyword argument will take precedence.
+  plt.errorbar(normsum.index, normsum["glu_mean"], yerr=normsum["glu_std"], fmt="o-", label="Glucose Mean", capsize=3, linestyle = '--')
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_21_stats_wetlab.py:79: UserWarning: linestyle is redundantly defined by the 'linestyle' keyword argument and the fmt string "s-" (-> linestyle='-'). The keyword argument will take precedence.
+  plt.errorbar(normsum.index, normsum["gal_mean"], yerr=normsum["gal_std"], fmt="s-", label="Galactose Mean", capsize=3, linestyle = '--')
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_21_stats_wetlab.py:164: RuntimeWarning: divide by zero encountered in log10
+  complex1.index = np.log10([0,20,5,1,0.1,0.05,0.01,0.005]) # Numerize to log10 index
+/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/pandas/core/indexes/base.py:944: RuntimeWarning: divide by zero encountered in log10
+  result = getattr(ufunc, method)(*new_inputs, **kwargs)
+Mean and Std of df1: Mean = 0.8144, Std = 0.1016
+Mean and Std of df2: Mean = -0.3324, Std = 0.0013
+p-value: 0.0026
+t-stat: 19.5517
+Glucose      6.522796
+Galactose    0.465125
+dtype: float64
+Mean and Std of df1: Mean = 1.2232, Std = 0.2945
+Mean and Std of df2: Mean = -0.1422, Std = 0.0709
+p-value: 0.0124
+t-stat: 7.8603
+Mean and Std of df1: Mean = 154.9437, Std = 26.3874
+Mean and Std of df2: Mean = 38.9788, Std = 12.1068
+p-value: 0.0000
+t-stat: 11.4938
+Mean and Std of df1: Mean = 100.2720, Std = 1.0555
+p-value: 0.6990
+t-stat: 0.4464
+Mean and Std of df1: Mean = 99.3708, Std = 1.9258
+p-value: 0.4598
+t-stat: -0.8003
+Mean and Std of df1: Mean = -0.6404, Std = 0.0058
+Mean and Std of df2: Mean = 0.9713, Std = 0.0467
+p-value: 0.0002
+t-stat: -59.3471
+0.22890438164693036
+9.397682941885307
+Mean and Std of df1: Mean = -0.7670, Std = 0.0461
+Mean and Std of df2: Mean = 0.7932, Std = 0.1372
+p-value: 0.0011
+t-stat: -18.6717
+Mean and Std of df1: Mean = -0.7670, Std = 0.0461
+Mean and Std of df2: Mean = 0.7655, Std = 0.2725
+p-value: 0.0089
+t-stat: -9.6053
+Mean and Std of df1: Mean = -0.7670, Std = 0.0461
+Mean and Std of df2: Mean = 0.7793, Std = 0.1935
+p-value: 0.0000
+t-stat: -18.5466
+0.17161533697433481
+6.47103858388589
+Mean and Std of df1: Mean = 0.2618, Std = 0.4013
+Mean and Std of df2: Mean = 23.6807, Std = 9.7823
+p-value: 0.0000
+t-stat: -11.4701
+Mean and Std of df1: Mean = 10.0573, Std = 7.9428
+Mean and Std of df2: Mean = 28.4889, Std = 4.2073
+p-value: 0.0016
+t-stat: -5.4220
+Mean and Std of df1: Mean = 4.6052, Std = 0.4460
+Mean and Std of df2: Mean = 3.0233, Std = 1.3448
+p-value: 0.0335
+t-stat: 2.7349
+Mean and Std of df1: Mean = 3.0233, Std = 1.3448
+p-value: 0.0345
+t-stat: -2.8814
+
+real	0m1.562s
+user	0m3.442s
+sys	0m7.218s
+[2025-10-03 13:29:19] >>> FINISH code/protacs_21_stats_wetlab.py

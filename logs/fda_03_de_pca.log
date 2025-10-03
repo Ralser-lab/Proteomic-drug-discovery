@@ -1,0 +1,12 @@
+[2025-10-03 13:19:47] >>> START code/fda_03_de_pca.py
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_03_de_pca.py:218: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  ax.text(df_labels['PC1'][i]- 5, df_labels['PC2'][i] + 1, label, fontsize=10)
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_03_de_pca.py:244: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  ax.text(df_labels['PC1'][i]- 5, df_labels['PC3'][i] + 1, df_labels['PC2'][i] - 3, label, fontsize=26)
+sig count, average deg, Methotrexate deg, percent: 
+sig count, average deg, Doxorubicin..Adriamycin..HCl deg, percent: 
+
+real	0m3.267s
+user	0m23.797s
+sys	0m7.710s
+[2025-10-03 13:19:50] >>> FINISH code/fda_03_de_pca.py

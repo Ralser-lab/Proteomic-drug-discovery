@@ -1,0 +1,18 @@
+[2025-10-03 13:27:59] >>> START code/protacs_15_split_enrich.py
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_15_split_enrich.py:130: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  if df_subset['direction'][0] == 'top':
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_15_split_enrich.py:130: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  if df_subset['direction'][0] == 'top':
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_15_split_enrich.py:130: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  if df_subset['direction'][0] == 'top':
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_15_split_enrich.py:130: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  if df_subset['direction'][0] == 'top':
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_15_split_enrich.py:130: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  if df_subset['direction'][0] == 'top':
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_15_split_enrich.py:130: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  if df_subset['direction'][0] == 'top':
+
+real	0m0.360s
+user	0m1.216s
+sys	0m2.059s
+[2025-10-03 13:28:00] >>> FINISH code/protacs_15_split_enrich.py

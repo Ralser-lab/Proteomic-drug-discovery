@@ -1,0 +1,12 @@
+[2025-10-03 13:27:40] >>> START code/protacs_11_de_stringnetworkenrich.py
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_11_de_stringnetworkenrich.py:78: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  if df_subset['direction'][0] == 'top':
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_11_de_stringnetworkenrich.py:78: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  if df_subset['direction'][0] == 'top':
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_11_de_stringnetworkenrich.py:84: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  dogma.loc[dogma['enrichment score'] == dogma['enrichment score'].min(), 'enrichment score'] = dogma['enrichment score'].sort_values()[1]
+
+real	0m1.064s
+user	0m4.071s
+sys	0m4.238s
+[2025-10-03 13:27:41] >>> FINISH code/protacs_11_de_stringnetworkenrich.py
