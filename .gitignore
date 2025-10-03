@@ -3,15 +3,15 @@ data/*
 !data/README.md
 
 #Ignore everything in figures/ 
-figures/*
-!figures/README.md
+#figures/*
+#!figures/README.md
 
 #Ignore .DS_Store
 .DS_Store
 
 #Ignore everything in log/
-log/*
-!log/README.md
+#log/*
+#!log/README.md
 log/.Rhistory
 
 # Byte-compiled / optimized / DLL files
