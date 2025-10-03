@@ -136,15 +136,12 @@ project_root/
 │
 │   ├── protacs_13_split
 │   │   ├── logs/protacs_13_split.log
-│   │   ├── figures/
 │
 │   ├── protacs_14_split_limma
 │   │   ├── logs/protacs_14_split_limma.log
-│   │   ├── figures/
 │
 │   ├── protacs_15_split_enrich
 │   │   ├── logs/protacs_15_split_enrich.log
-│   │   ├── figures/
 │
 │   ├── protacs_16_gbdt_train_retrain
 │   │   ├── figures/protacs_16_xgb_first-pass_classif_report.pdf
