@@ -7,7 +7,7 @@ data/*
 #!figures/README.md
 
 #Ignore .DS_Store
-.DS_Store
+*.DS_Store
 
 #Ignore everything in log/
 #log/*
@@ -23,7 +23,7 @@ __pycache__/
 *.so
 
 # R specific files
-.Rhistory
+*.Rhistory
 
 # Distribution / packaging
 .Python
