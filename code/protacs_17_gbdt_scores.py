@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: protacs_17_gbdt_scores.py
+Script Name: protacs_23_gbdt_scores.py
 Description:
     Post-hoc analysis of xgb model outputs (toxicity scores) with a focus on 
     series 15 compounds and the lenalidomide 5N series analogues. The script 

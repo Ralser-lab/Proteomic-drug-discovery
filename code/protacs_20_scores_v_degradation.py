@@ -66,44 +66,6 @@ cluster_mappings = {1 : 'AR-VHL-Other',
                14: 'AR-L5N-Other',
                15: 'AR-L5N-Pip'} 
 
-# fig, axes = plt.subplots(2, 2, figsize=(14, 10))  # 2 rows, 2 cols
-
-# # KDE Plot: Toxic Probability by Cluster
-# sns.kdeplot(data=tableS3, x='Cluster', y='Toxic Probability', common_norm=False, ax=axes[0, 0])
-# axes[0, 0].set_title('KDE: Toxic Probability by Cluster')
-# axes[0, 0].set_xlabel('Chemical Series')
-
-# # Violin Plot: Toxic Probability by Cluster
-# sns.violinplot(data=tableS3, x='Cluster', y='Toxic Probability', hue='Cluster', common_norm=False,
-#                palette = 'pastel', ax=axes[0, 1])
-# axes[0, 1].set_title('Violin: Toxic Probability by Cluster')
-# axes[0, 1].set_xlabel('Chemical Series')
-# axes[0, 1].legend_.remove()
-
-
-# # KDE Plot: NDUFA5 by Cluster
-# sns.kdeplot(data=tableS3, x='Cluster', y='NDUFA5', common_norm=False, ax=axes[1, 0])
-# axes[1, 0].set_title('KDE: NDUFA5 by Cluster')
-# axes[1, 0].set_xlabel('Chemical Series')
-# axes[1, 0].set_ylabel('NDUFA5 Differential Expression')
-
-# toplot_violin = tableS3.copy()
-# toplot_violin['Chemistry'] = toplot_violin['Cluster'].map(cluster_mappings)
-
-# print(toplot_violin)
-
-# # Violin Plot: NDUFA5 by Cluster
-# sns.boxplot(data=toplot_violin, x='Chemistry', y='NDUFA5', hue='Chemistry', showfliers = False, 
-#             palette = 'pastel',  ax=axes[1, 1])
-# axes[1, 1].set_title('Violin: NDUFA5 by Cluster')
-# axes[1, 1].set_xlabel('Chemical Series')
-# axes[1, 1].set_ylabel('NDUFA5 Differential Expression')
-# for tick in axes[1, 1].get_xticklabels():
-#     tick.set_rotation(90)
-
-# plt.tight_layout()
-# plt.show()
-
 # Plot and save join probability density function of toxicity scores
 sns.kdeplot(data=tableS3, x='Cluster', y='Toxic Probability', common_norm=False)
 plt.title('KDE: Toxic Probability by Cluster')
@@ -154,12 +116,6 @@ VHLsubset = tableS3.loc[tableS3['Cluster']==1]
 VHLexport = VHLsubset[['Unnamed: 0', 'Toxic Probability', 'Drug', 'Cluster','NDUFA5']]
 VHLexport.set_index('Unnamed: 0', inplace = True)
 VHLexport = VHLexport.assign(Chemistry='AR-VHL-Other').loc[VHLexport['NDUFA5']<0.1]
-# print(nontoxic_subset.shape)
-# print(toxic_subset.shape)
-# print(VHLsubset.shape)
-# print(nontoxic_subset)
-# print(toxic_subset)
-# print(VHLsubset)
 
 # Create summary dataframe
 toxic_subset['Pred'] = 'Toxic'

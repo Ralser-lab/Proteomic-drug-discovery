@@ -19,7 +19,7 @@ Inputs
 Outputs
 -------
 Figures:
-- figures/protacs_01_heatmap.pdf
+- figures/protacs_01_heatmap.png
 - figures/protacs_01_dispersion_kde.pdf
 - figures/protacs_01_global_PCA_scree.pdf
 - figures/protacs_01_global_PCA_concentration.pdf
@@ -126,7 +126,7 @@ ax2.set_xticks(np.arange(len(metadata_encoded.columns)))
 ax2.set_xticklabels(metadata_encoded.columns.values, rotation = 45)
 sns.heatmap(batch.to_frame(), cmap = 'jet_r', ax = ax3, cbar = False, yticklabels = False, xticklabels = False)
 ax3.set_title('Batch')
-plt.savefig(os.path.join(figure_out, 'protacs_01_heatmap.pdf'))
+plt.savefig(os.path.join(figure_out, 'protacs_01_heatmap.png'))
 # plt.show()
 
 # %% Dispersion plot of summarized proteins

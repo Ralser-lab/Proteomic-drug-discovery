@@ -1,9 +1,11 @@
+
 #!/usr/bin/env bash
 set -euo pipefail
 mkdir -p logs
 
 SCRIPTS=()
 STATUS=()
+HYPER_FILE="${1:-}"
 
 # run(): function to execute a script
 # Detects the correct interpreter (python3 or Rscript) based on file extension,
@@ -18,6 +20,30 @@ run() {
   {
     echo "[$start] >>> START $script"
     time "$runner" "$script"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] >>> FINISH $script"
+  } >"$log" 2>&1
+
+  if [[ $? -eq 0 ]]; then
+    SCRIPTS+=("$script")
+    STATUS+=("OK ($log)")
+  else
+    SCRIPTS+=("$script")
+    STATUS+=("FAIL ($log)")
+    exit 1
+  fi
+}
+
+# run_hyper(): for scripts that need the HYPER.json arg
+run_hyper() {
+  local runner="$1"
+  local script="$2"
+  local log="logs/$(basename "${script%.*}").log"
+  local start=$(date '+%Y-%m-%d %H:%M:%S')
+
+  echo "[$start] >>> Running $script with $HYPER_FILE"
+  {
+    echo "[$start] >>> START $script with $HYPER_FILE"
+    time "$runner" "$script" "$HYPER_FILE"
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] >>> FINISH $script"
   } >"$log" 2>&1
 
@@ -51,12 +77,13 @@ run() {
 # run python3 code/protacs_13_split.py
 # run Rscript code/protacs_14_split_limma.R
 # run python3 code/protacs_15_split_enrich.py
-run python3 code/protacs_16_gbdt_train_retrain.py
-run python3 code/protacs_17_gbdt_scores.py
+# run python3 code/protacs_16_gbdt_train_retrain.py
+# run python3 code/protacs_17_gbdt_scores.py
 # run Rscript code/protacs_18_pheatmap_topweights_all.R
 # run Rscript code/protacs_19_pheatmap_topweights_analogs.R
-run python3 code/protacs_20_scores_v_degradation.py
-# run python3 code/protacs_21_summarystats_wetlab.py
+# run python3 code/protacs_20_scores_v_degradation.py
+# run python3 code/protacs_21_stats_wetlab.py
+run_hyper python3 code/protacs_22_gbdt_deepsearch.py
 
 # REDUCE heatmap.pdf -> heatmaps.png
 # Add grand run time in logfiles 

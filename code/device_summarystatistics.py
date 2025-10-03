@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script Name: device_statistics.py
+Script Name: device_summarystatistics.py
 Description:
     Statistical utilities for exploratory analysis, hypothesis testing, and 
     regression-based IC50 estimation. Includes implementations of summary 

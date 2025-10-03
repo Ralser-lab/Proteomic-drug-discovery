@@ -282,6 +282,7 @@ ax.tick_params(axis='y', labelsize=15)  # Adjust font size
 ax.set_xlabel('')  # This removes the x-axis label
 ax.set_ylabel('')
 plt.savefig(os.path.join(fig_out, 'protacs_10_PMF_GSEA_PROTACs_all.pdf'))
+plt.close()
 
 # %% Plot the results
 norm = plt.Normalize(vmin=gsealist['NES'].min(), vmax=gsealist['NES'].max())
@@ -306,7 +307,8 @@ ax.tick_params(axis='y', labelsize = 30)
 ax.set_xlabel('')  # This removes the x-axis label
 ax.set_ylabel('') 
 ax.get_legend().remove()
-plt.show()
+# plt.show()
+plt.close()
 gseaplot.savefig(os.path.join(fig_out, 'protacs_10_GSEA_ChemicalSeries_1and10uM.pdf'))
 
 # %% Extract t-matrices
@@ -352,7 +354,8 @@ plt.errorbar(t_matrix.loc[1]['conc'], t_matrix.loc[1].drop('conc', axis = 1).mea
 plt.ylabel('Averaged DE (' + str(t_matrix.shape[1] )+ ' Proteins)')
 plt.xlabel('Concentration \u03bcM')
 plt.title(title)
-#plt.show()
+# plt.show()
+plt.close()
 lineplot2.savefig(os.path.join(fig_out,'protacs_10_' + title.lower() + '_lineplot.pdf'))
 
 # # %%

@@ -112,7 +112,7 @@ ax2.set_title('Batch', fontsize = 24)
 sns.heatmap(metadata_encoded, cmap='Greys', ax=ax3, cbar=False, yticklabels=False)
 ax3.set_xticks(np.arange(len(metadata_encoded.columns)))
 ax3.set_xticklabels(metadata_encoded.columns.values, rotation = 45, fontsize = 24)
-plt.savefig(os.path.join(figure_out, 'fda_01_heatmap.pdf')) # Export clustered heatmap on proteomes (all samples in FDA testing set)
+plt.savefig(os.path.join(figure_out, 'fda_01_heatmap.png')) # Export clustered heatmap on proteomes (all samples in FDA testing set)
 
 # %% Extract PCA loadings
 output = pasef_summarized_clustered.copy()
