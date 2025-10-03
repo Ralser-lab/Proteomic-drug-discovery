@@ -1,13 +1,13 @@
 # Proteomic-drug-discovery
 
 Repository containing scripts to regenerate all figures, training and analytics in 
-'Proteome-guided discovery accurately maps and mitigates toxicity mechanisms of therapeutic androgen receptor degraders'.
+**'Proteome-guided discovery accurately maps and mitigates toxicity mechanisms of therapeutic androgen receptor degraders'.**
 
-## Installation 
+## Installation (420 MB)
 
-Clone repository, download data at below URL, and copy-paste it into 'Proteomic-drug-discovery/data'
+Clone repository, download data at below URL, and copy-paste it into `/data'
 
-   https://www.
+   https://figshare.com/s/6d164fd50adfdb9a68d7 
    
 ## Version control and machine specs
 
@@ -17,10 +17,12 @@ The following packages and interpreters were used:
 - R 4.3.1 + Bioconductor 3.18 (use renv to restore dependencies from 'renv.lock')
 
 Machine used for original run: 
+
 MacBook Pro (Apple M2 Max, 32 GB)
+
 macOS Ventura v13.3
 
-## Execution (~12 minutes)
+## Execution (approx. 12 minutes run time)
 
 Navigate into `Proteomic-drug-discovery/` (project root) in command-line, then run CODERUNNER.sh:
 
