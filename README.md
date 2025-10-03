@@ -9,18 +9,18 @@ Clone repository, download data at below URL, and copy-paste it into `/data'
 
    https://figshare.com/s/6d164fd50adfdb9a68d7 
    
-## Version control and machine specs
+## Requirements
 
 The following packages and interpreters were used:
 
-- Python 3.11.5 (download dependencies in a virtual environment from 'requirements.txt') 
-- R 4.3.1 + Bioconductor 3.18 (use renv to restore dependencies from 'renv.lock')
+- Python 3.11.5 (download dependencies in a virtual environment from `requirements/scoring_models`) 
+- R 4.3.1 + Bioconductor 3.18 (use renv to restore dependencies from `requirements/renv.lock`)
 
 Machine used for original run: 
 
-MacBook Pro (CPU: Apple M2 Max, RAM: 32 GB, OS: macOS Ventura v13.3)
+- MacBook Pro (CPU: Apple M2 Max, RAM: 32 GB, OS: macOS Ventura v13.3) - approximately 12 minute run-time.
 
-## Execution (approx. 12 minutes run time)
+## Execution
 
 Navigate into `Proteomic-drug-discovery/` (project root) in command-line, then run CODERUNNER.sh:
 ```
@@ -92,7 +92,6 @@ project_root/
 │
 │   ├── protacs_04_limma_metadataconstructor
 │   │   ├── logs/protacs_04_limma_metadataconstructor.log
-│   │   ├── figures/
 │
 │   ├── protacs_05_limma_cluster_0p1
 │   │   ├── figures/protacs_05_volcanoes_0p1uM.png
