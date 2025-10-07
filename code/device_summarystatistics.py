@@ -88,14 +88,14 @@ def t_test(df1, df2):
 
 # colwise linear fit to extract IC50, *assumes response is normally distributed*
 def linear_IC50(df):
-    #empty vec for storing IC50s
+    # empty vec for storing IC50s
     ic50_values = pd.Series()
     for col in df.columns:
-        #drop NaNs
+        # drop NaNs
         valid_data = df[col].dropna()
-        #dependent
+        # dependent
         x = valid_data.index
-        #response
+        # response
         Y = valid_data.values
         # add intercept
         X = sm.add_constant(x)
@@ -105,7 +105,7 @@ def linear_IC50(df):
         intercept, slope = model.params
         # calculate ic50
         ic50 = (0.5 - intercept)/slope
-        #append series
+        # append series
         ic50_values[col] = ic50
     return ic50_values
 
@@ -129,3 +129,4 @@ def calculate_cv(df, name):
                         'Means' : means,
                         'Stdev': stds})
     return df
+

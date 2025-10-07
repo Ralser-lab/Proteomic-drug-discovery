@@ -1,11 +1,11 @@
-[2025-10-03 13:29:17] >>> START code/protacs_21_stats_wetlab.py
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_21_stats_wetlab.py:78: UserWarning: linestyle is redundantly defined by the 'linestyle' keyword argument and the fmt string "o-" (-> linestyle='-'). The keyword argument will take precedence.
+[2025-10-07 19:13:14] >>> START code/protacs_21_stats_wetlab.py
+/workflow/code/protacs_21_stats_wetlab.py:78: UserWarning: linestyle is redundantly defined by the 'linestyle' keyword argument and the fmt string "o-" (-> linestyle='-'). The keyword argument will take precedence.
   plt.errorbar(normsum.index, normsum["glu_mean"], yerr=normsum["glu_std"], fmt="o-", label="Glucose Mean", capsize=3, linestyle = '--')
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_21_stats_wetlab.py:79: UserWarning: linestyle is redundantly defined by the 'linestyle' keyword argument and the fmt string "s-" (-> linestyle='-'). The keyword argument will take precedence.
+/workflow/code/protacs_21_stats_wetlab.py:79: UserWarning: linestyle is redundantly defined by the 'linestyle' keyword argument and the fmt string "s-" (-> linestyle='-'). The keyword argument will take precedence.
   plt.errorbar(normsum.index, normsum["gal_mean"], yerr=normsum["gal_std"], fmt="s-", label="Galactose Mean", capsize=3, linestyle = '--')
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_21_stats_wetlab.py:164: RuntimeWarning: divide by zero encountered in log10
+/workflow/code/protacs_21_stats_wetlab.py:164: RuntimeWarning: divide by zero encountered in log10
   complex1.index = np.log10([0,20,5,1,0.1,0.05,0.01,0.005]) # Numerize to log10 index
-/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/pandas/core/indexes/base.py:944: RuntimeWarning: divide by zero encountered in log10
+/usr/local/lib/python3.11/site-packages/pandas/core/indexes/base.py:944: RuntimeWarning: divide by zero encountered in log10
   result = getattr(ufunc, method)(*new_inputs, **kwargs)
 Mean and Std of df1: Mean = 0.8144, Std = 0.1016
 Mean and Std of df2: Mean = -0.3324, Std = 0.0013
@@ -64,7 +64,7 @@ Mean and Std of df1: Mean = 3.0233, Std = 1.3448
 p-value: 0.0345
 t-stat: -2.8814
 
-real	0m1.562s
-user	0m3.442s
-sys	0m7.218s
-[2025-10-03 13:29:19] >>> FINISH code/protacs_21_stats_wetlab.py
+real	0m1.412s
+user	0m4.351s
+sys	0m0.113s
+[2025-10-07 19:13:16] >>> FINISH code/protacs_21_stats_wetlab.py

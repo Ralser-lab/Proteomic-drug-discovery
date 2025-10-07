@@ -1,4 +1,4 @@
-[2025-10-03 13:28:33] >>> START code/protacs_19_pheatmap_topweights_analogs.R
+[2025-10-07 19:13:10] >>> START code/protacs_19_pheatmap_topweights_analogs.R
 Loading required package: grid
 ========================================
 ComplexHeatmap version 2.18.0
@@ -46,15 +46,11 @@ The following object is masked from ‘package:pheatmap’:
  [5] "ggplot2"        "stats"          "graphics"       "grDevices"     
  [9] "utils"          "datasets"       "methods"        "base"          
 
-Warning messages:
-1: package ‘ggplot2’ was built under R version 4.3.3 
-2: package ‘RColorBrewer’ was built under R version 4.3.3 
-3: package ‘pheatmap’ was built under R version 4.3.3 
 All required packages are installed and loaded successfully!
 null device 
           1 
 
-real	0m1.529s
-user	0m1.435s
-sys	0m0.082s
-[2025-10-03 13:28:34] >>> FINISH code/protacs_19_pheatmap_topweights_analogs.R
+real	0m2.347s
+user	0m2.546s
+sys	0m0.746s
+[2025-10-07 19:13:13] >>> FINISH code/protacs_19_pheatmap_topweights_analogs.R

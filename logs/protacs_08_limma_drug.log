@@ -1,4 +1,4 @@
-[2025-10-03 13:24:37] >>> START code/protacs_08_limma_drug.R
+[2025-10-07 19:05:36] >>> START code/protacs_08_limma_drug.R
 
 Attaching package: ‘dplyr’
 
@@ -47,13 +47,8 @@ Loading required package: ggrepel
  [9] "ggplot2"         "stats"           "graphics"        "grDevices"      
 [13] "utils"           "datasets"        "methods"         "base"           
 
-Warning messages:
-1: package ‘ggplot2’ was built under R version 4.3.3 
-2: package ‘pheatmap’ was built under R version 4.3.3 
-3: package ‘cowplot’ was built under R version 4.3.3 
-4: package ‘ggrepel’ was built under R version 4.3.3 
 
-real	0m18.041s
-user	0m17.724s
-sys	0m0.294s
-[2025-10-03 13:24:55] >>> FINISH code/protacs_08_limma_drug.R
+real	0m48.279s
+user	0m48.758s
+sys	0m2.967s
+[2025-10-07 19:06:24] >>> FINISH code/protacs_08_limma_drug.R

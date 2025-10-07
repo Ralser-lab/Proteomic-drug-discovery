@@ -3,37 +3,42 @@
 Repository containing scripts to regenerate all figures, training and analytics in 
 **'Proteome-guided discovery accurately maps and mitigates toxicity mechanisms of therapeutic androgen receptor degraders'.**
 
-## Installation (420 MB)
+## Installation
 
-Clone repository, download data at below URL, and copy-paste it into `/data'
-
-   https://figshare.com/s/6d164fd50adfdb9a68d7 
+1. Clone this repository:
+```bash
+git clone https://github.com/BasuShaon/Proteomic-drug-discovery.git
+```
+2. Download data [here] (https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `Proteomic-drug-discovery/data`
    
-## Requirements
+### Development Environment
 
-The following packages and interpreters were used:
+**Python 3.11.5** (gseapy==1.0.6, joblib==1.3.2, matplotlib==3.8.1, numpy==1.25.2, openpyxl==3.1.2, pandas==2.1.0, scikit-learn==1.3.0, scipy==1.11.2, seaborn==0.13.2, shap==0.46.0, statsmodels==0.14.0, xgboost==2.0.3) **R 4.3.1** (ggplot2==3.5.2, dplyr==1.1.4, tidyr==1.3.1, pheatmap==1.0.13, cowplot==1.2.0, RColorBrewer==1.1-3, ggnewscale==0.5.2, ape==5.8-1, factoextra==1.0.7, ggfortify==0.4.18) + **Bioconductor 3.18** (limma==3.58.1, EnhancedVolcano=1.20.0, ComplexHeatmap==2.18.0, ggtree==3.10.1, ggtreeExtra=1.12.0) **Tested Hardware** MacBook Pro (M2 MAX CPU, 32 GB RAM, macOS Ventura 13.3) 
 
-- Python 3.11.5 (download dependencies in a virtual environment from `requirements/scoring_models`) 
-- R 4.3.1 + Bioconductor 3.18 (use renv to restore dependencies from `requirements/renv.lock`)
+### Reproduce Environment 
 
-Machine used for original run: 
-
-- MacBook Pro (CPU: Apple M2 Max, RAM: 32 GB, OS: macOS Ventura v13.3) - approximately 12 minute run-time.
-
-## Execution
-
-Navigate into `Proteomic-drug-discovery/` (project root) in command-line, then run CODERUNNER.sh:
+1. Install [Docker](https://www.docker.com/get-started)
+2. Navigate into the root directory:
+```bash
+cd Proteomic-drug-discovery
 ```
-   bash CODERUNNER.sh HYPER.json
+3. Build environment image with docker (copy-paste this):
+```bash
+docker build -t proteomediscovery-env .
 ```
 
-To adjust hyperparameter grid for the xgboost toxicity scoring workflow, edit `HYPER.json` with desired search space, 
-save, and run CODERUNNER.sh, as described above. 
+## Execution (~20 minute runtime)
 
-Generated outputs (models, figures, logfiles) save into `/scoring_models`, `/figures`, and `/logs` respectively, and they 
-map as follows:
+Run & load `CODERUNNER.sh` in a docker container within the root directory (copy-paste this):
+```bash
+docker run -it --rm -v "$PWD":/image proteomediscovery-env bash CODERUNNER.sh HYPER.json
+```
 
-## Mapping index
+To adjust hyperparameter grid for the xgboost toxicity scoring workflow, edit `HYPER.json` with desired search space, save, and run CODERUNNER.sh with docker in command-line as described above. 
+
+Generated outputs (models, figures, logfiles) save into `/scoring_models`, `/figures`, and `/logs` respectively, and they map as follows:
+
+### Mapping index
 
 ```
 project_root/      
@@ -253,3 +258,4 @@ project_root/
 │   │   ├── scoring_models/protacs_22_xgb_second-pass-model.json
 │   │   ├── scoring_models/protacs_22_xgb_second-pass-search_space.csv
 │   │   ├── logs/protacs_22_gbdt_train_retrain.log
+

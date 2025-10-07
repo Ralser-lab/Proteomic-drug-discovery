@@ -1,58 +1,78 @@
-[2025-10-03 13:31:21] >>> START code/protacs_22_gbdt_deepsearch.py with HYPER.json
-[HYPER] Loaded hyperparameters from /Users/shaon/Desktop/Proteomic-drug-discovery/HYPER.json
+[2025-10-07 19:13:16] >>> START code/protacs_22_gbdt_deepsearch.py with HYPER.json
+[HYPER] Loaded hyperparameters from /workflow/HYPER.json
 [HYPER] Keys: ['alpha', 'colsample_bytree', 'gamma', 'lambda', 'learning_rate', 'max_depth', 'min_child_weight', 'n_estimators', 'subsample']
-{'learning_rate': [0.01, 0.1, 1], 'n_estimators': [50, 75, 100], 'max_depth': [1, 2, 3], 'min_child_weight': [4, 5, 6], 'subsample': [0.8], 'colsample_bytree': [0.8], 'gamma': [4, 5], 'alpha': [1, 2, 3], 'lambda': [1, 2, 3]}
-{'alpha': 3, 'colsample_bytree': 0.8, 'gamma': 4, 'lambda': 2, 'learning_rate': 1, 'max_depth': 2, 'min_child_weight': 5, 'n_estimators': 100, 'subsample': 0.8}
-              precision    recall  f1-score   support
-
-           0       0.71      0.63      0.67        19
-           1       0.73      0.79      0.76        24
-
-    accuracy                           0.72        43
-   macro avg       0.72      0.71      0.71        43
-weighted avg       0.72      0.72      0.72        43
-
-Round 1 top features: 4       CYC1
-7    PRKAR2B
-6     NDUFA4
-5     MRPL19
-1     RPL18A
-2       RPL8
-0       RPL4
-3      RPS26
-8     ATP5ME
-Name: Feature, dtype: object
+/usr/local/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1469: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1469: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1469: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1469: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1469: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1469: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
 {'learning_rate': [0.01, 0.1, 1], 'n_estimators': [50, 75, 100], 'max_depth': [1, 2, 3], 'min_child_weight': [4, 5, 6], 'subsample': [0.8], 'colsample_bytree': [0.8], 'gamma': [4, 5], 'alpha': [1, 2, 3], 'lambda': [1, 2, 3]}
 {'alpha': 1, 'colsample_bytree': 0.8, 'gamma': 5, 'lambda': 1, 'learning_rate': 1, 'max_depth': 1, 'min_child_weight': 5, 'n_estimators': 75, 'subsample': 0.8}
               precision    recall  f1-score   support
 
-           0       0.83      0.26      0.40        19
-           1       0.62      0.96      0.75        24
+           0       0.80      0.21      0.33        19
+           1       0.61      0.96      0.74        24
 
-    accuracy                           0.65        43
-   macro avg       0.73      0.61      0.58        43
-weighted avg       0.72      0.65      0.60        43
+    accuracy                           0.63        43
+   macro avg       0.70      0.58      0.54        43
+weighted avg       0.69      0.63      0.56        43
+
+Round 1 top features: 11     NDUFA4
+9        PDPR
+3        RPL4
+15    MT-ATP6
+1       PSMF1
+6      PABPC1
+0      EIF2B5
+5     NDUFB10
+12    PRKAR2B
+10        BSG
+13      PSMA2
+2       RPS18
+7      NDUFS1
+16      MRPS5
+4      UQCRC1
+14     MRPS15
+8       RPL14
+Name: Feature, dtype: object
+{'learning_rate': [0.01, 0.1, 1], 'n_estimators': [50, 75, 100], 'max_depth': [1, 2, 3], 'min_child_weight': [4, 5, 6], 'subsample': [0.8], 'colsample_bytree': [0.8], 'gamma': [4, 5], 'alpha': [1, 2, 3], 'lambda': [1, 2, 3]}
+{'alpha': 1, 'colsample_bytree': 0.8, 'gamma': 4, 'lambda': 3, 'learning_rate': 1, 'max_depth': 2, 'min_child_weight': 4, 'n_estimators': 75, 'subsample': 0.8}
+              precision    recall  f1-score   support
+
+           0       0.00      0.00      0.00        19
+           1       0.56      1.00      0.72        24
+
+    accuracy                           0.56        43
+   macro avg       0.28      0.50      0.36        43
+weighted avg       0.31      0.56      0.40        43
 
               precision    recall  f1-score   support
 
-           0       1.00      0.21      0.35        19
-           1       0.62      1.00      0.76        24
+           0       1.00      0.05      0.10        19
+           1       0.57      1.00      0.73        24
 
-    accuracy                           0.65        43
-   macro avg       0.81      0.61      0.55        43
-weighted avg       0.79      0.65      0.58        43
+    accuracy                           0.58        43
+   macro avg       0.79      0.53      0.41        43
+weighted avg       0.76      0.58      0.45        43
 
               precision    recall  f1-score   support
 
-           0       1.00      0.21      0.35        19
-           1       0.62      1.00      0.76        24
+           0       1.00      0.05      0.10        19
+           1       0.57      1.00      0.73        24
 
-    accuracy                           0.65        43
-   macro avg       0.81      0.61      0.55        43
-weighted avg       0.79      0.65      0.58        43
+    accuracy                           0.58        43
+   macro avg       0.79      0.53      0.41        43
+weighted avg       0.76      0.58      0.45        43
 
 
-real	1m21.242s
-user	14m25.616s
-sys	0m34.554s
-[2025-10-03 13:32:43] >>> FINISH code/protacs_22_gbdt_deepsearch.py
+real	1m53.556s
+user	20m37.059s
+sys	0m10.144s
+[2025-10-07 19:15:09] >>> FINISH code/protacs_22_gbdt_deepsearch.py

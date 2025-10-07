@@ -1,4 +1,127 @@
-[2025-10-03 13:19:44] >>> START code/fda_02_limma_drug.R
+[2025-10-07 18:56:28] >>> START code/fda_02_limma_drug.R
+Installing missing packages: renv
+Installing package into ‘/usr/local/lib/R/site-library’
+(as ‘lib’ is unspecified)
+trying URL 'https://cloud.r-project.org/src/contrib/renv_1.1.5.tar.gz'
+Content type 'application/x-gzip' length 1255206 bytes (1.2 MB)
+==================================================
+downloaded 1.2 MB
+
+* installing *source* package ‘renv’ ...
+** package ‘renv’ successfully unpacked and MD5 sums checked
+** using staged installation
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** libs
+using C compiler: ‘gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0’
+gcc -I"/usr/local/lib/R/include" -DNDEBUG   -I/usr/local/include    -fPIC  -g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -g  -c renv.c -o renv.o
+gcc -shared -L/usr/local/lib/R/lib -L/usr/local/lib -o renv.so renv.o -L/usr/local/lib/R/lib -lR
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (renv)
+
+The downloaded source packages are in
+	‘/tmp/Rtmp4cUVg8/downloaded_packages’
+'getOption("repos")' replaces Bioconductor standard repositories, see
+'help("repositories", package = "BiocManager")' for details.
+Replacement repositories:
+    CRAN: https://p3m.dev/cran/2024-04-23
+Bioconductor version 3.18 (BiocManager 1.30.26), R 4.3.3 (2024-02-29)
+Installing package(s) 'limma'
+also installing the dependency ‘statmod’
+
+trying URL 'https://p3m.dev/cran/2024-04-23/src/contrib/statmod_1.5.0.tar.gz'
+Content type 'application/x-tar' length 91842 bytes (89 KB)
+==================================================
+downloaded 89 KB
+
+trying URL 'https://bioconductor.org/packages/3.18/bioc/src/contrib/limma_3.58.1.tar.gz'
+Content type 'application/gzip' length 2804950 bytes (2.7 MB)
+==================================================
+downloaded 2.7 MB
+
+* installing *source* package ‘statmod’ ...
+** package ‘statmod’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+using C compiler: ‘gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0’
+using Fortran compiler: ‘GNU Fortran (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0’
+gcc -I"/usr/local/lib/R/include" -DNDEBUG   -I/usr/local/include    -fPIC  -g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -g  -c expectedDeviance.c -o expectedDeviance.o
+gfortran  -fPIC  -g -O2  -c gaussq2.f -o gaussq2.o
+gcc -I"/usr/local/lib/R/include" -DNDEBUG   -I/usr/local/include    -fPIC  -g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -g  -c init.c -o init.o
+gcc -shared -L/usr/local/lib/R/lib -L/usr/local/lib -o statmod.so expectedDeviance.o gaussq2.o init.o -lgfortran -lm -L/usr/local/lib/R/lib -lR
+installing to /usr/local/lib/R/site-library/00LOCK-statmod/00new/statmod/libs
+** R
+** data
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (statmod)
+* installing *source* package ‘limma’ ...
+** using staged installation
+** libs
+using C compiler: ‘gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0’
+gcc -I"/usr/local/lib/R/include" -DNDEBUG   -I/usr/local/include    -fPIC  -g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -g  -c init.c -o init.o
+gcc -I"/usr/local/lib/R/include" -DNDEBUG   -I/usr/local/include    -fPIC  -g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -g  -c normexp.c -o normexp.o
+gcc -I"/usr/local/lib/R/include" -DNDEBUG   -I/usr/local/include    -fPIC  -g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -g  -c weighted_lowess.c -o weighted_lowess.o
+gcc -shared -L/usr/local/lib/R/lib -L/usr/local/lib -o limma.so init.o normexp.o weighted_lowess.o -L/usr/local/lib/R/lib -lR
+installing to /usr/local/lib/R/site-library/00LOCK-limma/00new/limma/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (limma)
+
+The downloaded source packages are in
+	‘/tmp/Rtmp4cUVg8/downloaded_packages’
+'getOption("repos")' replaces Bioconductor standard repositories, see
+'help("repositories", package = "BiocManager")' for details.
+Replacement repositories:
+    CRAN: https://p3m.dev/cran/2024-04-23
+Bioconductor version 3.18 (BiocManager 1.30.26), R 4.3.3 (2024-02-29)
+Installing package(s) 'EnhancedVolcano'
+trying URL 'https://bioconductor.org/packages/3.18/bioc/src/contrib/EnhancedVolcano_1.20.0.tar.gz'
+Content type 'application/gzip' length 9352350 bytes (8.9 MB)
+==================================================
+downloaded 8.9 MB
+
+* installing *source* package ‘EnhancedVolcano’ ...
+** using staged installation
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (EnhancedVolcano)
+
+The downloaded source packages are in
+	‘/tmp/Rtmp4cUVg8/downloaded_packages’
 Bioconductor version '3.18' is out-of-date; the current release version '3.21'
   is available with R version '4.5'; see https://bioconductor.org/install
 Loading required package: ggplot2
@@ -112,14 +235,6 @@ The following objects are masked from ‘package:base’:
 [13] "BiocManager"     "stats"           "graphics"        "grDevices"      
 [17] "utils"           "datasets"        "methods"         "base"           
 
-Warning messages:
-1: package ‘BiocManager’ was built under R version 4.3.3 
-2: package ‘ggplot2’ was built under R version 4.3.3 
-3: package ‘ggrepel’ was built under R version 4.3.3 
-4: package ‘pheatmap’ was built under R version 4.3.3 
-5: package ‘cowplot’ was built under R version 4.3.3 
-6: package ‘ggfortify’ was built under R version 4.3.3 
-7: package ‘renv’ was built under R version 4.3.3 
 All required packages are installed and loaded successfully!
 Warning message:
 The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
@@ -127,7 +242,7 @@ The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
 null device 
           1 
 
-real	0m2.799s
-user	0m2.410s
-sys	0m0.099s
-[2025-10-03 13:19:47] >>> FINISH code/fda_02_limma_drug.R
+real	0m37.090s
+user	0m25.671s
+sys	0m4.645s
+[2025-10-07 18:57:05] >>> FINISH code/fda_02_limma_drug.R

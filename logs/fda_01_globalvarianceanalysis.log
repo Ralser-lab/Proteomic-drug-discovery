@@ -1,23 +1,23 @@
-[2025-10-03 13:19:38] >>> START code/fda_01_globalvarianceanalysis.py
-/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/seaborn/matrix.py:560: UserWarning: Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
+[2025-10-07 18:56:21] >>> START code/fda_01_globalvarianceanalysis.py
+/usr/local/lib/python3.11/site-packages/seaborn/matrix.py:560: UserWarning: Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
   warnings.warn(msg)
-/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/seaborn/matrix.py:560: UserWarning: Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
+/usr/local/lib/python3.11/site-packages/seaborn/matrix.py:560: UserWarning: Clustering large matrix with scipy. Installing `fastcluster` may give better performance.
   warnings.warn(msg)
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_01_globalvarianceanalysis.py:70: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value 'Control' has dtype incompatible with float64, please explicitly cast to a compatible dtype first.
+/workflow/code/fda_01_globalvarianceanalysis.py:70: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value 'Control' has dtype incompatible with float64, please explicitly cast to a compatible dtype first.
   metadata.loc[metadata['Drug'].isna(), 'Sample.Type'] = 'Control'
 No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_01_globalvarianceanalysis.py:162: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+/workflow/code/fda_01_globalvarianceanalysis.py:162: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
   plt.annotate(label, (df_pca['PC1'][i], df_pca['PC2'][i]), fontsize=9)
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_01_globalvarianceanalysis.py:177: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+/workflow/code/fda_01_globalvarianceanalysis.py:177: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
   plt.annotate(label, (df_pca['PC1'][i], df_pca['PC2'][i]), fontsize=9)
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_01_globalvarianceanalysis.py:189: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+/workflow/code/fda_01_globalvarianceanalysis.py:189: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
   DMSO_frame = device_summarystatistics.calculate_cv(pasef_summarized[metadata_encoded['DMSO']==True], 'dmso')
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_01_globalvarianceanalysis.py:190: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+/workflow/code/fda_01_globalvarianceanalysis.py:190: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
   drug_frame = device_summarystatistics.calculate_cv(pasef_summarized[~metadata_encoded['DMSO']==True], 'drug')
-/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/seaborn/distributions.py:1176: UserWarning: The following kwargs were not used by contour: 'linewidth'
+/usr/local/lib/python3.11/site-packages/seaborn/distributions.py:1176: UserWarning: The following kwargs were not used by contour: 'linewidth'
   cset = contour_func(
 
-real	0m6.604s
-user	0m33.518s
-sys	0m18.711s
-[2025-10-03 13:19:44] >>> FINISH code/fda_01_globalvarianceanalysis.py
+real	0m7.002s
+user	0m22.020s
+sys	0m0.392s
+[2025-10-07 18:56:28] >>> FINISH code/fda_01_globalvarianceanalysis.py

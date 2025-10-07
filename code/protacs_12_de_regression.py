@@ -105,7 +105,7 @@ sigpath.sort_values(by = 'index', inplace = True)
 sigpath.set_index('index', inplace = True)
 
 # Load AZ compound cluster metadata
-AZclustered = pd.read_csv('/Users/shaon/Desktop/PROTACS/github/data/AZcompound_metadata_clustered_240611a.tsv',index_col=0)
+AZclustered = pd.read_csv(os.path.join(filepath, 'AZcompound_metadata_clustered_240611a.tsv'),index_col=0)
 
 # Clean IC50 values (remove ">" then convert to float)
 AZclustered['Gal'] = AZclustered['Gal'].str.replace('>','').astype(float)

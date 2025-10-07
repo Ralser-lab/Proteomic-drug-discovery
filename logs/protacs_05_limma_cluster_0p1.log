@@ -1,4 +1,4 @@
-[2025-10-03 13:23:47] >>> START code/protacs_05_limma_cluster_0p1.R
+[2025-10-07 19:03:15] >>> START code/protacs_05_limma_cluster_0p1.R
 
 Attaching package: ‘dplyr’
 
@@ -47,11 +47,6 @@ Loading required package: ggrepel
  [9] "ggplot2"         "stats"           "graphics"        "grDevices"      
 [13] "utils"           "datasets"        "methods"         "base"           
 
-Warning messages:
-1: package ‘ggplot2’ was built under R version 4.3.3 
-2: package ‘pheatmap’ was built under R version 4.3.3 
-3: package ‘cowplot’ was built under R version 4.3.3 
-4: package ‘ggrepel’ was built under R version 4.3.3 
 All required packages are installed and loaded successfully!
 Warning message:
 The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
@@ -59,7 +54,7 @@ The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
 null device 
           1 
 
-real	0m16.625s
-user	0m16.223s
-sys	0m0.388s
-[2025-10-03 13:24:04] >>> FINISH code/protacs_05_limma_cluster_0p1.R
+real	0m46.450s
+user	0m46.729s
+sys	0m1.815s
+[2025-10-07 19:04:01] >>> FINISH code/protacs_05_limma_cluster_0p1.R

@@ -1,18 +1,18 @@
-[2025-10-03 13:19:51] >>> START code/fda_04_de_gsea.py
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
+[2025-10-07 18:57:07] >>> START code/fda_04_de_gsea.py
+/workflow/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
   gsea_results = gp.prerank(rnk=x,
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
+/workflow/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
   gsea_results = gp.prerank(rnk=x,
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
+/workflow/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
   gsea_results = gp.prerank(rnk=x,
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
+/workflow/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
   gsea_results = gp.prerank(rnk=x,
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
+/workflow/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
   gsea_results = gp.prerank(rnk=x,
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
+/workflow/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
   gsea_results = gp.prerank(rnk=x,
 
-real	1m10.288s
-user	3m51.793s
-sys	0m9.185s
-[2025-10-03 13:21:01] >>> FINISH code/fda_04_de_gsea.py
+real	1m35.226s
+user	4m48.279s
+sys	0m3.445s
+[2025-10-07 18:58:42] >>> FINISH code/fda_04_de_gsea.py

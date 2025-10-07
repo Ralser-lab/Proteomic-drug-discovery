@@ -1,8 +1,8 @@
-[2025-10-03 13:27:41] >>> START code/protacs_12_de_regression.py
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_12_de_regression.py:273: UserWarning: color is redundantly defined by the 'color' keyword argument and the fmt string "k--" (-> color='k'). The keyword argument will take precedence.
+[2025-10-07 19:09:59] >>> START code/protacs_12_de_regression.py
+/workflow/code/protacs_12_de_regression.py:273: UserWarning: color is redundantly defined by the 'color' keyword argument and the fmt string "k--" (-> color='k'). The keyword argument will take precedence.
   ax.plot([min_value, max_value], [min_value, max_value], 'k--', c = 'blue')
 
-real	0m2.022s
-user	0m3.970s
-sys	0m4.879s
-[2025-10-03 13:27:43] >>> FINISH code/protacs_12_de_regression.py
+real	0m2.523s
+user	0m5.217s
+sys	0m0.145s
+[2025-10-07 19:10:02] >>> FINISH code/protacs_12_de_regression.py

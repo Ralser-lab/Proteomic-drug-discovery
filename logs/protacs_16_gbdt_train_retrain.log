@@ -1,6 +1,6 @@
-[2025-10-03 13:28:00] >>> START code/protacs_16_gbdt_train_retrain.py
+[2025-10-07 19:10:43] >>> START code/protacs_16_gbdt_train_retrain.py
 {'learning_rate': [0.01], 'n_estimators': [75, 100], 'max_depth': [1, 2, 3], 'min_child_weight': [4, 5, 6], 'subsample': [0.8], 'colsample_bytree': [0.8], 'gamma': [4, 5], 'alpha': [1, 2, 3], 'lambda': [1, 2, 3]}
-{'alpha': 3, 'colsample_bytree': 0.8, 'gamma': 5, 'lambda': 2, 'learning_rate': 0.01, 'max_depth': 2, 'min_child_weight': 4, 'n_estimators': 75, 'subsample': 0.8}
+{'alpha': 3, 'colsample_bytree': 0.8, 'gamma': 5, 'lambda': 2, 'learning_rate': 0.01, 'max_depth': 2, 'min_child_weight': 5, 'n_estimators': 75, 'subsample': 0.8}
               precision    recall  f1-score   support
 
            0       0.71      0.26      0.38        19
@@ -11,57 +11,57 @@
 weighted avg       0.66      0.63      0.58        43
 
 Round1 top features:
-24      NDUFA5
-23     PRKAR2B
-20    PAFAH1B1
-14        PDPR
-1         RPL4
-21      NDUFA4
-25     NDUFA13
-15        CYC1
-13     SLC16A1
-3      NDUFB10
-10      MRPS34
-6         TSFM
-18         BSG
-2        RPS14
-27       RPL35
-11      MRPL50
-12       PSMB3
+20      NDUFA5
+19     PRKAR2B
+17    PAFAH1B1
+0         RPL4
+13        PDPR
+12     SLC16A1
+14        CYC1
+10      MRPL50
+18      NDUFA4
+21     NDUFA13
+6       PABPC1
+2        PSMC2
+5      NDUFB10
+16         BSG
+11       PSMB3
+8         TSFM
+4        RPS14
 Name: Feature, dtype: object
 {'learning_rate': [0.01], 'n_estimators': [75, 100], 'max_depth': [1, 2, 3], 'min_child_weight': [4, 5, 6], 'subsample': [0.8], 'colsample_bytree': [0.8], 'gamma': [4, 5], 'alpha': [1, 2, 3], 'lambda': [1, 2, 3]}
-{'alpha': 1, 'colsample_bytree': 0.8, 'gamma': 4, 'lambda': 1, 'learning_rate': 0.01, 'max_depth': 2, 'min_child_weight': 5, 'n_estimators': 100, 'subsample': 0.8}
+{'alpha': 1, 'colsample_bytree': 0.8, 'gamma': 4, 'lambda': 1, 'learning_rate': 0.01, 'max_depth': 3, 'min_child_weight': 5, 'n_estimators': 75, 'subsample': 0.8}
               precision    recall  f1-score   support
 
-           0       0.70      0.84      0.76        19
-           1       0.85      0.71      0.77        24
+           0       0.75      0.63      0.69        19
+           1       0.74      0.83      0.78        24
 
-    accuracy                           0.77        43
-   macro avg       0.77      0.78      0.77        43
-weighted avg       0.78      0.77      0.77        43
+    accuracy                           0.74        43
+   macro avg       0.75      0.73      0.74        43
+weighted avg       0.74      0.74      0.74        43
 
               precision    recall  f1-score   support
 
-           0       0.70      0.84      0.76        19
-           1       0.85      0.71      0.77        24
+           0       0.76      0.68      0.72        19
+           1       0.77      0.83      0.80        24
 
     accuracy                           0.77        43
-   macro avg       0.77      0.78      0.77        43
-weighted avg       0.78      0.77      0.77        43
+   macro avg       0.77      0.76      0.76        43
+weighted avg       0.77      0.77      0.77        43
 
 0.7441860465116279
-0.46511627906976744
+0.6046511627906976
               precision    recall  f1-score   support
 
-           0       0.70      0.84      0.76        19
-           1       0.85      0.71      0.77        24
+           0       0.76      0.68      0.72        19
+           1       0.77      0.83      0.80        24
 
     accuracy                           0.77        43
-   macro avg       0.77      0.78      0.77        43
-weighted avg       0.78      0.77      0.77        43
+   macro avg       0.77      0.76      0.76        43
+weighted avg       0.77      0.77      0.77        43
 
 
-real	0m30.426s
-user	4m25.356s
-sys	0m32.154s
-[2025-10-03 13:28:30] >>> FINISH code/protacs_16_gbdt_train_retrain.py
+real	0m40.147s
+user	6m2.545s
+sys	0m4.082s
+[2025-10-07 19:11:23] >>> FINISH code/protacs_16_gbdt_train_retrain.py

@@ -158,7 +158,7 @@ round2.gbdt_baseline(Xb_train, Xb_test, yb_train, yb_test)
 round2.gbdt_gridcv(params, X_train[top_features], y_train)
 round2.gbdt_evaluate(X_test[top_features], y_test, round2.best_model)
 round2.gbdt_classify(X_test[top_features],y_test, round2.best_model)
-round2.gbdt_SHAP(['PRKAR2B', 'CYC1', 'NDUFA5', 'NDUFA4', 'RPL4', 'PAFAH1B1', 'RPL35']) # Top interactors from shap.summary
+round2.gbdt_SHAP(['PRKAR2B', 'CYC1', 'NDUFA5', 'NDUFA4', 'RPL4', 'PAFAH1B1']) # Top interactors from shap.summary
 
 # Model calibration
 round2.gbdt_calibrate()

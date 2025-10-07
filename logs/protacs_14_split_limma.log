@@ -1,4 +1,4 @@
-[2025-10-03 13:27:44] >>> START code/protacs_14_split_limma.R
+[2025-10-07 19:10:04] >>> START code/protacs_14_split_limma.R
 
 Attaching package: ‘dplyr’
 
@@ -47,13 +47,8 @@ Loading required package: ggrepel
  [9] "ggplot2"         "stats"           "graphics"        "grDevices"      
 [13] "utils"           "datasets"        "methods"         "base"           
 
-Warning messages:
-1: package ‘ggplot2’ was built under R version 4.3.3 
-2: package ‘pheatmap’ was built under R version 4.3.3 
-3: package ‘cowplot’ was built under R version 4.3.3 
-4: package ‘ggrepel’ was built under R version 4.3.3 
 
-real	0m15.220s
-user	0m14.800s
-sys	0m0.397s
-[2025-10-03 13:27:59] >>> FINISH code/protacs_14_split_limma.R
+real	0m38.706s
+user	0m38.996s
+sys	0m1.909s
+[2025-10-07 19:10:42] >>> FINISH code/protacs_14_split_limma.R

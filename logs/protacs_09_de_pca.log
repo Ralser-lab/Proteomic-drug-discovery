@@ -1,9 +1,9 @@
-[2025-10-03 13:24:55] >>> START code/protacs_09_de_pca.py
-/Users/shaon/Desktop/Proteomic-drug-discovery/code/protacs_09_de_pca.py:125: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+[2025-10-07 19:06:24] >>> START code/protacs_09_de_pca.py
+/workflow/code/protacs_09_de_pca.py:125: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
   ax.text(df_pca['PC1'][i] - 10, df_pca['PC3'][i] + 10, df_pca['PC2'][i] - 3, df_pca['labels'][i], fontsize=15)
 0.01863612220862294 0.05193764066407178 78 0.19136239448912692 0.17455803198811531 174
 
-real	0m3.126s
-user	0m17.733s
-sys	0m8.792s
-[2025-10-03 13:24:59] >>> FINISH code/protacs_09_de_pca.py
+real	0m2.478s
+user	0m9.180s
+sys	0m0.105s
+[2025-10-07 19:06:26] >>> FINISH code/protacs_09_de_pca.py
