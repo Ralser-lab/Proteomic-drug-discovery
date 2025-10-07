@@ -11,12 +11,10 @@ Repository containing scripts to regenerate all figures, training and analytics 
    cd /Proteomic-drug-discovery
 ```
 2. Download data [here](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `/data`.
-3. Install [docker](https://www.docker.com/get-started) and build docker image of computing environment:
+3. Install [docker](https://www.docker.com/get-started) and build docker image of the below computing environment:
 ```bash
    docker build -t proteomediscovery-env .
 ```
-
-### Computing environment
 
 **Python 3.11.5** (gseapy==1.0.6, joblib==1.3.2, matplotlib==3.8.1, numpy==1.25.2, openpyxl==3.1.2, pandas==2.1.0, scikit-learn==1.3.0, scipy==1.11.2, seaborn==0.13.2, shap==0.46.0, statsmodels==0.14.0, xgboost==2.0.3) 
 
@@ -26,7 +24,7 @@ Repository containing scripts to regenerate all figures, training and analytics 
 
 **Hardware** (MacBook Pro, M2 MAX CPU, 32 GB RAM, macOS Ventura 13.3) 
 
-## Execution (~20 minute runtime)
+## 2. Execution (~20 minute runtime)
 
 Run `CODERUNNER.sh` in docker container (copy-paste this from root directory):
 ```bash
@@ -36,8 +34,6 @@ Run `CODERUNNER.sh` in docker container (copy-paste this from root directory):
 To adjust hyperparameter grid for the xgboost toxicity scoring workflow, edit `HYPER.json` with desired search space, save, and run `CODERUNNER.sh` as described above. 
 
 Generated outputs (models, figures, logfiles) save into `/scoring_models`, `/figures`, and `/logs` respectively, and they map as follows:
-
-### Mapping index
 
 ```
 project_root/      
