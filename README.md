@@ -11,11 +11,8 @@ git clone https://github.com/BasuShaon/Proteomic-drug-discovery.git
 cd /Proteomic-drug-discovery
 ```
 2. Download data [here](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `/data`
-   
-## Reproduce Environment in a Docker Image
-
-1. Install [Docker](https://www.docker.com/get-started)
-2. Build environment with docker (copy-paste this from root directory):
+3. Install [docker](https://www.docker.com/get-started)
+4. Build environment with docker (copy-paste this from root directory):
 ```bash
    docker build -t proteomediscovery-env .
 ```
