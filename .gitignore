@@ -3,14 +3,14 @@ data/*
 !data/.gitkeep
 
 #Ignore everything in figures/ 
-#figures/*
+figures/*
 !figures/.gitkeep
 
 #Ignore .DS_Store
 *.DS_Store
 
 #Ignore everything in scoring_models/
-#scoring_models/*
+scoring_models/*
 !scoring_models/.gitkeep
 
 #Ignore everything in log/
