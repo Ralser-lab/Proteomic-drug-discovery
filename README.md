@@ -3,7 +3,7 @@
 Repository containing scripts to regenerate all figures, training and analytics in 
 **'Proteome-guided discovery accurately maps and mitigates toxicity mechanisms of therapeutic androgen receptor degraders'.**
 
-## Installation
+## Installation 
 
 1. Clone this repository and navigate to root directory:
 ```bash
@@ -11,10 +11,12 @@ Repository containing scripts to regenerate all figures, training and analytics 
    cd /Proteomic-drug-discovery
 ```
 2. Download data [here](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `/data`.
-3. Install [docker](https://www.docker.com/get-started) and build docker image for environment:
+3. Install [docker](https://www.docker.com/get-started) and build docker image of computing environment:
 ```bash
    docker build -t proteomediscovery-env .
 ```
+
+### Computing environment
 
 **Python 3.11.5** (gseapy==1.0.6, joblib==1.3.2, matplotlib==3.8.1, numpy==1.25.2, openpyxl==3.1.2, pandas==2.1.0, scikit-learn==1.3.0, scipy==1.11.2, seaborn==0.13.2, shap==0.46.0, statsmodels==0.14.0, xgboost==2.0.3) 
 
