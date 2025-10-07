@@ -62,10 +62,6 @@ for (pkg in bioc_packages) {
   }
 }
 
-# Load all libraries
-lapply(required_packages, library, character.only = TRUE)
-message("All required packages are installed and loaded successfully!")
-
 # Set up relative paths
 data_dir <- file.path(getwd(), "data")
 fig_dir  <- file.path(getwd(), "figures")

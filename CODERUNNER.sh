@@ -5,7 +5,8 @@ mkdir -p logs
 
 SCRIPTS=()
 STATUS=()
-HYPER_FILE="${1:-}"
+HYPER=${1:-}
+HYPER_FILE="configs/${1:-}"
 
 # run(): function to execute a script
 # Detects the correct interpreter (python3 or Rscript) based on file extension,
@@ -40,9 +41,9 @@ run_hyper() {
   local log="logs/$(basename "${script%.*}").log"
   local start=$(date '+%Y-%m-%d %H:%M:%S')
 
-  echo "[$start] >>> Running $script with $HYPER_FILE"
+  echo "[$start] >>> Running $script with $HYPER configuration"
   {
-    echo "[$start] >>> START $script with $HYPER_FILE"
+    echo "[$start] >>> START $script with $HYPER"
     time "$runner" "$script" "$HYPER_FILE"
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] >>> FINISH $script"
   } >"$log" 2>&1

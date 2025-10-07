@@ -5,15 +5,25 @@ Repository containing scripts to regenerate all figures, training and analytics 
 
 ## Installation 
 
-1. Clone this repository and navigate to root directory:
+1. Clone this repository and navigate to root directory (**`/Proteomic-drug-discovery`**):
 ```bash
    cd /Proteomic-drug-discovery
 ```
-2. Download data [here](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `/data`.
-3. Install [docker](https://www.docker.com/get-started) to bake image of the below environment (copy-paste this in root directory):
+2. Download data **[here]**(https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into **`/data`**.
+3. Install **[docker]**(https://www.docker.com/get-started) to make an image of the virtual environment (copy-paste this command):
 ```bash
-   docker build -t proteomediscovery-env .
+   docker build -t prot-env -f docker/Dockerfile . 
 ```
+4. Run **`CODERUNNER.sh`** in docker container (copy-paste this command):
+```bash
+   docker run -it --rm -v "$PWD":/image prot-env bash CODERUNNER.sh HYPER.json
+```
+5. To adjust hyperparameter grid for the xgboost toxicity scoring workflow, edit **`configs/HYPER.json`** with desired search space, save, and run:
+```bash
+   docker run -it --rm -v "$PWD":/image prot-env python3 code/protacs_22_gbdt_deepsearch.py configs/HYPER.json
+```
+
+### Computing environment
 
 **Hardware** (MacBook Pro, M2 MAX CPU, 32 GB RAM, macOS Ventura 13.3) 
 
@@ -23,14 +33,7 @@ Repository containing scripts to regenerate all figures, training and analytics 
 
 **Bioconductor 3.18** (limma==3.58.1, EnhancedVolcano==1.20.0, ComplexHeatmap==2.18.0, ggtree==3.10.1, ggtreeExtra==1.12.0) 
 
-## 2. Execution (~20 minute runtime)
-
-Run `CODERUNNER.sh` in docker container (copy-paste this in root directory):
-```bash
-   docker run -it --rm -v "$PWD":/image proteomediscovery-env bash CODERUNNER.sh HYPER.json
-```
-
-To adjust hyperparameter grid for the xgboost toxicity scoring workflow, edit `HYPER.json` with desired search space, save, and run `CODERUNNER.sh` as described above. 
+### Mapping index
 
 Generated outputs (models, figures, logfiles) save into `/scoring_models`, `/figures`, and `/logs` respectively, and they map as follows:
 

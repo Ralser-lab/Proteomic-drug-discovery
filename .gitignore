@@ -9,7 +9,7 @@ data/*
 *.DS_Store
 
 #Ignore everything in scoring_models/
-scoring_models/*
+#scoring_models/*
 !scoring_models/.gitkeep
 
 #Ignore everything in log/
