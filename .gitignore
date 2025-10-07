@@ -3,8 +3,8 @@ data/*
 !data/.gitkeep
 
 #Ignore everything in figures/ 
-figure/*
-!figure/.gitkeep
+figures/*
+!figures/.gitkeep
 
 #Ignore .DS_Store
 *.DS_Store
