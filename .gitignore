@@ -1,17 +1,21 @@
 #Ignore everything in data/ 
 data/*
-!data/README.md
+!data/.gitkeep
 
 #Ignore everything in figures/ 
 #figures/*
-#!figures/README.md
+#!figures/.gitkeep
 
 #Ignore .DS_Store
 *.DS_Store
 
+#Ignore everything in scoring_models/
+#scoring_models/*
+#!scoring_models/.gitkeep
+
 #Ignore everything in log/
 #log/*
-#!log/README.md
+#!log/.gitkeep
 log/.Rhistory
 
 # Byte-compiled / optimized / DLL files
