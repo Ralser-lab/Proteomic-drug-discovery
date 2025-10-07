@@ -11,16 +11,16 @@ Repository containing scripts to regenerate all figures, training and analytics 
 ```
 2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into **`/data`**.
 3. Install [docker](https://www.docker.com/get-started).
-4. Build virtual environment image with docker:
+4. Build virtual environment image with docker (paste in command-line):
 ```bash
    docker build -t prot-env -f docker/Dockerfile . 
 ```
-5. Run **`CODERUNNER.sh`** in docker container:
+5. Run **`CODERUNNER.sh`** in docker container (paste in command-line):
 ```bash
    docker run -it --rm -v "$PWD":/image prot-env bash CODERUNNER.sh HYPER.json
 ```
 
-To adjust ML-hyperparameters for the xgboost toxicity scoring workflow, edit **`configs/HYPER.json`** with desired search-space, save, and run:
+To adjust ML-hyperparameters for the xgboost toxicity scoring workflow, edit **`configs/HYPER.json`** with desired search-space, save, and run (paste in command-line):
 ```bash
    docker run -it --rm -v "$PWD":/image prot-env python3 code/protacs_22_gbdt_deepsearch.py configs/HYPER.json
 ```
