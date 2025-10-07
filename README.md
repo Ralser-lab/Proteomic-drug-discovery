@@ -7,11 +7,10 @@ Repository containing scripts to regenerate all figures, training and analytics 
 
 1. Clone this repository and navigate to root directory:
 ```bash
-   git clone https://github.com/BasuShaon/Proteomic-drug-discovery.git
    cd /Proteomic-drug-discovery
 ```
 2. Download data [here](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `/data`.
-3. Install [docker](https://www.docker.com/get-started) and build docker image of the below computing environment:
+3. Install [docker](https://www.docker.com/get-started) and build image of the below computing environment (copy-paste this in root directory)::
 ```bash
    docker build -t proteomediscovery-env .
 ```
