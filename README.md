@@ -9,21 +9,25 @@ Repository containing scripts to regenerate all figures, training and analytics 
 ```bash
    cd /Proteomic-drug-discovery
 ```
-2. Download data [here](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into **`/data`**.
-3. Install [docker](https://www.docker.com/get-started) to make an image of the virtual environment (copy-paste this command):
+2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into **`/data`**.
+3. Install [docker](https://www.docker.com/get-started).
+4. Build virtual environment image with docker:
 ```bash
    docker build -t prot-env -f docker/Dockerfile . 
 ```
-4. Run **`CODERUNNER.sh`** in docker container (copy-paste this command):
+5. Run **`CODERUNNER.sh`** in docker container:
 ```bash
    docker run -it --rm -v "$PWD":/image prot-env bash CODERUNNER.sh HYPER.json
 ```
-5. To adjust hyperparameter grid for the xgboost toxicity scoring workflow, edit **`configs/HYPER.json`** with desired search space, save, and run:
+
+To adjust ML-hyperparameters for the xgboost toxicity scoring workflow, edit **`configs/HYPER.json`** with desired search-space, save, and run:
 ```bash
    docker run -it --rm -v "$PWD":/image prot-env python3 code/protacs_22_gbdt_deepsearch.py configs/HYPER.json
 ```
 
 ### Computing environment
+
+The following environment was used for development:
 
 **Hardware** (MacBook Pro, M2 MAX CPU, 32 GB RAM, macOS Ventura 13.3) 
 
