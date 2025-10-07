@@ -25,7 +25,7 @@ Repository containing scripts to regenerate all figures, training and analytics 
 
 ## 2. Execution (~20 minute runtime)
 
-Run `CODERUNNER.sh` in docker container (copy-paste this from root directory):
+Run `CODERUNNER.sh` in docker container (copy-paste this in root directory):
 ```bash
    docker run -it --rm -v "$PWD":/image proteomediscovery-env bash CODERUNNER.sh HYPER.json
 ```
