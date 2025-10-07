@@ -3,7 +3,7 @@
 Repository containing scripts to regenerate all figures, training and analytics in 
 **'Proteome-guided discovery accurately maps and mitigates toxicity mechanisms of therapeutic androgen receptor degraders'.**
 
-## Installation 
+## Installation and Useage
 
 1. Clone this repository and navigate to root directory (`/Proteomic-drug-discovery`):
 ```bash
@@ -15,12 +15,11 @@ Repository containing scripts to regenerate all figures, training and analytics 
 ```bash
    docker build -t prot-env -f docker/Dockerfile . 
 ```
-5. Run `CODERUNNER.sh` in docker container (paste in command-line):
+5. Run **`CODERUNNER.sh`** in docker container (paste in command-line):
 ```bash
    docker run -it --rm -v "$PWD":/image prot-env bash CODERUNNER.sh HYPER.json
 ```
-
-To adjust ML-hyperparameters for the xgboost toxicity scoring workflow, edit `configs/HYPER.json` with desired search-space, save, and run (paste in command-line):
+Optional: To adjust ML-hyperparameters for the xgboost toxicity scoring workflow, edit **`configs/HYPER.json`** with desired search-space, save, and run (paste in command-line):
 ```bash
    docker run -it --rm -v "$PWD":/image prot-env python3 code/protacs_22_gbdt_deepsearch.py configs/HYPER.json
 ```
