@@ -25,7 +25,7 @@ cd /Proteomic-drug-discovery
 
 **R 4.3.1** (ggplot2==3.5.2, dplyr==1.1.4, tidyr==1.3.1, pheatmap==1.0.13, cowplot==1.2.0, RColorBrewer==1.1-3, ggnewscale==0.5.2, ape==5.8-1, factoextra==1.0.7, ggfortify==0.4.18) 
 
-**Bioconductor 3.18** (limma==3.58.1, EnhancedVolcano=1.20.0, ComplexHeatmap==2.18.0, ggtree==3.10.1, ggtreeExtra=1.12.0) 
+**Bioconductor 3.18** (limma==3.58.1, EnhancedVolcano==1.20.0, ComplexHeatmap==2.18.0, ggtree==3.10.1, ggtreeExtra==1.12.0) 
 
 **Hardware** MacBook Pro (M2 MAX CPU, 32 GB RAM, macOS Ventura 13.3) 
 
@@ -36,7 +36,7 @@ Run & load `CODERUNNER.sh` in docker container (copy-paste this from root direct
    docker run -it --rm -v "$PWD":/image proteomediscovery-env bash CODERUNNER.sh HYPER.json
 ```
 
-To adjust hyperparameter grid for the xgboost toxicity scoring workflow, edit `HYPER.json` with desired search space, save, and run CODERUNNER.sh with docker in command-line as described above. 
+To adjust hyperparameter grid for the xgboost toxicity scoring workflow, edit `HYPER.json` with desired search space, save, and run CODERUNNER.sh as described above. 
 
 Generated outputs (models, figures, logfiles) save into `/scoring_models`, `/figures`, and `/logs` respectively, and they map as follows:
 
