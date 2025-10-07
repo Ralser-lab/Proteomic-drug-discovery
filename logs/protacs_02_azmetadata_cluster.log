@@ -1,8 +1,0 @@
-[2025-10-07 19:02:23] >>> START code/protacs_02_azmetadata_cluster.py
-/usr/local/lib/python3.11/site-packages/scipy/cluster/hierarchy.py:3429: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  ivl.append(labels[int(i - n)])
-
-real	0m0.816s
-user	0m3.104s
-sys	0m0.060s
-[2025-10-07 19:02:23] >>> FINISH code/protacs_02_azmetadata_cluster.py

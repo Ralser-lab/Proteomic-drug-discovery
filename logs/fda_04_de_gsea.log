@@ -1,18 +1,32 @@
-[2025-10-07 18:57:07] >>> START code/fda_04_de_gsea.py
-/workflow/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
+[2025-10-07 21:40:35] >>> START code/fda_04_de_gsea.py
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
   gsea_results = gp.prerank(rnk=x,
-/workflow/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
   gsea_results = gp.prerank(rnk=x,
-/workflow/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
   gsea_results = gp.prerank(rnk=x,
-/workflow/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
   gsea_results = gp.prerank(rnk=x,
-/workflow/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
+/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
   gsea_results = gp.prerank(rnk=x,
-/workflow/code/fda_04_de_gsea.py:68: DeprecationWarning: processes is deprecated; use threads
-  gsea_results = gp.prerank(rnk=x,
+Traceback (most recent call last):
+  File "/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_04_de_gsea.py", line 82, in <module>
+    df7 = run_gsea(t_matrix.loc['Ibuprofen.'])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shaon/Desktop/Proteomic-drug-discovery/code/fda_04_de_gsea.py", line 68, in run_gsea
+    gsea_results = gp.prerank(rnk=x, 
+                   ^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/gseapy/__init__.py", line 377, in prerank
+    pre.run()
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/gseapy/gsea.py", line 458, in run
+    self.to_df(
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/gseapy/base.py", line 566, in to_df
+    res_df = self._to_df(gsea_summary, gmt, metric)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/gseapy/base.py", line 522, in _to_df
+    e = pd.Series(
+        ^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/pandas/core/series.py", line 371, in __init__
+    def __init__(
 
-real	1m35.226s
-user	4m48.279s
-sys	0m3.445s
-[2025-10-07 18:58:42] >>> FINISH code/fda_04_de_gsea.py
+KeyboardInterrupt

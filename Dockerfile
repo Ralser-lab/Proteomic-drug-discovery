@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
 # ------------------------------
-# Install modern Rust (needed for gseapy build on aarch64)
+# Install Rust (needed for gseapy build on aarch64)
 # ------------------------------
 ENV RUSTUP_HOME=/usr/local/rust CARGO_HOME=/usr/local/rust
 ENV PATH=/usr/local/rust/bin:$PATH
@@ -46,7 +46,7 @@ RUN wget -q https://www.python.org/ftp/python/${PY_VER}/Python-${PY_VER}.tgz \
  && cd / && rm -rf /tmp/Python-${PY_VER} /tmp/Python-${PY_VER}.tgz
 
 # ------------------------------
-# Python packages (version-locked)
+# Python packages (exact)
 # ------------------------------
 RUN python -m pip install --no-cache-dir \
       gseapy==1.0.6 \
@@ -64,7 +64,7 @@ RUN python -m pip install --no-cache-dir \
 
 
 # ------------------------------
-# R helper + CRAN packages (exact versions)
+# R helper + CRAN packages (exact)
 # ------------------------------
 RUN R -q -e 'install.packages(c("remotes","BiocManager"), repos="https://cloud.r-project.org", Ncpus=parallel::detectCores())'
 
@@ -75,7 +75,7 @@ RUN R -q -e 'pkgs <- c( \
   for (s in pkgs) remotes::install_version(package=parse(s), version=vers(s), upgrade="never", repos="https://cloud.r-project.org")'
 
 # ------------------------------
-# Bioconductor (release pinned)
+# Bioconductor (exact)
 # ------------------------------
 RUN R -q -e '\
   BiocManager::install(version = "3.18", ask = FALSE, update = FALSE); \
