@@ -228,18 +228,7 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 data/*
-!data/README.md
-
-#Ignore everything in figures/ 
-figures/*
-!figures/README.md
-
-#Ignore .DS_Store
-.DS_Store
-
-#Ignore everything in log/
-log/*
-log/.Rhistory	
+!data/README.md	
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
