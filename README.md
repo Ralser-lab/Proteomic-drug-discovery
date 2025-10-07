@@ -11,8 +11,7 @@ Repository containing scripts to regenerate all figures, training and analytics 
    cd /Proteomic-drug-discovery
 ```
 2. Download data [here](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `/data`
-3. Install [docker](https://www.docker.com/get-started)
-4. Build environment with docker (copy-paste this from root directory):
+3. Install [docker](https://www.docker.com/get-started) and build docker image for environment:
 ```bash
    docker build -t proteomediscovery-env .
 ```
@@ -28,7 +27,7 @@ Repository containing scripts to regenerate all figures, training and analytics 
 
 ## Execution (~20 minute runtime)
 
-Run & load `CODERUNNER.sh` in docker container (copy-paste this from root directory):
+Run `CODERUNNER.sh` in docker container (copy-paste this from root directory):
 ```bash
    docker run -it --rm -v "$PWD":/image proteomediscovery-env bash CODERUNNER.sh HYPER.json
 ```
