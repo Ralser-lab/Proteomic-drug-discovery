@@ -15,7 +15,7 @@ cd /Proteomic-drug-discovery
 ## Reproduce Environment in a Docker Image
 
 1. Install [Docker](https://www.docker.com/get-started)
-2. Build environment with docker (copy-paste in root directory):
+2. Build environment with docker (copy-paste this from root directory):
 ```bash
    docker build -t proteomediscovery-env .
 ```
