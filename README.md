@@ -15,11 +15,11 @@ cd /Proteomic-drug-discovery
 ## Reproduce Environment in a Docker Image
 
 1. Install [Docker](https://www.docker.com/get-started)
-2. Build environment image with docker (copy-paste in root directory):
+2. Build environment with docker (copy-paste in root directory):
 ```bash
    docker build -t proteomediscovery-env .
 ```
-### Image Details:
+### Environment Details:
 
 **Python 3.11.5** (gseapy==1.0.6, joblib==1.3.2, matplotlib==3.8.1, numpy==1.25.2, openpyxl==3.1.2, pandas==2.1.0, scikit-learn==1.3.0, scipy==1.11.2, seaborn==0.13.2, shap==0.46.0, statsmodels==0.14.0, xgboost==2.0.3) 
 
@@ -36,7 +36,7 @@ Run & load `CODERUNNER.sh` in docker container (copy-paste this from root direct
    docker run -it --rm -v "$PWD":/image proteomediscovery-env bash CODERUNNER.sh HYPER.json
 ```
 
-To adjust hyperparameter grid for the xgboost toxicity scoring workflow, edit `HYPER.json` with desired search space, save, and run CODERUNNER.sh as described above. 
+To adjust hyperparameter grid for the xgboost toxicity scoring workflow, edit `HYPER.json` with desired search space, save, and run `CODERUNNER.sh` as described above. 
 
 Generated outputs (models, figures, logfiles) save into `/scoring_models`, `/figures`, and `/logs` respectively, and they map as follows:
 
