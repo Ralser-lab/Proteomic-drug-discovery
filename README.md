@@ -22,15 +22,15 @@ Repository containing scripts to regenerate all figures, training and analytics 
 ```bash
    docker run -it --rm -v "$PWD":/image soft-env bash CODERUNNER.sh HYPER.json
 ```
-2. To adjust ML-hyperparameters for the xgboost toxicity scoring workflow, edit **`configs/HYPER.json**`** with desired search-space, save, and run (paste in CLI):
+2. To adjust ML-hyperparameters for the xgboost toxicity scoring workflow, edit **`configs/HYPER.json`** with desired search-space, save, and run (paste in CLI):
 ```bash
    # nano configs/HYPER.json
    docker run -it --rm -v "$PWD":/image soft-env python3 code/protacs_22_gbdt_deepsearch.py configs/HYPER.json
 ```
 
-### Computing environment
+## Environment
 
-The following environment was used for development:
+The following computing environment was used for development:
 
 **Hardware** (MacBook Pro, M2 MAX CPU, 32 GB RAM, macOS Ventura 13.3) 
 
