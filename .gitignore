@@ -1,8 +1,5 @@
-# 
-──────────────────────────────────────────────────────────────────────────────
-# Project data & artifacts
-# 
-──────────────────────────────────────────────────────────────────────────────
+# Ignore everything in .snakemake/
+.snakemake/ 
 
 # Ignore everything in data/ except placeholders/docs
 data/*
