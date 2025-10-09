@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# Shell script to reproduce all figures, models, and analysis in manuscript
-# in chronological order
-
 set -euo pipefail
 mkdir -p logs
 
@@ -10,7 +7,9 @@ STATUS=()
 HYPER=${1:-}
 HYPER_FILE="configs/${1:-}"
 
-# run(): time stamps and extracts log while running a target script.
+# run(): function to execute a script
+# Detects the correct interpreter (python3 or Rscript) based on file extension,
+# runs the script, logs output (stdout/stderr) with timestamps, and reports status.
 run() {
   local runner="$1"
   local script="$2"
@@ -34,7 +33,31 @@ run() {
   fi
 }
 
-# Execute scripts sequentially with run().
+# run_hyper(): for scripts that need the HYPER.json arg
+run_hyper() {
+  local runner="$1"
+  local script="$2"
+  local log="logs/$(basename "${script%.*}").log"
+  local start=$(date '+%Y-%m-%d %H:%M:%S')
+
+  echo "[$start] >>> Running $script with $HYPER configuration"
+  {
+    echo "[$start] >>> START $script with $HYPER"
+    time "$runner" "$script" "$HYPER_FILE"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] >>> FINISH $script"
+  } >"$log" 2>&1
+
+  if [[ $? -eq 0 ]]; then
+    SCRIPTS+=("$script")
+    STATUS+=("OK ($log)")
+  else
+    SCRIPTS+=("$script")
+    STATUS+=("FAIL ($log)")
+    exit 1
+  fi
+}
+
+# Execute scripts with run()
 run python3 code/fda_01_globalvarianceanalysis.py
 run Rscript code/fda_02_limma_drug.R
 run python3 code/fda_03_de_pca.py
@@ -60,8 +83,9 @@ run Rscript code/protacs_18_pheatmap_topweights_all.R
 run Rscript code/protacs_19_pheatmap_topweights_analogs.R
 run python3 code/protacs_20_scores_v_degradation.py
 run python3 code/protacs_21_stats_wetlab.py
+# run_hyper python3 code/protacs_22_gbdt_deepsearch.py
 
-# Print Summary and a produce master log-file. 
+# Print Summary
 echo
 echo "===================== SUMMARY ====================="
 for i in "${!SCRIPTS[@]}"; do
@@ -69,5 +93,4 @@ for i in "${!SCRIPTS[@]}"; do
 done
 echo "==================================================="
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] >>> All tasks complete"
-touch logs/all_manuscript_steps.done
- 
+touch logs/manuscript_steps.done

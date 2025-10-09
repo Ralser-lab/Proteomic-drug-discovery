@@ -84,7 +84,7 @@ RUN R -q -e '\
 # 8. Final setup
 WORKDIR /image
 COPY . /image
-RUN chmod +x /workflows/manuscript_flow.sh || true
+RUN chmod +x /run_all.sh || true
 
 # Print build-time versions for transparency
 RUN python --version && pip --version && rustc -V && cargo -V && R --version

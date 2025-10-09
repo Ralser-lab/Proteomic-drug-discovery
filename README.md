@@ -12,19 +12,24 @@ Repository containing scripts to regenerate all figures, training and analytics 
 ```
 2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `/data`.
 3. Install [docker](https://www.docker.com/get-started).
-4. Build software environment as a docker image (paste in CLI):
+4. Build software environment as a docker image (copy-paste in CLI):
 ```bash
    docker build -t prot-env -f docker/Dockerfile . 
 ```
+
 ## Execution
 
-1. To reproduce manuscript findings in sequence, run `manuscript_flow.sh` in docker container (paste in CLI):
-```bash
-   docker run --rm -v "$PWD":/image prot-env manuscript_flow.sh
+To reproduce manuscript findings, execute `run_all.sh` in docker container (copy-paste in CLI):
+```bash 
+   docker run --rm -v "$PWD":/image prot-env bash run_all.sh
 ```
-2. To adjust ML-hyperparameters for toxicity scoring, edit `configs/HYPER.json` and run `deepsearch_flow.smk` in docker container (paste in CLI):
+
+## ML-modification 
+
+To then adjust hyperparameters for toxicity scoring workflow: 
+1. Edit `configs/HYPER.json`.
+2. Then run `deepsearch_flow.smk` in docker container (copy-paste in CLI):
 ```bash
-   # nano configs/HYPER.json
    docker run --rm -v "$PWD":/image prot-env snakemake -s deepsearch_flow.smk -j 12
 ```
 
