@@ -20,7 +20,7 @@ Repository containing scripts to regenerate all figures, training and analytics 
 
 1. To reproduce manuscript findings in sequence, run `manuscript_flow.sh` in docker container (paste in CLI):
 ```bash
-   docker run --rm -v "$PWD":/image prot-env manusript_flow.sh
+   docker run --rm -v "$PWD":/image prot-env manuscript_flow.sh
 ```
 2. To adjust ML-hyperparameters for toxicity scoring, edit `configs/HYPER.json` and run `deepsearch_flow.smk` in docker container (paste in CLI):
 ```bash
