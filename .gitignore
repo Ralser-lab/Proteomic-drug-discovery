@@ -6,6 +6,7 @@ data/*
 !data/.gitkeep
 
 #Ignore everything in figures/ 
+#figures/*
 !figures/.gitkeep
 
 #Ignore CODERUNNER.sh
