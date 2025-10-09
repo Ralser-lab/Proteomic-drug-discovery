@@ -5,9 +5,8 @@ Repository containing scripts to regenerate all figures, training and analytics 
 
 ## Installation 
 
-1. Clone this repository and navigate to root directory (`/Proteomic-drug-discovery`):
+1. Clone this repository and navigate to root directory (**`/Proteomic-drug-discovery`**):
 ```bash
-   git clone https://github.com/BasuShaon/Proteomic-drug-discovery.git
    cd /Proteomic-drug-discovery
 ```
 2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `/data`.
@@ -19,7 +18,7 @@ Repository containing scripts to regenerate all figures, training and analytics 
 
 ## Execution
 
-To reproduce manuscript findings, execute `run_all.sh` in docker container (copy-paste in CLI):
+To reproduce manuscript findings, execute **`run_all.sh`** in docker container (copy-paste in CLI):
 ```bash 
    docker run --rm -v "$PWD":/image prot-env bash run_all.sh
 ```
@@ -28,7 +27,11 @@ To reproduce manuscript findings, execute `run_all.sh` in docker container (copy
 
 To then adjust hyperparameters for toxicity scoring workflow: 
 1. Edit `configs/HYPER.json`.
-2. Then run `deepsearch.smk` in docker container (copy-paste in CLI):
+```bash
+   cd configs
+   nano HYPER.json # or any text editor on your machine
+```
+2. Then run **`deepsearch.smk`** in docker container (copy-paste in CLI):
 ```bash
    docker run --rm -v "$PWD":/image prot-env snakemake -s workflows/deepsearch.smk -j 12
 ```
