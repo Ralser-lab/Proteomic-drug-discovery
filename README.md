@@ -11,7 +11,7 @@ Repository containing scripts to regenerate all figures, training and analytics 
 ```
 2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `/data`.
 3. Install [docker](https://www.docker.com/get-started).
-4. Build software environment as a docker image (copy-paste in CLI):
+4. Build the virtual environment (use the pinned [Dockerfile](./docker/Dockerfile))
 ```bash
    docker build -t prot-env -f docker/Dockerfile . 
 ```
