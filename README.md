@@ -219,4 +219,4 @@ Generated outputs (models, figures, logfiles) save into `/scoring_models`, `/fig
   - `scoring_models/protacs_22_xgb_first-pass-model.json`
   - `scoring_models/protacs_22_xgb_second-pass-model.json`
   - `scoring_models/protacs_22_xgb_second-pass-calibrated-model.pkl`
-  - `logs/protacs_16_gbdt_train_retrain.log`
+  - `logs/protacs_22_gbdt_train_retrain.log`
