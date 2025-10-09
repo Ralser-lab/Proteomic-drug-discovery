@@ -1,5 +1,5 @@
 # Ignore everything in .snakemake/
-.snakemake/ 
+.snakemake/* 
 
 # Ignore everything in data/ except placeholders/docs
 data/*
