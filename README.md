@@ -18,7 +18,7 @@ Repository containing scripts to regenerate all figures, training and analytics 
 ```
 ## Execution
 
-1. To reproduce all manuscript in chronological sequence, run `manuscript_flow.sh` in docker container (paste in CLI):
+1. To reproduce manuscript findings in sequence, run `manuscript_flow.sh` in docker container (paste in CLI):
 ```bash
    docker run --rm -v "$PWD":/image prot-env manusript_flow.sh
 ```
