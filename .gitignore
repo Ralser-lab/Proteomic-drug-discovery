@@ -1,9 +1,15 @@
+#Ignore snakemake files
+.snakemake/*
+
 #Ignore everything in data/ 
 data/*
 !data/.gitkeep
 
 #Ignore everything in figures/ 
 !figures/.gitkeep
+
+#Ignore CODERUNNER.sh
+CODERUNNER.sh
 
 #Ignore .DS_Store
 *.DS_Store

@@ -10,29 +10,29 @@ Repository containing scripts to regenerate all figures, training and analytics 
    git clone https://github.com/BasuShaon/Proteomic-drug-discovery.git
    cd /Proteomic-drug-discovery
 ```
-2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `/data`.
+2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `/data` (~420 MB).
 3. Install [docker](https://www.docker.com/get-started).
-4. Build software environment as a docker image (paste in CLI):
+4. Build software environment as a docker image (~500 MB) (paste in CLI):
 ```bash
-   docker build -t soft-env -f docker/Dockerfile . 
+   docker build -t prot-env -f docker/Dockerfile . 
 ```
 ## Execution
 
-1. Navigate to root directory and run **`CODERUNNER.sh`** in docker container (paste in CLI):
+1. To reproduce all figures, models, and analysis in manuscript in chronological sequence, run `manuscript_flow.sh` in docker container (paste in CLI):
 ```bash
-   docker run -it --rm -v "$PWD":/image soft-env bash CODERUNNER.sh HYPER.json
+   docker run --rm -v "$PWD":/image prot-env manusript_flow.sh
 ```
-2. To adjust ML-hyperparameters for the xgboost toxicity scoring workflow, edit **`configs/HYPER.json`** with desired search-space, save, and run (paste in CLI):
+2. To adjust ML-hyperparameters for toxicity scoring, edit `configs/HYPER.json` and run `deepsearch_flow.smk` in docker container (paste in CLI):
 ```bash
    # nano configs/HYPER.json
-   docker run -it --rm -v "$PWD":/image soft-env python3 code/protacs_22_gbdt_deepsearch.py configs/HYPER.json
+   docker run --rm -v "$PWD":/image prot-env snakemake -s deepsearch_flow.smk -j 12
 ```
 
 ## Environment
 
-The following computing environment was used for development:
+**Hardware** (MacBook Pro, M2 MAX 12-core CPU, 32 GB RAM, macOS Ventura 13.3) 
 
-**Hardware** (MacBook Pro, M2 MAX CPU, 32 GB RAM, macOS Ventura 13.3) 
+The following software environment was used for development:
 
 **Python 3.11.5** (gseapy==1.0.6, joblib==1.3.2, matplotlib==3.8.1, numpy==1.25.2, openpyxl==3.1.2, pandas==2.1.0, scikit-learn==1.3.0, scipy==1.11.2, seaborn==0.13.2, shap==0.46.0, snakemake==9.12.0, statsmodels==0.14.0, xgboost==2.0.3) 
 
@@ -48,10 +48,10 @@ Generated outputs (models, figures, logfiles) save into `/scoring_models`, `/fig
 project_root/      
 │     
 │-- code/            
-│   ├── device_gradientboostingmachine.py 
-│   ├── device_summarystatistics.py  
+│   ├── device_gradientboostingmachine.py # ML-workflow manager
+│   ├── device_summarystatistics.py # Statistics class
 │
-│   ├── fda_01_globalvarianceanalysis.py
+│   ├── fda_01_globalvarianceanalysis.py 
 │   │   ├── figures/fda_01_dispersion_kde.pdf
 │   │   ├── figures/fda_01_global_PCA.pdf
 │   │   ├── figures/fda_01_global_PCA_scree.pdf
