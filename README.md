@@ -10,15 +10,15 @@ Repository containing scripts to regenerate all figures, training and analytics 
    git clone https://github.com/BasuShaon/Proteomic-drug-discovery.git
    cd /Proteomic-drug-discovery
 ```
-2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `/data` (~420 MB).
+2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and copy-paste it into `/data`.
 3. Install [docker](https://www.docker.com/get-started).
-4. Build software environment as a docker image (~500 MB) (paste in CLI):
+4. Build software environment as a docker image (paste in CLI):
 ```bash
    docker build -t prot-env -f docker/Dockerfile . 
 ```
 ## Execution
 
-1. To reproduce all figures, models, and analysis in manuscript in chronological sequence, run `manuscript_flow.sh` in docker container (paste in CLI):
+1. To reproduce all manuscript in chronological sequence, run `manuscript_flow.sh` in docker container (paste in CLI):
 ```bash
    docker run --rm -v "$PWD":/image prot-env manusript_flow.sh
 ```
