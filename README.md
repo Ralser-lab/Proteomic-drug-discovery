@@ -3,32 +3,28 @@
 Repository containing scripts to regenerate all figures, training and analytics in 
 **'Proteome-guided discovery accurately maps and mitigates toxicity mechanisms of therapeutic androgen receptor degraders'.**
 
-## Installation 
+## Installation & Execution
 
 1. Clone this repository and navigate to root directory (copy-paste in CLI):
 ```bash
-   git clone 'https://github.com/BasuShaon/Proteomic-drug-discovery' 
    cd /Proteomic-drug-discovery
 ```
 2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and place it into `/data`.
-3. Install [docker](https://www.docker.com/get-started).
-4. Build the virtual environment using the pinned [Dockerfile](./docker/Dockerfile) (copy-paste in CLI):
+3. Install [docker](https://www.docker.com/get-started) and add to $PATH.
+4. Build a [virtual computing environment](./docker/Dockerfile) with docker (copy-paste in CLI):
 ```bash
    docker build -t prot-env -f docker/Dockerfile . 
 ```
-
-## Execution
-
-To reproduce manuscript findings, execute `run_all.sh` (copy-paste in CLI):
+5. Reproduce analysis by executing `run_all.sh` in a docker container (copy-paste in CLI):
 ```bash 
    docker run --rm -v "$PWD":/image prot-env bash run_all.sh
 ```
 
-## ML-modification 
+## Modification 
 
-To adjust hyperparameters for toxicity scoring ML workflow: 
+To adjust hyperparameters for ML training: 
 1. Edit [`/configs/HYPER.json`](./configs/HYPER.json).
-2. Then run `deepsearch.smk` in docker container (copy-paste in CLI):
+2. Run `deepsearch.smk` in a docker container (copy-paste in CLI):
 ```bash
    docker run --rm -v "$PWD":/image prot-env snakemake -s workflows/deepsearch.smk -j 12
 ```
