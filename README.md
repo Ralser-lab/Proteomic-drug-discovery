@@ -5,13 +5,13 @@ Repository containing scripts to regenerate all figures, training and analytics 
 
 ## Installation & Execution
 
-1. Clone this repository and navigate to root directory (copy-paste in CLI):
+1. Clone this repository and navigate to root directory.
 ```bash
    cd /Proteomic-drug-discovery
 ```
 2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and place it into `/data`.
-3. Install [docker](https://www.docker.com/get-started) and add to $PATH.
-4. Build a [virtual computing environment](./docker/Dockerfile) with docker (copy-paste in CLI):
+3. Install [docker](https://www.docker.com/get-started) and add to command line interface (CLI) $PATH.
+4. Build a [docker image](./docker/Dockerfile) of the computing environment  in the root directory (copy-paste in CLI):
 ```bash
    docker build -t prot-env -f docker/Dockerfile . 
 ```
@@ -44,8 +44,6 @@ The following [software environment](./docker/Dockerfile) was used for developme
 ## Mapping index
 
 Generated outputs (models, figures, logfiles) save into `/scoring_models`, `/figures`, and `/logs` respectively, and they map as follows:
-
----
 
 ### FDA analysis (steps 1–4)
 
