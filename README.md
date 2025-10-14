@@ -7,9 +7,10 @@ Repository containing scripts to regenerate all figures, training and analytics 
 
 1. Clone this repository and navigate to root directory.
 ```bash
-   cd /Proteomic-drug-discovery
+   git clone https://github.com/BasuShaon/Proteomic-drug-discovery
+   cd Proteomic-drug-discovery
 ```
-2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and place it into `/data`.
+2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and place it into `./data`.
 3. Install [docker](https://www.docker.com/get-started) and add to command line interface (CLI) $PATH.
 4. Build a [docker image](./docker/Dockerfile) of the computing environment  in the root directory (copy-paste in CLI):
 ```bash
@@ -23,7 +24,7 @@ Repository containing scripts to regenerate all figures, training and analytics 
 ## Modification 
 
 To adjust hyperparameters for ML training: 
-1. Edit [`/configs/HYPER.json`](./configs/HYPER.json).
+1. Edit [`./configs/HYPER.json`](./configs/HYPER.json).
 2. Run `deepsearch.smk` in a docker container (copy-paste in CLI):
 ```bash
    docker run --rm -v "$PWD":/image prot-env snakemake -s workflows/deepsearch.smk -j 12
