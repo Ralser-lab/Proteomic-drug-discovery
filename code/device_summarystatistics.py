@@ -47,6 +47,7 @@ import numpy as np
 def std_calc(df):
     """
     Calculate var using E(X^2) - E(X)^2 on a series.
+
     """
     var = (df**2).mean(skipna = True) - (df.mean(skipna = True))**2
     std = np.sqrt(var)
@@ -55,6 +56,7 @@ def std_calc(df):
 def summary_stats(df1, df2):
     """
     Calculate parameters (n, std, mew) for 2 sample vars.
+
     """
     mean1, mean2 = df1.mean(skipna = True), df2.mean(skipna = True) # calc E(X)
     std1, std2 = std_calc(df1), std_calc(df2) # calc E(X - E(X))
@@ -65,6 +67,7 @@ def summary_stats(df1, df2):
 def geometric_mean(ser1):
     """
     Calculate geometric mean of a series.
+
     """
     product = ser1.prod()
     return np.power(product, 1/ser1.shape[0])
@@ -72,6 +75,7 @@ def geometric_mean(ser1):
 def z_test(df1, df2):
     """
     Two sample z-test.
+
     """
     # calculate summary stats
     mean1, std1, n1, mean2, std2, n2 = summary_stats(df1, df2)
@@ -86,6 +90,7 @@ def z_test(df1, df2):
 def t_test(df1, df2):
     """
     Two sample t-test.
+
     """
     # print out summary stats
     print(f"Mean and Std of df1: Mean = {df1.mean():.4f}, Std = {df1.std():.4f}")
@@ -100,6 +105,7 @@ def linear_IC50(df):
     """
     Colwise linear fit to extract IC50, *assumes response
     is normally distributed*.
+
     """
     # empty vec for storing IC50s
     ic50_values = pd.Series()
@@ -125,6 +131,7 @@ def linear_IC50(df):
 def one_test(df1, popmean = 100):
     """
     One sample t-test.
+
     """
     # print out summary stats
     print(f"Mean and Std of df1: Mean = {df1.mean():.4f}, Std = {df1.std():.4f}")
@@ -137,6 +144,7 @@ def one_test(df1, popmean = 100):
 def calculate_cv(df, name):
     """
     Calculate coefficient of variation of a dataframe by index.
+    
     """
     # CV = (standard deviation / mean) * 100 
     # Replace 0 with NaN to avoid division by zero errors
