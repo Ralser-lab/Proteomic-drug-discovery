@@ -1,3 +1,7 @@
+# Upload no tsvs or csvs
+*.tsv
+*.csv
+
 # Ignore everything in .snakemake/
 .snakemake/* 
 

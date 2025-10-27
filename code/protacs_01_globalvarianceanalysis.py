@@ -64,7 +64,7 @@ figure_out = os.path.join(dir_main, '..', 'figures')
 filepath3 = str(export_path)
 
 # %% Load proteome data from HBD screen 
-pasef_summarized = pd.read_csv(os.path.join(filepath3, 'SB_PROTACs_prmatrix_filtered_5_imputed_50_ltrfm_batched_summarized_240314.tsv'),
+pasef_summarized = pd.read_csv(os.path.join(filepath3, 'SB_SpeedyPasef_prmatrix_plateswap_filtered_5_imputed_50_ltrfm_batched_summarized_251027.tsv'),
                      decimal=',', 
                      delimiter=';', 
                      index_col = 0) 
@@ -140,7 +140,7 @@ plt.rcParams['axes.titlesize'] = '30'
 plt.rcParams['xtick.labelsize'] = '26'  
 plt.rcParams['ytick.labelsize'] = '26' 
 plt.rcParams['ytick.labelsize'] = '26' 
-sns.jointplot(all, x = 'Means', y = 'Stdev', hue = 'ID', linewidth = 2, 
+sns.jointplot(all, x = 'Means', y = 'Stdev', hue = 'ID', linewidths = 2, 
               kind = 'kde', space=0, height=10, ratio=4, palette = custom_palette)
 sns.scatterplot(all, x = 'Means', y = 'Stdev', hue = 'ID', alpha = 0.2, 
                 marker = 'x', palette = custom_palette)

@@ -37,7 +37,7 @@ export_path = data
 import_path = data
 
 # %% Load summarized proteome and metadata from HBD screen
-pasef_summarized = pd.read_csv(os.path.join(import_path, 'SB_PROTACs_prmatrix_filtered_5_imputed_50_ltrfm_batched_summarized_240314.tsv'),
+pasef_summarized = pd.read_csv(os.path.join(import_path, 'SB_SpeedyPasef_prmatrix_plateswap_filtered_5_imputed_50_ltrfm_batched_summarized_251027.tsv'),
                      decimal=',', 
                      delimiter=';', 
                     index_col = 0)
