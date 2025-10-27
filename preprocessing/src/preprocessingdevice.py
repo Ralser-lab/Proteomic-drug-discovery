@@ -695,7 +695,7 @@ class Batcher(Device):
 
         self.raw = data
 
-        self.output = os.path.join(os.path.dirname(__file__), '..', 'output')
+        self.output_path = os.path.join(os.path.dirname(__file__), '..', 'output')
         
         self.metapath = path
 
@@ -801,7 +801,7 @@ class Batcher(Device):
 
         plt.xlabel('Precursor')
 
-        plt.savefig(os.path.join(self.output, ('cvbybatch'+title+'.pdf')))
+        plt.savefig(os.path.join(self.output_path, ('cvbybatch'+title+'.pdf')))
 
         long_df = cv_by_batch.reset_index().melt(id_vars='batchdata', var_name='Precursor', value_name='CV')
 
@@ -827,7 +827,7 @@ class Batcher(Device):
 
         plt.ylabel('Coefficient of Variation (%)')
 
-        plt.savefig(os.path.join(self.output, ('cvdist'+title+'.pdf')))
+        plt.savefig(os.path.join(self.output_path, ('cvdist'+title+'.pdf')))
 
         return
  
@@ -899,9 +899,9 @@ if __name__ == '__main__':
 
     pasef_filter = DerivativeFilter(pasef_data)
 
-    pasef_peptide_stats = pasef_filter.calculate_peptide_stats(step = 20)
+    pasef_peptide_stats = pasef_filter.calculate_peptide_stats()
 
-    pasef_sample_stats = pasef_filter.calculate_sample_stats(step = 20)
+    pasef_sample_stats = pasef_filter.calculate_sample_stats()
 
     pasef_filtered = pasef_filter.apply_sample_filter(pasef_sample_stats, ramp = 95)
 
@@ -914,7 +914,7 @@ if __name__ == '__main__':
 
     pasef_imputer.detection_probability_curve()
 
-    pasef_imputer.precursor_missing_matrix(plot = True)
+    pasef_imputer.precursor_missing_matrix(plot = False)
 
     pasef_imputed = pasef_imputer.impute_missing_matrix(knn = 3)
 
@@ -924,7 +924,7 @@ if __name__ == '__main__':
     # Batch Correct 
     
     pasef_batcher = Batcher(pasef_imputed, 
-                        path = os.path.join(os.path.dirname(__file__), '..', '20240314_AF_50-0121_metadata.xlsx'),
+                        path = os.path.join(directory, '20240314_AF_50-0121_metadata.xlsx'),
                         batchID = 'MS.Batch',
                         logtransform = True)
 
