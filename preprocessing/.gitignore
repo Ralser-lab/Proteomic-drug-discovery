@@ -2,11 +2,10 @@
 *.parquet
 *.tsk
 *.csv
+*.xlsx
 
 #ignore all files in /data and /example
 
-input/
-output/
 unittest/
 unit_test.py
 .Rhistory
