@@ -16,8 +16,8 @@ Inputs
 
 Outputs
 -------
-- data/SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_forlimma_240611a.tsv
-- data/SB_PROTACs_metadata_clustered_240611a.tsv
+- data/SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_251027.tsv
+- data/SB_PROTAC_metadata_240611a.tsv
 
 Requirements
 ------------
@@ -32,12 +32,12 @@ import os
 # Set relative paths
 dir = os.path.dirname(__file__)
 data = os.path.join(dir, '..', 'data')
-filepath2 = os.path.join(data, 'SB_PROTACs_metadata_240611a.tsv')
+filepath2 = os.path.join(data, 'SB_PROTAC_metadata_240611a.tsv')
 export_path = data
 import_path = data
 
 # %% Load summarized proteome and metadata from HBD screen
-pasef_summarized = pd.read_csv(os.path.join(import_path, 'SB_SpeedyPasef_prmatrix_plateswap_filtered_5_imputed_50_ltrfm_batched_summarized_251027.tsv'),
+pasef_summarized = pd.read_csv(os.path.join(import_path, 'SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_251027.tsv'),
                      decimal=',', 
                      delimiter=';', 
                     index_col = 0)

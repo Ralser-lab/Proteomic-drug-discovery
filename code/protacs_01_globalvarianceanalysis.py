@@ -12,8 +12,8 @@ Date: 2025-09-16
 
 Inputs
 ------
-- data/SB_PROTACs_prmatrix_filtered_5_imputed_50_ltrfm_batched_summarized_240314.tsv
-- data/SB_PROTACs_metadata_240611a.tsv
+- data/SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_251027.tsv
+- data/SB_PROTAC_metadata_240611a.tsv
 - data/c5.all.v2023.1.Hs.symbols.gmt
 
 Outputs
@@ -64,7 +64,7 @@ figure_out = os.path.join(dir_main, '..', 'figures')
 filepath3 = str(export_path)
 
 # %% Load proteome data from HBD screen 
-pasef_summarized = pd.read_csv(os.path.join(filepath3, 'SB_SpeedyPasef_prmatrix_plateswap_filtered_5_imputed_50_ltrfm_batched_summarized_251027.tsv'),
+pasef_summarized = pd.read_csv(os.path.join(filepath3, 'SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_251027.tsv'),
                      decimal=',', 
                      delimiter=';', 
                      index_col = 0) 
@@ -76,7 +76,7 @@ col_order = leaves_list(euclidian_ward.dendrogram_col.linkage)
 pasef_summarized_clustered = pasef_summarized.iloc[row_order, col_order]
 
 # Extract metadata from HBD screen
-metadata = pd.read_csv(os.path.join(export_path, 'SB_PROTACs_metadata_240611a.tsv'), index_col = 0)
+metadata = pd.read_csv(os.path.join(export_path, 'SB_PROTAC_metadata_240611a.tsv'), index_col = 0)
 
 # %% Extract drug cluster orthog data
 drugcluster = metadata['Cluster'].fillna(value = 0)
