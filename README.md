@@ -6,9 +6,9 @@ Repository containing scripts to regenerate all figures, training and analytics 
 ## Reproduce manuscript findings
 
 1. Clone this repository and navigate to root directory.
-2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and place it into ./data.
+2. Download [data](https://doi.org/10.6084/m9.figshare.28578113) and place it into ./data.
 3. Install [docker](https://www.docker.com/get-started) and add to command line interface (CLI) $PATH.
-4. Build a image of the computing environment using the provided [dockerfile](./docker/Dockerfile):
+4. Build a image of the computing environment using the provided [dockerfile](./docker/Dockerfile).
 5. Reproduce analysis by executing `run_all.sh` in a docker container (copy-paste in CLI):
 ```bash
    git clone https://github.com/BasuShaon/Proteomic-drug-discovery
@@ -29,10 +29,10 @@ To replicate or adjust the hyperparameters used for ML training:
 ## Pre-processing workflow: Data-independent-aquisition mass spectrometry
 
 To reproduce pre-processing pipeline on DIA-NN prmatrix:
-1. Download [data]() and place it into ./preprocessing-dia/data.
+1. Download [input files](https://doi.org/10.6084/m9.figshare.30469304.v1) and place it into ./preprocessing-dia/input.
 2. Run `preprocessing-dia.smk` in a docker container (copy-paste in CLI):
 ```bash
-   docker run --rm -v "$PWD":/image prot-env snakemake -s sanakefiles/preprocessing-dia.smk -j 12
+   docker run --rm -v "$PWD":/image prot-env snakemake -s snakefiles/preprocessing-dia.smk -j 12
 ```
 
 ## Pre-processing workflow: Next generation sequencing
