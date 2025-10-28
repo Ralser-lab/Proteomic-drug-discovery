@@ -3,31 +3,45 @@
 Repository containing scripts to regenerate all figures, training and analytics in 
 **'Proteome-guided discovery accurately maps and mitigates toxicity mechanisms of therapeutic androgen receptor degraders'.**
 
-## Installation & Execution
+## Reproduce manuscript findings
 
 1. Clone this repository and navigate to root directory.
+2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and place it into ./data.
+3. Install [docker](https://www.docker.com/get-started) and add to command line interface (CLI) $PATH.
+4. Build a image of the computing environment using the provided [dockerfile](./docker/Dockerfile):
+5. Reproduce analysis by executing `run_all.sh` in a docker container (copy-paste in CLI):
 ```bash
    git clone https://github.com/BasuShaon/Proteomic-drug-discovery
    cd Proteomic-drug-discovery
-```
-2. Download [data](https://figshare.com/s/6d164fd50adfdb9a68d7) and place it into `./data`.
-3. Install [docker](https://www.docker.com/get-started) and add to command line interface (CLI) $PATH.
-4. Build a [docker image](./docker/Dockerfile) of the computing environment  in the root directory (copy-paste in CLI):
-```bash
    docker build -t prot-env -f docker/Dockerfile . 
-```
-5. Reproduce analysis by executing `run_all.sh` in a docker container (copy-paste in CLI):
-```bash 
    docker run --rm -v "$PWD":/image prot-env bash run_all.sh
 ```
 
-## Modification 
+## Machine learning workflow: Hyperparameter search 
 
-To adjust hyperparameters for ML training: 
-1. Edit [`./configs/HYPER.json`](./configs/HYPER.json).
+To replicate or adjust the hyperparameters used for ML training: 
+1. Edit [./configs/HYPER.json](./configs/HYPER.json).
 2. Run `deepsearch.smk` in a docker container (copy-paste in CLI):
 ```bash
-   docker run --rm -v "$PWD":/image prot-env snakemake -s workflows/deepsearch.smk -j 12
+   docker run --rm -v "$PWD":/image prot-env snakemake -s snakefiles/deepsearch.smk -j 12
+```
+
+## Pre-processing workflow: Data-independent-aquisition mass spectrometry
+
+To reproduce pre-processing pipeline on DIA-NN prmatrix:
+1. Download [data]() and place it into ./preprocessing-dia/data.
+2. Run `preprocessing-dia.smk` in a docker container (copy-paste in CLI):
+```bash
+   docker run --rm -v "$PWD":/image prot-env snakemake -s sanakefiles/preprocessing-dia.smk -j 12
+```
+
+## Pre-processing workflow: Next generation sequencing
+
+To reproduce pre-processing pipeline on Illumina sequencing outputs:
+1. Download [data]() and place it into ./preprocessing-ngs/data`.
+2. Run `preprocessing-ngs.smk` in a docker container (copy-paste in CLI):
+```bash
+   docker run --rm -v "$PWD":/image prot-env snakemake -s snakefiles/preprocessing-ngs.smk -j 12
 ```
 
 ## Environment
