@@ -1,33 +1,37 @@
 # Upload no tsvs or csvs
 *.tsv
+*.txt
 *.csv
 
 # Ignore everything in .snakemake/
-.snakemake/* 
+.snakemake/
+**/.snakemake/
 
 # Ignore everything in data/ except placeholders/docs
 data/*
 !data/.gitkeep
 !data/README.md
 
-# Ignore everything in figures/ except placeholder
+# Ignore everything in figures/ 
 figures/*
-!figures/.gitkeep
+preprocessing_rna/plots/
+preprocessing_dia/output/
+
 
 # Ignore everything in scoring_models/ except placeholder
 scoring_models/*
-!scoring_models/.gitkeep
 
 # Ignore everything in log/ except placeholder; also ignore R history
-log/*
-!log/.gitkeep
-log/.Rhistory
+logs/*
 
 # macOS
 *.DS_Store
 
 # R specific files
 *.Rhistory
+*.rds
+.RDataTmp*
+*.RData
 
 # Marimo
 marimo/_static/
