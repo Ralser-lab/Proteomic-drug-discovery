@@ -39,15 +39,10 @@ Custom: device_summarystatistics
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-import matplotlib.colors as mcolors
 import numpy as np
 import seaborn as sns
 from sklearn.decomposition import PCA
 import numpy as np
-from matplotlib.lines import Line2D    
-from scipy.spatial import distance
-import re
 
 # Import custom statistics module
 import sys

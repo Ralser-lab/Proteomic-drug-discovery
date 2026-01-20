@@ -44,16 +44,15 @@ import statsmodels.api as sm # for linear fits
 import pandas as pd 
 import numpy as np
 
-def std_calc(df):
+def std_calc(df)->float:
     """
-    Calculate var using E(X^2) - E(X)^2 on a series.
+    Perform E(X^2) - E(X)^2 on a series.
 
     """
     var = (df**2).mean(skipna = True) - (df.mean(skipna = True))**2
-    std = np.sqrt(var)
-    return std
+    return np.sqrt(var)
 
-def summary_stats(df1, df2):
+def summary_stats(df1, df2)->tuple:
     """
     Calculate parameters (n, std, mew) for 2 sample vars.
 
@@ -61,10 +60,9 @@ def summary_stats(df1, df2):
     mean1, mean2 = df1.mean(skipna = True), df2.mean(skipna = True) # calc E(X)
     std1, std2 = std_calc(df1), std_calc(df2) # calc E(X - E(X))
     n1, n2 = df1.count(), df2.count() # calc N
-    print(mean1, std1, n1, mean2, std2, n2) 
     return mean1, std1, n1, mean2, std2, n2
 
-def geometric_mean(ser1):
+def geometric_mean(ser1)->float:
     """
     Calculate geometric mean of a series.
 
@@ -72,7 +70,7 @@ def geometric_mean(ser1):
     product = ser1.prod()
     return np.power(product, 1/ser1.shape[0])
 
-def z_test(df1, df2):
+def z_test(df1,df2)->tuple:
     """
     Two sample z-test.
 
@@ -87,7 +85,7 @@ def z_test(df1, df2):
     p_value = 2 * (1 - stats.norm.cdf(np.abs(z_score)))
     return z_score, p_value # return params
 
-def t_test(df1, df2):
+def t_test(df1, df2)->tuple:
     """
     Two sample t-test.
 
@@ -101,7 +99,7 @@ def t_test(df1, df2):
     print(f't-stat: {t_stat:.4f}')
     return t_stat, p_value # return params
 
-def linear_IC50(df):
+def linear_IC50(df)->float:
     """
     Colwise linear fit to extract IC50, *assumes response
     is normally distributed*.
@@ -128,7 +126,7 @@ def linear_IC50(df):
         ic50_values[col] = ic50
     return ic50_values
 
-def one_test(df1, popmean = 100):
+def one_test(df1, popmean:float = 100)->float:
     """
     One sample t-test.
 
@@ -141,7 +139,7 @@ def one_test(df1, popmean = 100):
     print(f't-stat: {t_stat:.4f}')
     return t_stat, p_value
 
-def calculate_cv(df, name):
+def calculate_cv(df, name)->pd.DataFrame:
     """
     Calculate coefficient of variation of a dataframe by index.
     
@@ -150,8 +148,7 @@ def calculate_cv(df, name):
     # Replace 0 with NaN to avoid division by zero errors
     means = df.mean().replace(0, np.nan)
     stds = df.std()
-    df = pd.DataFrame({'ID': name,
+    return pd.DataFrame({'ID': name,
                         'Means' : means,
                         'Stdev': stds})
-    return df
 

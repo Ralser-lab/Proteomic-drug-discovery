@@ -1,0 +1,12 @@
+# Configuration for split_contrasts
+
+data_dir: 'data'
+lfc_path: 'raw_counts_filtered_TMM_logCPM_limma_dmso_lfc_symbols.csv'
+bh_path: 'raw_counts_filtered_TMM_logCPM_limma_dmso_pval_symbols.csv'
+input_dir: '../ranked_lists'
+output_dir: '../gsea_output'
+plot_dir: '../plots'
+log_dir: 'logs'
+gene_sets: 'genesets/h.all.v2025.1.Hs.symbols.gmt'
+gs_name: 'h'
+top_pathways: 10

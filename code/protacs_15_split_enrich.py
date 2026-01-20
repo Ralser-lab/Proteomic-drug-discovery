@@ -78,7 +78,8 @@ def process_for_network(df):
     """
     Create a signed ranking of genes from logFC and p-values.
     Returns a Series of -log10(p-value) weighted by the sign of logFC,
-    sorted in descending order.
+    sorted in descending order. Use this as input for string enrichment 
+    analysis.
     """
     df['sign'] = np.sign(df['logFC']) * -np.log10(df['P.Value'])
     ranked = df['sign'].sort_values(ascending=False)
@@ -105,7 +106,7 @@ nx_dict = {
     "VHL amide": VHLreact
 }
 
-def top5(df):
+def top10(df):
     """
     Return the top 10 rows with the lowest false discovery rate.
     """
@@ -114,11 +115,10 @@ def top5(df):
     return df
 
 for n, df in nx_dict.items():
-    df = top5(df)
+    df = top10(df)
     nx_dict[n] = df
 
 cat_order = ['Thalidomide 5N','Lenalinomide 5N','VHL amide','Thalidomide 6N', 'Dihydrouracyl','Transcription']
-#cat_order = ['Thalidomide 5N','Lenalinomide 5N','VHL amide','Thalidomide 6N','Transcription']
 cat_order.reverse() 
 dogma = pd.DataFrame()
 filter = 0.01 #FDR cutoff

@@ -49,7 +49,7 @@ import joblib
 import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__)))
-from device_gradientboostingmachine import GBDT 
+from device_gradientbooster import GBDT 
 
 # Set relative paths
 path = os.path.join(os.path.dirname(__file__), '..', 'data')

@@ -33,7 +33,6 @@ Dependencies: pandas, scikit-learn, os, sys
 # %% Import modules
 import pandas as pd
 import os
-import sys
 from sklearn.model_selection import train_test_split
 
 # Set relative paths

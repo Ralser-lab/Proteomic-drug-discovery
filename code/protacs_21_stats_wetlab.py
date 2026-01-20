@@ -41,14 +41,13 @@ Packages: pandas, numpy, matplotlib, seaborn
 Custom: device_summarystatistics 
 
 """
-# Import packages
+# %% Import packages
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import os
 import sys
-import importlib
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 import device_summarystatistics
 
@@ -84,7 +83,6 @@ plt.savefig(os.path.join(fig_path,'protacs_21_compound1_glugal.pdf'))
 plt.close()
 
 # Perform statistical test
-importlib.reload(device_summarystatistics)
 real = norm.copy() # Use data normalized to 0 micromolar
 real = norm.drop([0.00]) # Remove normalizing measurement
 real.index = np.log10(real.index) # Log transform drug concentration
@@ -102,9 +100,6 @@ device_summarystatistics.t_test(ic50_df['Glucose'], ic50_df['Galactose'])
 print(10**(ic50_df.mean()))
 
 # %% Galactose IC50 for compound 1 & constituents (Figure 3).
-seahorse = pd.DataFrame({'AR-Ligand': [10, 11, 12],
-                        'Lenalidomide': [15,16,17],
-                        'AR-HBD': [1,2,1.5]})
 
 # Read in wetlab sourcedata
 cpd1_constituents = pd.read_excel(os.path.join(data_path, 'Figure3_compound1_constituents_gal_250604a.xlsx')).T.iloc[1:,:]
@@ -145,7 +140,6 @@ plt.close()
 complex2 = pd.read_excel(os.path.join(data_path, 'Figure3_all_Complex2_250204a.xlsx'), index_col = 0)
 
 # Perform statistical tests   
-importlib.reload(device_summarystatistics)
 device_summarystatistics.one_test(complex2.loc['AZ14183816'], 100)
 device_summarystatistics.one_test(pd.Series(complex2.loc[['AZ14197166', 'AZ14183816']].values.flatten()), 100)
  
@@ -157,7 +151,6 @@ plt.savefig(os.path.join(fig_path, 'protacs_21_complexII_all.pdf'))
 plt.close()
 
 # %% Perform statistical tests on complex I data for Figure 3.
-importlib.reload(device_summarystatistics)
 
 # Read in wetlab sourcedata
 complex1 = pd.read_excel(os.path.join(data_path, 'Figure3_Complex1_250219a.xlsx'), index_col = 0)
@@ -172,7 +165,6 @@ print((10**ic50_values.iloc[0:3]).mean()) # exponentiate to IC50
 print((10**ic50_values.iloc[6:9]).mean()) # exponentiate to IC50
 
 # %% Perform statistical tests on complex I data for Figure 5.
-importlib.reload(device_summarystatistics)
 
 # Read in wetlab source data
 complex1 = pd.read_excel(os.path.join(data_path, 'Figure4_Complex1_250207a.xlsx'), index_col = 0)
@@ -269,15 +261,13 @@ device_summarystatistics.t_test(pd.Series(ARpos.values.flatten()),
 
 # Perform t-test
 ARneg_stat = ARneg.assign(
-    factor = ['Comppound 1', 'Compound 1', 'Compound 1', 'Compound 1','Analogue', 'Analogue', 'Analogue', 'Analogue', 'Analogue', 'Analogue','Analogue','Analogue'])
+    factor = ['Compound 1', 'Compound 1', 'Compound 1', 'Compound 1','Analogue', 'Analogue', 'Analogue', 'Analogue', 'Analogue', 'Analogue','Analogue','Analogue'])
 device_summarystatistics.t_test(pd.Series(ARneg_stat.loc[ARneg_stat['factor']!= 'Analogue'].iloc[:,0:3].values.flatten()),
                 pd.Series(ARneg_stat.loc[ARneg_stat['factor']== 'Analogue'].iloc[:,0:3].values.flatten()))
-
 
 # %% Load, analyze, plot and save mouse xenograft AR degradation data (Figure 5).
 
 # Read in wetlab source data
-importlib.reload(device_summarystatistics)
 degron = pd.read_excel(
                 os.path.join(data_path, 'Figure4_XenoGraftARdeg_250207a.xlsx'))
 
@@ -293,3 +283,82 @@ plt.yscale('log')
 plt.savefig(os.path.join(fig_path, 'protacs_21_xenograft_ARdeg.pdf'))
 plt.close()
 
+# %% Load, analyze, plot and save glucose galactose compound 1 - 2 - 3 series data. 
+
+def title_from_sheet(func):
+    def wrapper(*args, **kwargs):
+        df = func(*args, **kwargs)
+        df.attrs['title'] = kwargs['sheet']
+        return df
+    return wrapper
+
+@title_from_sheet
+def read_excel_with_title(path:str, sheet:str, col:int)->pd.DataFrame:
+    return pd.read_excel(path, sheet_name = sheet, index_col = col)
+
+cmdp1_df = read_excel_with_title(
+    os.path.join(data_path, 'FigureED_Glu_gal_260119a.xlsx'),
+    sheet='cmpd1',
+    col=0
+)
+
+cmdp2_df = read_excel_with_title(
+    os.path.join(data_path, 'FigureED_Glu_gal_260119a.xlsx'),
+    sheet='cmpd2',
+    col=0
+)
+
+cmdp3_df = read_excel_with_title(
+    os.path.join(data_path, 'FigureED_Glu_gal_260119a.xlsx'),
+    sheet='cmpd3',
+    col=0
+)
+
+def glu_gal_plotter(norm):
+
+    normsum = norm.assign(
+        glu_mean=norm.iloc[:, 0:3].mean(axis=1),
+        glu_std=norm.iloc[:, 0:3].std(axis=1),
+        gal_mean=norm.iloc[:, 3:6].mean(axis=1),
+        gal_std=norm.iloc[:, 3:6].std(axis=1)
+    )
+
+    # Plot and save mean trend lines with error bars
+    plt.figure(figsize=(6, 4)) 
+    plt.errorbar(normsum.index, normsum["glu_mean"], yerr=normsum["glu_std"], fmt="o-", label="Glucose Mean", capsize=3, linestyle = '--')
+    plt.errorbar(normsum.index, normsum["gal_mean"], yerr=normsum["gal_std"], fmt="s-", label="Galactose Mean", capsize=3, linestyle = '--')
+    plt.plot(norm.index, normsum.iloc[:,3:6], color = 'orange', alpha = 0.5)
+    plt.ylim(-100000, 2500000)
+    plt.plot(norm.index, normsum.iloc[:,0:3], color = 'lightblue', alpha = 0.5)
+    plt.savefig(os.path.join(fig_path,f"protacs_21_{norm.attrs['title']}_glugal.pdf"))
+    plt.title(norm.attrs['title'])
+    plt.show()
+    plt.close()
+    
+glu_gal_plotter(cmdp1_df)
+glu_gal_plotter(cmdp2_df)
+glu_gal_plotter(cmdp3_df)
+
+# Perform statistical test
+
+def IC50_test(df):
+    real = df.copy() 
+    print(f"\nGlu:Gal dose-response stats for: {real.attrs['title']}")
+    real.index = np.log10(real.index) # Log transform drug concentration
+
+    # Extract column wise IC50s using linear model, clean up for t-test
+    ic50_values = device_summarystatistics.linear_IC50(real)
+    ic50_df = pd.DataFrame({'Glucose': ic50_values[0:3].values,
+                                'Galactose': ic50_values[3:6].values}, 
+                                index = ['rep1', 'rep2', 'rep3'])
+
+    # Perform t-test (welch, independent)
+    device_summarystatistics.t_test(ic50_df['Glucose'], ic50_df['Galactose'])
+
+    # Unlog IC50
+    print('IC50s')
+    print(10**(ic50_df.mean()))
+
+IC50_test(cmdp1_df)
+IC50_test(cmdp2_df)
+IC50_test(cmdp3_df)

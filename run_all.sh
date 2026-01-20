@@ -57,6 +57,12 @@ run_hyper() {
   fi
 }
 
+mkdir -p data
+mkdir -p figures
+mkdir -p scoring_models
+mkdir -p logs
+
+
 # Execute scripts with run()
 run python3 code/fda_01_globalvarianceanalysis.py
 run Rscript code/fda_02_limma_drug.R
