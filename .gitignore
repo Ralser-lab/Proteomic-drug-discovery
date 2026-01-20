@@ -23,6 +23,7 @@ scoring_models/*
 
 # Ignore everything in log/ except placeholder; also ignore R history
 logs/*
+**/logs/
 
 # macOS
 *.DS_Store
