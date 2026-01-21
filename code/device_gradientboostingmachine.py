@@ -29,16 +29,10 @@ Class architecture:
     export_all_predictions : Save predictions + SHAP features for all samples.
     export_subset_predictions : Export a focused subset with per-feature barplots.
 
-Outputs
--------
-- figures/*.pdf 
-- data/Rplot_Figure4.csv
-- data/Rplot_Figure5.csv 
-
 Requirements
 ------------
 Python >= 3.8  
-Dependencies: pandas, numpy, scikit-learn, xgboost, shap, seaborn, matplotlib
+Dependencies: pandas, numpy, optuna, scikit-learn, xgboost, shap, seaborn, matplotlib
 
 """
 # Import modules
@@ -69,7 +63,7 @@ class GBDT:
     paths and run metadata in one place.
 
     """
-    def __init__(self, dpath, prefix, name)->None:
+    def __init__(self, dpath, prefix, name):
         """
         Initialize the GBDT class with data/figure paths and identifiers.
 
@@ -143,7 +137,7 @@ class GBDT:
     # Helper functions
     ##############################################################################
     
-    def out(self, filename, params = False)->str:
+    def out(self, filename, params = False) -> str:
         """
         Build a full output path under the figures directory, prefixed with the
         run's prefix and name. Centralizes figure naming to keep artifacts tidy.
@@ -170,7 +164,7 @@ class GBDT:
     # Feature importance 
     ##############################################################################
 
-    def get_model_features(self, plot = True, n = 20)->pd.Series:
+    def get_model_features(self, plot = True, n = 20) -> pd.Series:
         """
         Extract feature importance (weight, gain, cover) from the fitted best model,
         return the top-n features, and optionally save bar plots for gain and weight.
@@ -216,7 +210,7 @@ class GBDT:
     # Train / tune / evaluate
     ##############################################################################
 
-    def gbdt_baseline(self, Xb_train, Xb_test, yb_train, yb_test)->None:
+    def gbdt_baseline(self, Xb_train, Xb_test, yb_train, yb_test):
         """
         Fit a simple, untuned XGBClassifier as a baseline comparator. Stores the
         model and its test-set predictions/probabilities for side-by-side plots.
@@ -249,7 +243,7 @@ class GBDT:
         self.baseline_proba = baseline_model.predict_proba(self.Xb_test)[:, 1]
         self.baseline_model = baseline_model
 
-    def gbdt_gridcv(self, params, X_train, y_train)->xgb.XGBClassifier:
+    def gbdt_gridcv(self, params, X_train, y_train) -> xgb.XGBClassifier:
         """
         Run a 5-fold GridSearchCV over the provided hyperparameter grid, refit
         the best XGBClassifier on all training data, and store the tuned model.
@@ -295,7 +289,7 @@ class GBDT:
         return best_model
     
     def gbdt_optuna(self, params, X_train, y_train, n_trials=50, score='accuracy',
-                timeout=None, random_state=42, enqueue_params=None)->xgb.XGBClassifier:
+                timeout=None, random_state=42, enqueue_params=None) -> xgb.XGBClassifier:
         """
         Run Bayesian search over the provided hyperparameter grid using 5 stratified-splits
         then refit the best XGBClassifier on all training data, and store the tuned model.
@@ -321,7 +315,7 @@ class GBDT:
 
         kf = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_state)
 
-        def objective(trial: optuna.Trial) -> float:
+        def objective(trial: optuna.Trial) ->float:
             tp = {}
             for name, spec in params.items():
                 t = spec["type"]
@@ -382,7 +376,7 @@ class GBDT:
         return best_model
 
 
-    def gbdt_evaluate(self, X_test, y_test, model)->None:
+    def gbdt_evaluate(self, X_test, y_test, model):
         """
         Evaluate a model on held-out data. Computes predicted probabilities and
         saves ROC and Precision-Recall curves for test (and optionally train) sets,
@@ -413,7 +407,7 @@ class GBDT:
         self.plot_pr(y_test=y_test, proba=self.proba_test, baseline=self.baseline_proba,
                      y_train=self.y_train, proba2=self.proba_train)
 
-    def gbdt_classify(self, X, y, model='best', threshold='auto', all = False)->None:
+    def gbdt_classify(self, X, y, model='best', threshold='auto', all = False):
         """
         Generate binary classifications from predicted probabilities using either
         the stored best model or a provided model. Select a decision boundary
@@ -497,7 +491,7 @@ class GBDT:
         self.report = pd.concat([baseline_report, final_report, train_report])
         self.plot_classification_report(self.report, round(self.threshold * 100))
 
-    def gbdt_SHAP(self, top_interactors=None)->None:
+    def gbdt_SHAP(self, top_interactors=None):
         """
         Compute SHAP values for the best model to quantify feature influence,
         save a SHAP summary plot, derive top features, and visualize SHAP
@@ -558,7 +552,7 @@ class GBDT:
         # plt.show()
         plt.close()
 
-    def gbdt_calibrate(self)->None:
+    def gbdt_calibrate(self):
         """
         Calibrate class probabilities for both best and baseline models using
         isotonic regression on the test set, then plot and save a calibration
@@ -614,7 +608,7 @@ class GBDT:
     # Export functions
     ##############################################################################
 
-    def export_all_predictions(self, AZmeta, model)->None:
+    def export_all_predictions(self, AZmeta, model):
         """
         Export per-sample predictions and probabilities (plus SHAP feature columns)
         merged with metadata (Drug ID, Cluster). Produces a tidy CSV for R
@@ -654,7 +648,7 @@ class GBDT:
         self.dotplotforR = dotplotforR
         dotplotforR.to_csv(os.path.join(self.dpath, 'Rplot_Figure4.csv'))
 
-    def export_subset_predictions(self, AZmeta, targets)->None:
+    def export_subset_predictions(self, AZmeta, targets):
         """
         Export predictions for a subset of 'targets' and generate per-feature
         differential expression bar plots for those targets. Also prepares a
@@ -728,7 +722,7 @@ class GBDT:
     # Plotting functions
     ##############################################################################
 
-    def plot_roc(self, y_test, proba, baseline=None, y_train=None, proba2=None)->None:
+    def plot_roc(self, y_test, proba, baseline=None, y_train=None, proba2=None):
         """
         Save ROC curves comparing the evaluated model on test (and optional train)
         data, with an optional overlay of the baseline model evaluated on test.
@@ -779,7 +773,7 @@ class GBDT:
         plt.close()
         # plt.show()
 
-    def plot_pr(self, y_test, proba, baseline=None, y_train=None, proba2=None)->None:
+    def plot_pr(self, y_test, proba, baseline=None, y_train=None, proba2=None):
         """
         Save Precision-Recall curves for:
         - test predictions of the evaluated model,
@@ -831,7 +825,7 @@ class GBDT:
         plt.close()
         # plt.show()
 
-    def plot_top_features(self, df_importances_weight, str_out)->None:
+    def plot_top_features(self, df_importances_weight, str_out):
         """
         Save bar plot for top features by a specified importance column (e.g., Gain
         or Weight). 
@@ -866,7 +860,7 @@ class GBDT:
         plt.close()
         # plt.show()
 
-    def plot_confusion(self, y_true, proba, name, boundary)->None:
+    def plot_confusion(self, y_true, proba, name, boundary):
         """
         Save  a confusion matrix plot using a specified decision threshold.
 
@@ -902,7 +896,7 @@ class GBDT:
         plt.close()
         # plt.show()
 
-    def plot_f1_and_pick_threshold(self, y_true, proba, xline)->float:
+    def plot_f1_and_pick_threshold(self, y_true, proba, xline) -> float:
         """
         Sweep decision thresholds in [0, 1] to compute F1 scores, plot the
         F1 curve, and return the threshold that maximizes F1.
@@ -952,7 +946,7 @@ class GBDT:
         self.threshold = max_f1_threshold
         return max_f1_threshold
 
-    def plot_classification_report(self, report, threshold)->None:
+    def plot_classification_report(self, report, threshold):
         """
         Save bar plot summarizing precision, recall, and accuracy for baseline/test/train
         (as prepared by `gbdt_classify`).
@@ -984,3 +978,4 @@ class GBDT:
         plt.savefig(self.out('classif_report.pdf'))
         plt.close()
         # plt.show()
+

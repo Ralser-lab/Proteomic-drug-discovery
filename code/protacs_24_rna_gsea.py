@@ -84,7 +84,6 @@ def gsea_summary_plot(
     eps: float = np.finfo(float).eps
 ) -> Any:
 
-    # ------------- CLEAN 
     # Subset on cellline.
     subset_df = df.loc[df["filepath"].astype(str).str.contains(target, na=False)]
 

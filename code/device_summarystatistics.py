@@ -12,7 +12,7 @@ Description:
 Author: Shaon Basu
 Date: 2025-09-29
 
-Function architecture:
+Functions:
 --------
 - std_calc : Compute standard deviation using E(X^2) - E(X)^2.
 - summary_stats : Report mean, standard deviation, and sample size for two series.
@@ -151,4 +151,3 @@ def calculate_cv(df, name)->pd.DataFrame:
     return pd.DataFrame({'ID': name,
                         'Means' : means,
                         'Stdev': stds})
-

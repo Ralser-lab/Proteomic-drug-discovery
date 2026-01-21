@@ -56,48 +56,92 @@ path = os.path.dirname(__file__)
 data_path = os.path.join(path, '..', 'data')
 fig_path = os.path.join(path, '..', 'figures')
 
-# %% Glucose galactose data for compound 1 (Figure 3).
+def add_title(func):
+    """Title wrapper for sheet reader. """
+    def wrap(*args, **kwargs):
+        df = func(*args, **kwargs)
+        df.attrs['title'] = kwargs['sheet']
+        return df
+    return wrap
 
-# Read in wetlab source data
-galactose = pd.read_excel(os.path.join(data_path, 'Figure3_Compound1_Galactose_250204a.xlsx'))
-galactose.index = [10, 5, 1, 0.5, 0.25, 0]
-galactose.drop(galactose.columns[0], axis = 1, inplace = True) # drop not category column 
+@add_title
+def read_sheets(path, sheet, col):
+    """ Read excel sheets. """
+    return pd.read_excel(path, sheet_name = sheet, index_col = col)
 
-# Calculate mean and standard deviation for error bars
-norm = galactose / galactose.iloc[-1]
-normsum = norm.assign(
-    glu_mean=norm.iloc[:, 0:3].mean(axis=1),
-    glu_std=norm.iloc[:, 0:3].std(axis=1),
-    gal_mean=norm.iloc[:, 3:6].mean(axis=1),
-    gal_std=norm.iloc[:, 3:6].std(axis=1)
-)
+# %% Load, analyze, plot and save glucose galactose compound 1 - 2 - 3 series data. 
+condition_list, condition_dfs, norm_dfs = ['cmpd1', 'cmpd2', 'cmpd3', 'untreated'], {}, {}
 
-# Plot and save mean trend lines with error bars
-plt.figure(figsize=(6, 4)) 
-plt.errorbar(normsum.index, normsum["glu_mean"], yerr=normsum["glu_std"], fmt="o-", label="Glucose Mean", capsize=3, linestyle = '--')
-plt.errorbar(normsum.index, normsum["gal_mean"], yerr=normsum["gal_std"], fmt="s-", label="Galactose Mean", capsize=3, linestyle = '--')
-plt.plot(norm.index, normsum.iloc[:,3:6], color = 'orange', alpha = 0.5)
-plt.plot(norm.index, normsum.iloc[:,0:3], color = 'lightblue', alpha = 0.5)
-plt.savefig(os.path.join(fig_path,'protacs_21_compound1_glugal.pdf'))
-# plt.show()
-plt.close()
+# Read in all measurements for each treatmenet
+for c in condition_list:
+    df = read_sheets(os.path.join(data_path, 'FigureED_Glu_gal_260119a.xlsx'),sheet=c,col=0)
+    condition_dfs[c] = df
+
+# Get averages of glucose and galactose untreated controls conditions
+glu_untreated_mean = (condition_dfs['untreated']
+                      .loc[:, condition_dfs['untreated'].columns.str.contains('Glu')]
+                      .mean(axis=1)
+                      .iloc[0])
+gal_untreated_mean = (condition_dfs['untreated']
+                      .loc[:, condition_dfs['untreated'].columns.str.contains('Gal')]
+                      .mean(axis=1)
+                      .iloc[0])
+
+# Normalize measurements to untreated controls
+for c in ['cmpd1', 'cmpd2', 'cmpd3']:
+    glu = condition_dfs[c].loc[:,condition_dfs[c].columns.str.contains('Glu')]/glu_untreated_mean
+    gal = condition_dfs[c].loc[:,condition_dfs[c].columns.str.contains('Gal')]/glu_untreated_mean
+    norm_dfs[c] = pd.concat([glu, gal], axis=1)
+    norm_dfs[c].loc[0.00] = 1
+
+# Plot glu-gal curves for each treatment condition
+def glu_gal_plotter(norm):
+    '''Glu-gal curve plot to disk'''
+    normsum = norm.assign(
+        glu_mean=norm.iloc[:, 0:3].mean(axis=1),
+        glu_std=norm.iloc[:, 0:3].std(axis=1),
+        gal_mean=norm.iloc[:, 3:6].mean(axis=1),
+        gal_std=norm.iloc[:, 3:6].std(axis=1)
+    )
+
+    # Plot and save mean trend lines with error bars
+    plt.figure(figsize=(6, 4)) 
+    plt.title(norm.attrs['title'])
+    plt.errorbar(normsum.index, normsum["glu_mean"], yerr=normsum["glu_std"], fmt="o-", label="Glucose Mean", capsize=3, linestyle = '--')
+    plt.errorbar(normsum.index, normsum["gal_mean"], yerr=normsum["gal_std"], fmt="s-", label="Galactose Mean", capsize=3, linestyle = '--')
+    plt.plot(norm.index, normsum.iloc[:,3:6], color = 'orange', alpha = 0.5)
+    plt.plot(norm.index, normsum.iloc[:,0:3], color = 'lightblue', alpha = 0.5)
+    plt.ylim(-0.1,1.1)
+    plt.savefig(os.path.join(fig_path,f"protacs_21_{norm.attrs['title']}_glugal.pdf"))
+    plt.show()
+    plt.close()
+
+for c in norm_dfs:
+    glu_gal_plotter(norm_dfs[c])
 
 # Perform statistical test
-real = norm.copy() # Use data normalized to 0 micromolar
-real = norm.drop([0.00]) # Remove normalizing measurement
-real.index = np.log10(real.index) # Log transform drug concentration
+def IC50_test(df):
+    '''
+    Performs t-test on IC50s from Glu vs Gal condition 
+    estimated from the replicates (n=3).
+    
+    '''
+    real = df.drop([0.00])# Remove normalizing measurement
+    print(f"\nGlu:Gal dose-response stats for: {real.attrs['title']}")
+    real.index = np.log10(real.index) # Log transform drug concentration
+    # Extract replicate (column)-wise IC50s using linear model, clean up for t-test
+    ic50_values = device_summarystatistics.linear_IC50(real)
+    ic50_df = pd.DataFrame({'Glucose': ic50_values[0:3].values,
+                                'Galactose': ic50_values[3:6].values}, 
+                                index = ['rep1', 'rep2', 'rep3'])
+    # Perform t-test (welch, independent)
+    device_summarystatistics.t_test(ic50_df['Glucose'], ic50_df['Galactose'])
+    # Unlog IC50
+    print('IC50s')
+    print(10**(ic50_df.mean()))
 
-# Extract column wise IC50s using linear model, clean up for t-test
-ic50_values = device_summarystatistics.linear_IC50(real)
-ic50_df = pd.DataFrame({'Glucose': ic50_values[0:3].values,
-                            'Galactose': ic50_values[3:6].values}, 
-                            index = ['rep1', 'rep2', 'rep3'])
-
-# Perform t-test (welch, independent)
-device_summarystatistics.t_test(ic50_df['Glucose'], ic50_df['Galactose'])
-
-# Unlog IC50
-print(10**(ic50_df.mean()))
+for c in norm_dfs:
+    IC50_test(norm_dfs[c])
 
 # %% Galactose IC50 for compound 1 & constituents (Figure 3).
 
@@ -283,82 +327,5 @@ plt.yscale('log')
 plt.savefig(os.path.join(fig_path, 'protacs_21_xenograft_ARdeg.pdf'))
 plt.close()
 
-# %% Load, analyze, plot and save glucose galactose compound 1 - 2 - 3 series data. 
 
-def title_from_sheet(func):
-    def wrapper(*args, **kwargs):
-        df = func(*args, **kwargs)
-        df.attrs['title'] = kwargs['sheet']
-        return df
-    return wrapper
 
-@title_from_sheet
-def read_excel_with_title(path:str, sheet:str, col:int)->pd.DataFrame:
-    return pd.read_excel(path, sheet_name = sheet, index_col = col)
-
-cmdp1_df = read_excel_with_title(
-    os.path.join(data_path, 'FigureED_Glu_gal_260119a.xlsx'),
-    sheet='cmpd1',
-    col=0
-)
-
-cmdp2_df = read_excel_with_title(
-    os.path.join(data_path, 'FigureED_Glu_gal_260119a.xlsx'),
-    sheet='cmpd2',
-    col=0
-)
-
-cmdp3_df = read_excel_with_title(
-    os.path.join(data_path, 'FigureED_Glu_gal_260119a.xlsx'),
-    sheet='cmpd3',
-    col=0
-)
-
-def glu_gal_plotter(norm):
-
-    normsum = norm.assign(
-        glu_mean=norm.iloc[:, 0:3].mean(axis=1),
-        glu_std=norm.iloc[:, 0:3].std(axis=1),
-        gal_mean=norm.iloc[:, 3:6].mean(axis=1),
-        gal_std=norm.iloc[:, 3:6].std(axis=1)
-    )
-
-    # Plot and save mean trend lines with error bars
-    plt.figure(figsize=(6, 4)) 
-    plt.errorbar(normsum.index, normsum["glu_mean"], yerr=normsum["glu_std"], fmt="o-", label="Glucose Mean", capsize=3, linestyle = '--')
-    plt.errorbar(normsum.index, normsum["gal_mean"], yerr=normsum["gal_std"], fmt="s-", label="Galactose Mean", capsize=3, linestyle = '--')
-    plt.plot(norm.index, normsum.iloc[:,3:6], color = 'orange', alpha = 0.5)
-    plt.ylim(-100000, 2500000)
-    plt.plot(norm.index, normsum.iloc[:,0:3], color = 'lightblue', alpha = 0.5)
-    plt.savefig(os.path.join(fig_path,f"protacs_21_{norm.attrs['title']}_glugal.pdf"))
-    plt.title(norm.attrs['title'])
-    plt.show()
-    plt.close()
-    
-glu_gal_plotter(cmdp1_df)
-glu_gal_plotter(cmdp2_df)
-glu_gal_plotter(cmdp3_df)
-
-# Perform statistical test
-
-def IC50_test(df):
-    real = df.copy() 
-    print(f"\nGlu:Gal dose-response stats for: {real.attrs['title']}")
-    real.index = np.log10(real.index) # Log transform drug concentration
-
-    # Extract column wise IC50s using linear model, clean up for t-test
-    ic50_values = device_summarystatistics.linear_IC50(real)
-    ic50_df = pd.DataFrame({'Glucose': ic50_values[0:3].values,
-                                'Galactose': ic50_values[3:6].values}, 
-                                index = ['rep1', 'rep2', 'rep3'])
-
-    # Perform t-test (welch, independent)
-    device_summarystatistics.t_test(ic50_df['Glucose'], ic50_df['Galactose'])
-
-    # Unlog IC50
-    print('IC50s')
-    print(10**(ic50_df.mean()))
-
-IC50_test(cmdp1_df)
-IC50_test(cmdp2_df)
-IC50_test(cmdp3_df)
