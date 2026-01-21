@@ -1,3 +1,39 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Script Name: protacs_25_rna_gex.py
+Description:
+    Load normalized rna gene expression (logCPM), sample metadata, and gene set
+    definitions to compute per-condition pathway activity scores. For a given
+    Hallmark gene set, genes are mapped from symbols to Ensembl IDs (via a
+    BioMart mapping table), expression is z-scored across samples, and
+    pathway activity is summarized as the mean expression across target genes.
+    The script then generates condition-level plots (e.g., boxplots / line
+    plots) for selected cell lines and timepoints.
+
+Author: Shaon Basu
+Date: 2026-01-21
+
+Inputs
+------
+- preprocessing_rna/data/raw_counts_filtered_TMM_logCPM.csv
+- preprocessing_rna/data/metadata_limma_design.csv
+- preprocessing_rna/data/mart_GRCh38.p14.txt
+- preprocessing_rna/src/gsea/genesets/h.all.v2025.1.Hs.symbols.gmt
+- ../preprocessing_rna/gsea_output/h_pval/*.csv
+
+Outputs
+-------
+- figures/protacs_25_rna_<CELL>_<TIMEPOINT>_<HALLMARK_ID>.pdf
+
+Requirements
+------------
+Python >= 3.8
+Dependencies: pandas, numpy, matplotlib
+Custom: protacs_24_rna_gsea 
+
+"""
 # %%
 import pandas as pd
 import os
@@ -5,7 +41,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import Tuple
 from functools import lru_cache
-from dataclasses import dataclass
+from dataclasses import replace
+from protacs_24_rna_gsea import PlotterCfg, list_getter
 
 @lru_cache
 def load_dfs(
@@ -322,66 +359,49 @@ def plotter(data_df:pd.DataFrame, timepoint, cell, hallmark_id):
         grid=False
     )
 
-    # scatter overlay
-    # for i, cond in enumerate(boxplot_df["condition"].unique(), start=1):
-    #     y = boxplot_df.loc[boxplot_df["condition"] == cond, "Z"]
-    #     x = np.random.normal(i, 0.04, size=len(y))
-    #     ax.scatter(x, y, s=20, alpha=0.7)
-
     plt.suptitle("")
     plt.title(f"{hallmark_id} @ {timepoint} ({cell})")
     plt.ylabel("Mean target expression (logCPM)")
     plt.tight_layout()
-
-# %%
-
-dir_fp = os.path.dirname(__file__)
-
-data_df, meta_df, mart_df, gene_sets = load_dfs(
-    dir_path = dir_fp,
-    data_fp = 'raw_counts_filtered_TMM_logCPM.csv',
-    meta_fp = 'metadata_limma_design.csv',
-    mart_fp = 'mart_GRCh38.p14.txt',
-    sets_fp = 'h.all.v2025.1.Hs.symbols.gmt',
-)
-
-data_df = data_df.loc[~data_df.index.str.contains('7166_3uM')]
- 
-hallmark_id:str = ['HALLMARK_ANDROGEN_RESPONSE','HALLMARK_OXIDATIVE_PHOSPHORYLATION']
-timepoints:list[str]= ['6h','24h','72h']
-cells:list[str] = ['C4_2']
-
-# %%
-
-from protacs_24_rna_gsea import PlotterCfg, list_getter
-
-cfg = PlotterCfg()
-
-df = list_getter(cfg.dir_name)
-
-targets = df.loc[df['filepath'].str.contains('Enza_3uM_24h')].loc[
-    lambda df: df['Term'] == 'HALLMARK_OXIDATIVE_PHOSPHORYLATION'
-]['Lead_genes'].str.split(';').explode().tolist()
-
-# %%
-
-for h in hallmark_id: 
-    targets = target_search(sets=gene_sets,
-        hallmark_id=h)
-
-    target_ids = get_target_ensemblids(targets, mart_df)
-
-    z_condition_df = z_condition(data_df, meta_df, target_ids)
-
-    for c in cells: 
-        for t in timepoints:
-            plotter(data_df,t, c, h)
+    plt.savefig(cfg.fig_path_suffix+f'{cell}_{timepoint}_{hallmark_id}.pdf')
+    plt.show()
+    plt.close()
 
 
-# %%
+if __name__ == '__main__':
+    dir_fp = os.path.dirname(__file__)
+    cfg = PlotterCfg()
+    df = list_getter(cfg.dir_name)
+    data_df, meta_df, mart_df, gene_sets = load_dfs(
+        dir_path = dir_fp,
+        data_fp = 'raw_counts_filtered_TMM_logCPM.csv',
+        meta_fp = 'metadata_limma_design.csv',
+        mart_fp = 'mart_GRCh38.p14.txt',
+        sets_fp = 'h.all.v2025.1.Hs.symbols.gmt',
+    )
 
-# convert to leading edge for above plots, see if it improves the behavior
-targets = target_search(sets=gene_sets,
-    hallmark_id='HALLMARK_OXIDATIVE_PHOSPHORYLATION')
+    #data_df = data_df.loc[~data_df.index.str.contains('7166_3uM')]
+    
+    hallmark_id:str = ['HALLMARK_ANDROGEN_RESPONSE']
+    timepoints:list[str]= ['24h']
+    cells:list[str] = ['C4_2', 'LNCaP']
 
-len(targets)
+
+    targets = df.loc[df['filepath'].str.contains('Enza_3uM_24h')].loc[
+        lambda df: df['Term'] == 'HALLMARK_OXIDATIVE_PHOSPHORYLATION'
+    ]['Lead_genes'].str.split(';').explode().tolist()
+
+    cfg = replace(cfg, fig_path_suffix="../figures/protacs_25_rna_")
+
+    for h in hallmark_id: 
+        targets = target_search(sets=gene_sets,
+            hallmark_id=h)
+
+        target_ids = get_target_ensemblids(targets, mart_df)
+
+        z_condition_df = z_condition(data_df, meta_df, target_ids)
+
+        for c in cells: 
+            for t in timepoints:
+                plotter(data_df,t, c, h)
+
