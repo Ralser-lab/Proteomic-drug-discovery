@@ -27,7 +27,7 @@ Inputs
 
 Outputs
 -------
-- figures/protacs_21_compound1_glugal.pdf                       
+- figures/protacs_21_{cmpd1,cmpd2,cmpd3}_glugal.pdf                       
 - figures/protacs_21_galactose.pdf                               
 - figures/protacs_21_seahorsemax.pdf                            
 - figures/protacs_21_complexII_all.pdf                    
@@ -69,10 +69,10 @@ def read_sheets(path, sheet, col):
     """ Read excel sheets. """
     return pd.read_excel(path, sheet_name = sheet, index_col = col)
 
-# %% Load, analyze, plot and save glucose galactose compound 1 - 2 - 3 series data. 
-condition_list, condition_dfs, norm_dfs = ['cmpd1', 'cmpd2', 'cmpd3', 'untreated'], {}, {}
+# %% Glucose-galactose curves and IC50s for compounds 1, 2 and 3 (ED)
 
-# Read in all measurements for each treatmenet
+# Read in all measurements for each treatment
+condition_list, condition_dfs, norm_dfs = ['cmpd1', 'cmpd2', 'cmpd3', 'untreated'], {}, {}
 for c in condition_list:
     df = read_sheets(os.path.join(data_path, 'FigureED_Glu_gal_260119a.xlsx'),sheet=c,col=0)
     condition_dfs[c] = df
@@ -103,7 +103,6 @@ def glu_gal_plotter(norm):
         gal_mean=norm.iloc[:, 3:6].mean(axis=1),
         gal_std=norm.iloc[:, 3:6].std(axis=1)
     )
-
     # Plot and save mean trend lines with error bars
     plt.figure(figsize=(6, 4)) 
     plt.title(norm.attrs['title'])
