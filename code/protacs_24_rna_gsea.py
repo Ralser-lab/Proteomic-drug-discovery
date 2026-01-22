@@ -18,7 +18,6 @@ Inputs
 
 Outputs
 -------
-- figures/protacs_24_rna_<CELL>_gsea_summary_plot.pdf
 - figures/protacs_24_rna_<CELL>_gsea_selection_plot.pdf
 
 Requirements
@@ -104,99 +103,6 @@ def split_filepath(df:pd.DataFrame)->pd.DataFrame:
         time=lambda df: df['filepath'].str.extract(r'_([^_]*)$').replace(r'\D+', '', regex=True).astype(int),
         drug = lambda df: df['filepath'].str.split('_').str[0]
     )
-
-def gsea_summary_plot(
-    df: pd.DataFrame,
-    target: str = "C4_2",
-    priority_terms:list[str]|None=None,
-    metric: str = "NES",
-    metric2: str = "FDR q-val",
-    eps: float = np.finfo(float).eps
-) -> Any:
-
-    # Subset on cellline.
-    subset_df = df.loc[df["filepath"].astype(str).str.contains(target, na=False)]
-
-    # Prepare term ordering via priority terms at front followed by frequency.
-    topN_terms = subset_df["Term"].value_counts().index.to_list()
-    other_terms = [
-        t for t in topN_terms
-        if t not in priority_terms
-    ]
-    term_order = priority_terms + other_terms
-
-    # Prepare plotting df.
-    nes_df = (
-        subset_df.loc[subset_df["Term"].isin(topN_terms)]
-        .pipe(clean_filepath, target)
-    )
-
-    # Clean filepath col.
-    filepath_df = (
-        pd.DataFrame({"filepath": nes_df["filepath"].unique()})
-        .pipe(split_filepath)
-    )
-
-    # Prepare contrast ordering.
-    filepath_order = (
-        filepath_df.sort_values(["time", "drug", "conc"], ascending=[False, True, True])["filepath"]
-        .tolist()
-    )
-
-    # Order the plotting df.
-    nes_df = (nes_df
-              .assign(
-                  filepath = lambda df: pd.Categorical(df['filepath'], categories = filepath_order, ordered=True),
-                  Term = lambda df: pd.Categorical(df['Term'], categories = term_order, ordered=True),)
-              .sort_values(['filepath','Term'])
-    )
-
-    vmin = nes_df[metric].min()
-    vmax = nes_df[metric].max()
-    norm = TwoSlopeNorm(vmin=vmin, vcenter=0, vmax=vmax)
-    cmap = cm.get_cmap("RdBu_r")
-
-    # Size by |NES|.
-    nes = nes_df[metric].to_numpy()
-    nes_abs = np.abs(nes)
-    sizes = 20 + 80 * (nes_abs - nes_abs.min()) / (nes_abs.ptp() + eps)
-
-    # Alpha by -log10(p or q).
-    sig = -np.log10(nes_df[metric2].to_numpy() + eps)
-    alphas = (sig - sig.min()) / (sig.ptp() + eps)
-    alphas = np.clip(alphas, 0.2, 1.0)
-
-    # Color by NES, with per-point alpha via signficance.
-    cmap = cm.get_cmap("RdBu_r")
-    rgba = cmap(norm(nes))
-    rgba[:, 3] = alphas
-
-    x = nes_df["Term"].cat.codes
-    y = nes_df["filepath"].cat.codes
-
-    fig, ax = plt.subplots(figsize=(11, 7))
-
-    ax.scatter(x,y,c=rgba,s=sizes)
-
-    # Force axis order from categories.
-    ax.set_xticks(np.arange(len(nes_df["Term"].cat.categories)))
-    ax.set_xticklabels(nes_df["Term"].cat.categories, rotation=90)
-
-    ax.set_yticks(np.arange(len(nes_df["filepath"].cat.categories)))
-    ax.set_yticklabels(nes_df["filepath"].cat.categories)
-
-    ax.set_title(f"Top terms: {target}")
-    ax.set_xlabel("Term")
-    ax.set_ylabel("Contrast")
-
-    mappable = cm.ScalarMappable(norm=norm, cmap=cmap)
-    mappable.set_array(nes)
-    fig.colorbar(mappable, ax=ax, label=metric)
-
-    fig.tight_layout()
-    plt.savefig(cfg.fig_path_suffix + f'{target}_gsea_summary_plot.pdf')
-    plt.show()
-    plt.close()
 
 def gsea_selection_plot(
     df: pd.DataFrame,
@@ -307,13 +213,6 @@ if __name__ == '__main__':
     gsea_df = list_getter(cfg.dir_name)
 
     for c in cfg.cells: 
-        gsea_summary_plot(
-                df=gsea_df,
-                target = c,
-                metric = 'NES',
-                metric2 = 'FDR q-val',
-                priority_terms=cfg.priority_terms,
-                eps = np.finfo(float).eps)
         
         gsea_selection_plot(
                 df=gsea_df,

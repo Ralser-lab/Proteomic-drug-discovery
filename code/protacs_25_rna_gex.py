@@ -360,7 +360,7 @@ def plotter(data_df:pd.DataFrame, timepoint, cell, hallmark_id):
     )
 
     plt.suptitle("")
-    plt.title(f"{hallmark_id} @ {timepoint} ({cell})")
+    plt.title(f"{hallmark_id} \n@ {timepoint} ({cell})")
     plt.ylabel("Mean target expression (logCPM)")
     plt.tight_layout()
     plt.savefig(cfg.fig_path_suffix+f'{cell}_{timepoint}_{hallmark_id}.pdf')
@@ -380,7 +380,7 @@ if __name__ == '__main__':
         sets_fp = 'h.all.v2025.1.Hs.symbols.gmt',
     )
 
-    #data_df = data_df.loc[~data_df.index.str.contains('7166_3uM')]
+    data_df = data_df.loc[~data_df.index.str.contains('7166_3uM')]
     
     hallmark_id:str = ['HALLMARK_ANDROGEN_RESPONSE']
     timepoints:list[str]= ['24h']
