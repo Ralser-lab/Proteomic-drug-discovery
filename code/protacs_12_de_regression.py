@@ -25,6 +25,8 @@ Inputs
 Outputs
 -------
 - figures/protacs_12_barplot_IC50.pdf
+- figures/protacs_12_barplot_IC50_mean.pdf
+- figures/protacs_12_barplot_logIC50_mean.pdf
 - figures/protacs_12_<first_pathway> models.pdf
 - figures/protacs_12_regression_p_values.pdf
 - figures/protacs_12_OLS_<gene>.pdf
@@ -53,25 +55,8 @@ expression_matrix =  pd.read_csv(filepath + 'SB_PROTAC_prmatrix_filtered_95_impu
                                  delimiter = ',', decimal = '.', index_col=0, header = 0).T
 LFC_matrix = pd.read_csv(filepath + 'Cluster_LFC_10uM_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0, header = 0).T
-string14 = pd.read_csv(filepath + 'Cluster14_enrichment.Component.tsv', index_col = 1, sep = '\t')
-string4 = pd.read_csv(filepath + 'Cluster4_enrichment.Component.tsv', index_col = 1, sep = '\t')
 
-# %% IC50-Proteome regression workflow
-# Performs: Pathway gene extraction, IC50 analysis, and regression modelling
-pathway1 = list(string14.index[0:5]) + list(string4.index[0:5])  # take first 5 pathway names from string14 and string4
-
-# pathway1 can be manually overridden by setting a single pathway name instead:
-# pathway1 = ['Inner mitochondrial membrane protein complex']
-# pathway1 = ['Oxidoreductase complex']
-# pathway1 = ['Mitochondrial ribosome']
-# pathway1 = ['Mitochondrial respirasome']
-# pathway1 = ['Respiratory chain complex']
-# pathway1 = ['Chromosomal region']
-# pathway1 = ['Nuclear chromosome']
-# pathway1 = ['MCM complex']
-# pathway1 = ['Cytosolic ribosome']
-# pathway1 = ['Replication fork']
-
+# %% Format predictor variable (X: Log Fold Change)
 def extract_genes(df, pathways, matrix, boundary):
     """
     Extract gene list for given pathways, then filter for genes 
@@ -94,26 +79,25 @@ def extract_genes(df, pathways, matrix, boundary):
     
     return list(selected_genes)
 
-path_genes = extract_genes(string14, pathway1, expression_matrix, 11.85)  # filtered pathway genes
+# Extract genes from enriched pathways
+cluster14 = pd.read_csv(filepath + 'Cluster14_enrichment.Component.tsv', index_col = 1, sep = '\t')
+cluster4 = pd.read_csv(filepath + 'Cluster4_enrichment.Component.tsv', index_col = 1, sep = '\t')
+path_genes = extract_genes(cluster14, list(cluster14.index[0:5]) + list(cluster4.index[0:5]), expression_matrix, 11.85)  # filtered pathway genes
 
-# Reindex LFC matrix by numeric cluster IDs
-LFC_matrix.index = [1.0,10.0,11.0,12.0,13.0,14.0,15.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]
+# Clean and sort index (order by chemical series)
+LFC_matrix.index = LFC_matrix.index.str.extract(r'_(\d+(?:\.\d+)?)')[0]
 sigpath = LFC_matrix.copy()
-sigpath.reset_index(inplace=True)
-sigpath['index'] = sigpath['index'].astype('float64')
-sigpath.sort_values(by = 'index', inplace = True)
-sigpath.set_index('index', inplace = True)
+sigpath.index = pd.to_numeric(sigpath.index, errors="coerce")
+sigpath.sort_index(inplace=True)
 
+# %% Format response variable (Y: IC50s)
 # Load AZ compound cluster metadata
 AZclustered = pd.read_csv(os.path.join(filepath, 'AZcompound_metadata_clustered_240611a.tsv'),index_col=0)
-
 # Clean IC50 values (remove ">" then convert to float)
 AZclustered['Gal'] = AZclustered['Gal'].str.replace('>','').astype(float)
-
 # Compute cluster-wise mean IC50 and SEM
 Gal = AZclustered.groupby('Dend')['Gal'].mean()
 Error = AZclustered.groupby('Dend')['Gal'].sem()
-
 # Attach IC50 means to LFC matrix
 sigpath['Gal'] = Gal.values
 
@@ -134,21 +118,34 @@ plt.rcParams['xtick.labelsize'] = '26'
 plt.rcParams['ytick.labelsize'] = '26' 
 plt.rcParams['ytick.labelsize'] = '26'
 
+# Bar plot of means
+bars['IC50'].plot(kind = 'bar', capsize = 2, color = cmap(rescale(y)))
+plt.title('Reponse Variable (Y)')
+plt.ylabel('IC50 (uM)') 
+plt.xlabel('Cluster')
+plt.savefig(outpath + 'protacs_12_barplot_IC50_mean.pdf')
+plt.close()
+
+# Bar plot of means
+np.log10(bars['IC50']).plot(kind = 'bar', capsize = 2, color = cmap(rescale(y)))
+plt.title('Reponse Variable (Y)')
+plt.ylabel('log(IC50 [uM])') 
+plt.xlabel('Cluster')
+plt.savefig(outpath + 'protacs_12_barplot_logIC50_mean.pdf')
+plt.close()
+
 # Bar plot with error bars
 bars['IC50'].plot(kind = 'bar', yerr = bars['error'], capsize = 2, color = cmap(rescale(y)))
 plt.title('Mitochondrial Toxicity')
 plt.ylabel('IC50 (uM)') 
 plt.xlabel('Cluster')
 plt.savefig(outpath + 'protacs_12_barplot_IC50.pdf')
-#plt.show()
+plt.close()
 
-# Regression modelling Proteome to IC50 
+# %% Univariate OLS regression of log10(IC50) on individual protein LFCs
 tomodel = sigpath.copy()
-# tomodel.drop([13.0], inplace = True)  # optional drop
 
-# X = pathway genes, Y = log10(IC50)
 X = tomodel[path_genes]   # predictor variables
-X = sm.add_constant(X)    # add intercept
 Y = np.log10(tomodel['Gal'])  # response variable
 
 gene_models = {}
@@ -156,21 +153,19 @@ p_values = {}
 
 # Fit OLS regression for each gene individually
 for gene in X.columns:  
-    X_gene = X[[gene]]                # single gene as predictor
-    X_gene = sm.add_constant(X_gene)  # add intercept
+    X_gene = sm.add_constant(tomodel[[gene]])  # add intercept
     model = sm.OLS(Y, X_gene)         # build model
     result = model.fit()              # fit model
     
     gene_models[gene] = result        # store fitted model
     p_values[gene] = result.pvalues[gene]  # store p-value
 
-# Evaluate R^2 and RMSE for each gene model
+# %% Evaluate individual fits using R^2 and RMSE 
 r2_scores = []
 rmse_scores = []
 
 for gene, result in gene_models.items():
     X_gene = X[[gene]]
-    Y = Y
     Y_pred = result.predict(sm.add_constant(X_gene))  # model predictions
     
     r2 = result.rsquared  # R² score
@@ -194,51 +189,21 @@ sorted_gene_names_rmse, sorted_rmse_scores = zip(*sorted_gene_rmse)
 # Plot sorted R^2 scores 
 plt.figure(figsize=(10, 10))
 plt.plot(range(len(sorted_r2_scores)), sorted_r2_scores, marker='o', linestyle='-', color='b')
-plt.title(str(pathway1[0]) +  '\n' + str(len(sorted_r2_scores)) + ' Proteins Fitted to Mitotoxicity', fontsize = 26)
+plt.title(str(len(sorted_r2_scores)) + ' Proteins Fitted to Mitotoxicity', fontsize = 26)
 plt.ylabel('$R^2$', fontsize = 26)
 plt.xlabel('Sorted $R^2$ Scores', fontsize = 26)
 plt.xticks(None)
 plt.ylim(0,0.6)
-plt.savefig(outpath + f"protacs_12_regression_models({pathway1[0].replace(' ','_')}).pdf")
+plt.savefig(outpath + f"protacs_12_regression_models.pdf")
+plt.close()
 
-sorted_gene_names_r2  # sorted list of genes by R^2
-
-# Sort p-values by their values
-sorted_genes_pvals = sorted(p_values.items(), key=lambda x: x[1])
-
-# Extract sorted gene names and their corresponding p-values
-sorted_gene_names_pval, sorted_p_values = zip(*sorted_genes_pvals)
-
-# Convert p-values to -log10(p-value) for better visualization
-log_p_values = [-np.log10(p) for p in sorted_p_values]
-
-# Plot sorted p-values (-log10(p-values))
-plt.figure(figsize=(10, 10))
-plt.plot(range(len(log_p_values)), log_p_values, marker='o', linestyle='-', color='g')
-plt.title('Sorted P-values for Genes', fontsize=20)
-plt.ylabel('-log10(P-value)', fontsize=16)
-plt.xlabel('Sorted Genes', fontsize=16)
-plt.xticks(None)
-plt.savefig(outpath + 'protacs_12_regression_p_values.pdf')
-
-# Return sorted p-values for further use
-sorted_gene_names_pval, sorted_p_values
-
-# %% P-value and R^2 sorted df
-df_p = pd.DataFrame({'pval': sorted_p_values}, index = sorted_gene_names_pval)
-df_r = pd.DataFrame({'r2': sorted_r2_scores}, index = sorted_gene_names_r2)
-df_combined = pd.merge(df_p, df_r, left_index=True, right_index=True)
-df_combined.loc[['MACROH2A1','MCM6','RFC4','NSUN4','RPL11','NDUFA5']]
-
+print('Top Proteins (descending by R^2 of linear fits)')
+for gene, r2 in zip(reversed(sorted_gene_names_r2),
+                    reversed(sorted_r2_scores)):
+    print(f"{gene}\t{r2}")
 # %% Choose a gene for visualization of measured vs predicted pIC50 values using regression model
-
-# Gene select (only last assignment takes effect)
-#selected_gene = 'RFC4'
-selected_gene = 'MCM6'
-selected_gene = 'NSUN4'
+# Gene select
 selected_gene = 'NDUFA5'
-#selected_gene = 'MACROH2A1'
-#selected_gene = 'RPL11'
 
 # Extract predictor variable (expression of selected gene) and response (pIC50)
 X_gene = X[[selected_gene]]
@@ -267,7 +232,7 @@ min_value = min(Y.min(), Y_pred.min())
 
 # Annotate each point with its index (chemical series number)
 for i, (observed, predicted) in enumerate(zip(Y, Y_pred)):
-    ax.text(observed, predicted, str(i+1), fontsize=10, ha='right', va='bottom')
+    ax.text(observed, predicted, str(i+1), fontsize=12, ha='right', va='bottom')
 
 # Add diagonal reference line (perfect prediction)
 ax.plot([min_value, max_value], [min_value, max_value], 'k--', c = 'blue')
@@ -279,7 +244,8 @@ plt.ylabel('Predicted Mitochondrial Toxicity (pIC50)', fontsize = 26)
 plt.grid(True)
 
 # Save observed vs predicted plot
-plt.savefig(outpath + 'protacs_12_regression_' + selected_gene + '.pdf')
+plt.savefig(outpath + 'protacs_12_regression_' + selected_gene + '_pred.pdf')
+plt.close()
 #plt.show()
 
 # %% Gene expression vs IC50 scatter plot
@@ -298,23 +264,14 @@ plt.figure(figsize=(10,8))
 plt.scatter(X_val, Y, c = 'grey', s = 200)
 
 # Add regression line (predicted pIC50)
-plt.plot(X_val, Y_pred, color = 'grey', linewidth = 1, ls = '--')
+plt.plot(X_val, Y_pred, color = 'blue', linewidth = 1, ls = '--')
 
 # Title and axis labels
-plt.title('OLS using {}'.format(selected_gene) + ' fold change')
+plt.title('Linear regression \nusing {}'.format(selected_gene) + ' fold change')
 plt.xlabel('LFC')      # log fold change of gene expression
-plt.ylabel('pIC50')    # negative log IC50 (toxicity)
+plt.ylabel('log(IC50)')    # negative log IC50 (toxicity)
 plt.grid(True)
 
 # Save gene expression vs IC50 plot
-plt.savefig(outpath + 'protacs_12_regression_' + selected_gene + '_pred.pdf')
+plt.savefig(outpath + 'protacs_12_regression_' + selected_gene + '.pdf')
 #plt.show()
-
-# %% DEG p-value count extraction
-# adjLFC_matrix = pd.read_csv(filepath + 'Cluster_LFCxadjPval_10uM_250305a.csv',
-#                      delimiter = ';', decimal = ',', index_col=0, header = 0).T
-# adjLFC_matrix.index = [1.0,10.0,11.0,12.0,13.0,14.0,15.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]
-# Deg_mask = np.abs(adjLFC_matrix) > -np.log10(0.05)
-# df_count = Deg_mask.sum(axis = 1)
-# arpro_count = df_count.drop([4,7,13]).mean()
-
