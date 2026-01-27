@@ -42,8 +42,8 @@ def format_response_var(AZmeta, LFC_matrix)->pd.DataFrame:
 
 def extract_genes(df, pathways, matrix, boundary, outpath)->list[str]:
     """
-    For each pathway, the function collects the listed proteins, and saves 
-    the final set to 'enriched_proteins.csv'.
+    For each pathway enriched in split, the function collects the listed proteins, 
+    and saves the final set to 'enriched_proteins.csv'.
 
     Parameters
     ----------
@@ -55,7 +55,7 @@ def extract_genes(df, pathways, matrix, boundary, outpath)->list[str]:
 
     Returns
     -------
-    list of str
+    List of genes from enrichment analysis on split. 
 
     """
     all_genes = set()
