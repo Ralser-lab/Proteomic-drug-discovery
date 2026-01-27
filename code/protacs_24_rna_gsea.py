@@ -27,7 +27,6 @@ Dependencies: os, numpy, pandas, matplotlib
 
 """
 
-
 # %%
 import os 
 import numpy as np
@@ -116,8 +115,8 @@ def gsea_selection_plot(
     # Subset on cell-line.
     subset_df = df.loc[df["filepath"].astype(str).str.contains(target, na=False)]
 
-    if target == "C4_2":
-        subset_df = subset_df.loc[~subset_df["filepath"].astype(str).str.contains('7166_3uM',na=False)]
+    subset_df = subset_df.loc[~subset_df["filepath"].astype(str).str.contains('7166_3uM',na=False)]
+    subset_df = subset_df.loc[~subset_df["filepath"].astype(str).str.contains('Enza_300nM',na=False)]
 
     # Prepare term ordering via priority terms at front followed by frequency.
     topN_terms = subset_df["Term"].value_counts().index.to_list()

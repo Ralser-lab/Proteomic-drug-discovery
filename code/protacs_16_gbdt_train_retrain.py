@@ -38,14 +38,14 @@ Requirements
 ------------
 Python >= 3.8  
 Dependencies: pandas, scikit-learn, joblib 
-Custom: device_ml_helpers, device_gradientboostingmachine
+Custom: device_gradientboostingmachine, device_supportfunctions
 
 """
 # %% Import modules
 import os, sys, joblib
 import pandas as pd
 sys.path.append(os.path.join(os.path.dirname(__file__)))
-from device_ml_helpers import (
+from device_supportfunctions import (
     get_relative_paths,
     get_inputs, 
     format_response_var,

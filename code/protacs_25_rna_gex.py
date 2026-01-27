@@ -381,6 +381,8 @@ if __name__ == '__main__':
     )
 
     data_df = data_df.loc[~data_df.index.str.contains('7166_3uM')]
+    data_df = data_df.loc[~data_df.index.str.contains('Enza_300nM')]
+
     
     hallmark_id:str = ['HALLMARK_ANDROGEN_RESPONSE']
     timepoints:list[str]= ['24h']
