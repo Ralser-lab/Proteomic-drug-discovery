@@ -1,20 +1,20 @@
 import os
 import pandas as pd
 
-def get_relative_paths():
-    '''Helper function to get relative paths for ml scripts.'''
+def get_relative_paths()->tuple[str, str, str]:
+    '''Helper function to get relative paths for ML scripts.'''
     path = os.path.join(os.path.dirname(__file__), '..', 'data')
     model_out = os.path.join(path, '..' ,'scoring_models')
     dpath = os.path.dirname(__file__)
     return path, model_out, dpath
 
-def clean_drug_index(df):
+def clean_drug_index(df)->pd.DataFrame:
     '''Helper function to format DE matrix index when loading.'''
     df.index = df.index.map(lambda x: '_'.join(x.split('_')[1:3]) if len(x.split('_')) > 2 else None)
     df.index = df.index.str.replace(' - Compound', '')
     return df
 
-def get_inputs(path):
+def get_inputs(path)->tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     '''Load differential expression profiles and proteome from HBD screen.'''
     LFC_matrix = clean_drug_index(pd.read_csv(os.path.join(path, 
                                                         'Drug_LFCxadjPval_250305a.csv'
@@ -30,7 +30,7 @@ def get_inputs(path):
     
     return LFC_matrix, expression_matrix, AZmeta
 
-def format_response_var(AZmeta, LFC_matrix):
+def format_response_var(AZmeta, LFC_matrix)->pd.DataFrame:
     '''Formats response variable and aligns to predictor index.'''
     AZmeta.index = AZmeta.index.str.replace('-','_') # Format index
     AZmeta['Gal'] = AZmeta['Gal'].str.replace('>','').astype(float) # Convert IC50 to float
@@ -40,7 +40,7 @@ def format_response_var(AZmeta, LFC_matrix):
     BinaryTox = pd.DataFrame({ 'IC50' : (IC50snoNA['Gal_IC50']<10).astype(int)}) # binarize
     return BinaryTox
 
-def extract_genes(df, pathways, matrix, boundary, outpath):
+def extract_genes(df, pathways, matrix, boundary, outpath)->list[str]:
     """
     For each pathway, the function collects the listed proteins, and saves 
     the final set to 'enriched_proteins.csv'.
