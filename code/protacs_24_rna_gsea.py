@@ -31,6 +31,7 @@ Dependencies: os, numpy, pandas, matplotlib
 import os 
 import numpy as np
 import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from typing import Any
@@ -42,7 +43,8 @@ from dataclasses import dataclass
 class PlotterCfg:
     dir_name: str = "../preprocessing_rna/gsea_output/h_pval/"
     cells: tuple[str, ...] = ("LNCaP", "C4_2")
-    priority_terms = ["HALLMARK_ANDROGEN_RESPONSE", "HALLMARK_OXIDATIVE_PHOSPHORYLATION"]
+    priority_terms = ["HALLMARK_ANDROGEN_RESPONSE", "HALLMARK_OXIDATIVE_PHOSPHORYLATION",
+                      "HALLMARK_E2F_TARGETS", "HALLMARK_MYC_TARGETS_V1", "HALLMARK_MYC_TARGETS_V2", "HALLMARK_G2M_CHECKPOINT"]
     metrics: tuple[str, ...] = ("NES", "absNES")
     fig_path_suffix: str = "../figures/protacs_24_rna_"
 
@@ -181,7 +183,7 @@ def gsea_selection_plot(
     x = nes_df["Term"].cat.codes
     y = nes_df["filepath"].cat.codes
 
-    fig, ax = plt.subplots(figsize=(2, 7))
+    fig, ax = plt.subplots(figsize=(5, 5))
 
     ax.scatter(x,y,c=rgba,s=sizes)
 
@@ -196,13 +198,17 @@ def gsea_selection_plot(
     ax.set_xlabel("Term")
     ax.set_ylabel("Contrast")
 
-    ax.margins(x=0.75)
+    ax.margins(x=0.1)
+    ax.margins(y=0.1)
+
+    mpl.rcParams["pdf.fonttype"] = 42   # embed TrueType fonts (Type 42)
+    mpl.rcParams["font.family"] = "Helvetica"  # or another installed font
 
     mappable = cm.ScalarMappable(norm=norm, cmap=cmap)
     mappable.set_array(nes)
     fig.colorbar(mappable, ax=ax, label=metric)
     fig.tight_layout()
-    plt.savefig(cfg.fig_path_suffix + f'{target}_gsea_selection_plot.pdf')
+    plt.savefig(cfg.fig_path_suffix + f'{target}_gsea_dot_plot.pdf')
     plt.show()
     plt.close()
 

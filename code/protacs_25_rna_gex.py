@@ -38,6 +38,7 @@ Custom: protacs_24_rna_gsea
 import pandas as pd
 import os
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from typing import Tuple
 from functools import lru_cache
@@ -348,7 +349,10 @@ def plotter(data_df:pd.DataFrame, timepoint, cell, hallmark_id):
     )
 
 
-    fig, ax = plt.subplots(figsize=(4, 6)) 
+    fig, ax = plt.subplots(figsize=(3, 5)) 
+
+    mpl.rcParams["pdf.fonttype"] = 42   # embed TrueType fonts (Type 42)
+    mpl.rcParams["font.family"] = "Helvetica"  # or another installed font
 
     ax = boxplot_df.boxplot(
         column="Z",
@@ -360,7 +364,7 @@ def plotter(data_df:pd.DataFrame, timepoint, cell, hallmark_id):
     )
 
     plt.suptitle("")
-    plt.title(f"{hallmark_id} \n@ {timepoint} ({cell})")
+    plt.title(f"{hallmark_id} \nat {timepoint} ({cell})")
     plt.ylabel("Mean target expression (logCPM)")
     plt.tight_layout()
     plt.savefig(cfg.fig_path_suffix+f'{cell}_{timepoint}_{hallmark_id}.pdf')
