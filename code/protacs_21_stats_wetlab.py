@@ -219,30 +219,34 @@ ic50_values = device_summarystatistics.linear_IC50(complex1) # Calculate log10(I
 device_summarystatistics.t_test(ic50_values.iloc[0:3], ic50_values.iloc[3:6])
 device_summarystatistics.t_test(ic50_values.iloc[0:3], ic50_values.iloc[6:9])
 device_summarystatistics.t_test(ic50_values.iloc[0:3], ic50_values.iloc[3:9])
+
+print('Compound 1 IC50s complex I activity [uM]:')
 print((10**ic50_values.iloc[0:3]).mean()) # exponentiate to IC50
+print('Analogues IC50s complex I activity [uM]:')
 print((10**ic50_values.iloc[3:9]).mean()) # exponentiate to IC50
 
 # %% Load and analyze primary HCC data (Figure 5).
 
 # Read in and format wetlab source data
-HCC = pd.read_excel(os.path.join(data_path, 'Figure4_HCC_250208a.xlsx'), index_col = 0)
-HCC = HCC.loc[~HCC.index.isna()]
-HCC2 = HCC.assign(conc = np.log10(HCC.index))
-# HCC2.conc.replace(-np.inf, -10, inplace = True)
-HCC2 = HCC2.iloc[1:HCC2.shape[0]]
-HCC2.set_index('conc', inplace = True)
+hcc_df = pd.read_excel(os.path.join(data_path, 'Figure4_HCC_250208a.xlsx'), index_col = 0)
+hcc_df = hcc_df.loc[~hcc_df.index.isna()] # drop NAs
+log_df = hcc_df.assign(conc = np.log10(hcc_df.index)) # log transform X
+log_df = log_df.replace([np.inf, -np.inf], 0) # recover 0  
+log_df.set_index('conc', inplace=True) 
+norm_df = log_df/log_df.max() # normalize Y
 
 # Extract column wise IC50s using linear model 
-HCC_values = device_summarystatistics.linear_IC50(HCC2)
+hcc_ic50s = device_summarystatistics.linear_IC50(norm_df)
 
 # Clean up data for t-test
-ic50_df = pd.DataFrame({'Compound 1': ic50_values[0:3].values,
-                            'Compound 2': ic50_values[3:6].values, 
-                            'Compound 3': ic50_values[6:9].values}, 
+hcc_ic50_df = pd.DataFrame({'Compound 1': hcc_ic50s[0:3].values,
+                            'Compound 2': hcc_ic50s[3:6].values, 
+                            'Compound 3': hcc_ic50s[6:9].values}, 
                             index = ['rep1', 'rep2', 'rep3'])
 
 # Get IC50 values unlogged
-ic50s = (10**ic50_df).mean()
+print('IC50s human hepatocarcinoma survival [uM]:')
+print((10**hcc_ic50_df).mean())
 
 # %% Load analyze and plot cell panel data (Figure 5).
 

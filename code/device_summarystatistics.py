@@ -101,8 +101,7 @@ def t_test(df1, df2)->tuple:
 
 def linear_IC50(df)->float:
     """
-    Colwise linear fit to extract IC50, *assumes response
-    is normally distributed*.
+    Colwise linear fit to extract IC50.
 
     """
     # empty vec for storing IC50s
