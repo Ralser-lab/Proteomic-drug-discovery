@@ -56,7 +56,8 @@ expression_matrix =  pd.read_csv(filepath + 'SB_PROTAC_prmatrix_filtered_95_impu
 LFC_matrix = pd.read_csv(filepath + 'Cluster_LFC_10uM_250305a.csv',
                      delimiter = ';', decimal = ',', index_col=0, header = 0).T
 
-# %% Format predictor variable (X: Log Fold Change)
+# Format predictor variable (X: Log Fold Change)
+
 def extract_genes(df, pathways, matrix, boundary):
     """
     Extract gene list for given pathways, then filter for genes 
@@ -82,7 +83,9 @@ def extract_genes(df, pathways, matrix, boundary):
 # Extract genes from enriched pathways
 cluster14 = pd.read_csv(filepath + 'Cluster14_enrichment.Component.tsv', index_col = 1, sep = '\t')
 cluster4 = pd.read_csv(filepath + 'Cluster4_enrichment.Component.tsv', index_col = 1, sep = '\t')
-path_genes = extract_genes(cluster14, list(cluster14.index[0:5]) + list(cluster4.index[0:5]), expression_matrix, 11.85)  # filtered pathway genes
+
+n_cut = 5
+path_genes = extract_genes(cluster14, list(cluster14.index[0:n_cut]) + list(cluster4.index[0:n_cut]), expression_matrix, 11.85)  # filtered pathway genes
 
 # Clean and sort index (order by chemical series)
 LFC_matrix.index = LFC_matrix.index.str.extract(r'_(\d+(?:\.\d+)?)')[0]
@@ -90,7 +93,7 @@ sigpath = LFC_matrix.copy()
 sigpath.index = pd.to_numeric(sigpath.index, errors="coerce")
 sigpath.sort_index(inplace=True)
 
-# %% Format response variable (Y: IC50s)
+# Format response variable (Y: IC50s)
 # Load AZ compound cluster metadata
 AZclustered = pd.read_csv(os.path.join(filepath, 'AZcompound_metadata_clustered_240611a.tsv'),index_col=0)
 # Clean IC50 values (remove ">" then convert to float)
@@ -105,7 +108,7 @@ sigpath['Gal'] = Gal.values
 bars = pd.DataFrame({'IC50':sigpath['Gal'], 'error': Error}, index = sigpath.index)
 bars.sort_values(by = 'IC50', ascending = False, inplace = True)  # sort by IC50
 cmap = plt.get_cmap('jet')
-bars.drop([3.0, 13.0], axis = 0, inplace = True)  # drop two clusters
+bars.drop([3.0, 13.0], axis = 0, inplace = True)  # drop non-degraders
 
 # Cluster IDs for color scaling
 y = list(bars.index)
@@ -142,7 +145,7 @@ plt.xlabel('Cluster')
 plt.savefig(outpath + 'protacs_12_barplot_IC50.pdf')
 plt.close()
 
-# %% Univariate OLS regression of log10(IC50) on individual protein LFCs
+# Univariate OLS regression of log10(IC50) on individual protein LFCs
 tomodel = sigpath.copy()
 
 X = tomodel[path_genes]   # predictor variables
@@ -160,7 +163,7 @@ for gene in X.columns:
     gene_models[gene] = result        # store fitted model
     p_values[gene] = result.pvalues[gene]  # store p-value
 
-# %% Evaluate individual fits using R^2 and RMSE 
+# Evaluate individual fits using R^2 and RMSE 
 r2_scores = []
 rmse_scores = []
 
