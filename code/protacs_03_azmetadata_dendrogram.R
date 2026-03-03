@@ -17,7 +17,7 @@
 #'
 #' Outputs
 #' -------
-#' - figures/protacs_03_ChemicalSeries_dendrogram_plot.pdf
+#' - figures/protacs_03_chemicalseries_dendrogram_plot.pdf
 #'
 #' Requirements
 #' ------------
@@ -71,7 +71,7 @@ mapdata$Target <- factor(mapdata$Target, levels = c('AR_piperidine','AR_indole',
 # Plot the dedrogram
 setwd(fig_dir)
 
-pdf("protacs_03_ChemicalSeries_dendrogram_plot.pdf", width = 20, height = 10)
+pdf("protacs_03_chemicalseries_dendrogram_plot.pdf", width = 20, height = 10)
 options(repr.plot.width = 20, repr.plot.height =10) 
 
 p <- ggtree(phylo_tree, layout = 'circular', size = 0.5)

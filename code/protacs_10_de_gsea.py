@@ -24,8 +24,8 @@ Inputs
 Outputs
 -------
 - data/gsea_FDR_NES_redux_HBDlib_250205a.csv
-- figures/protacs_10_PMF_GSEA_PROTACs_all.pdf
-- figures/protacs_10_GSEA_ChemicalSeries_1and10uM.pdf
+- figures/protacs_10_de_gsea_pmf.pdf
+- figures/protacs_10_de_gsea_chemicalseries_1and10uM.pdf
 - figures/protacs_10_<gsea_term>_lineplot.pdf
 
 Requirements
@@ -37,6 +37,7 @@ Dependencies: pandas, numpy, matplotlib, seaborn, gseapy
 # %% Import modules
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.colors import TwoSlopeNorm
 import numpy as np
 import seaborn as sns
 import numpy as np
@@ -281,11 +282,11 @@ ax.tick_params(axis='x', labelsize=15, rotation=90)  # Adjust font size and rota
 ax.tick_params(axis='y', labelsize=15)  # Adjust font size
 ax.set_xlabel('')  # This removes the x-axis label
 ax.set_ylabel('')
-plt.savefig(os.path.join(fig_out, 'protacs_10_PMF_GSEA_PROTACs_all.pdf'))
+plt.savefig(os.path.join(fig_out, 'protacs_10_de_gsea_pmf.pdf'))
 plt.close()
 
 # %% Plot the results
-norm = plt.Normalize(vmin=gsealist['NES'].min(), vmax=gsealist['NES'].max())
+norm = TwoSlopeNorm(vmin=gsealist['NES'].min(), vcenter=0, vmax=gsealist['NES'].max())
 gradient = 'RdBu_r'
 plt.rcParams['axes.labelsize'] = '30'   
 plt.rcParams['axes.titlesize'] = '30' 
@@ -295,9 +296,16 @@ plt.rcParams['ytick.labelsize'] = '26'
 
 # Create a stripplot (dot plot)
 gseaplot = plt.figure(figsize=(30, 10))
-sns.stripplot(x="condition", y="Term.1", data=gsealist, hue="NES",  order = cat_order,
-              palette=gradient, jitter=False, size=30, dodge=False)
 ax = plt.gca()
+sns.stripplot(x="condition", y="Term.1", data=gsealist, hue="NES", order=cat_order,
+              palette=gradient, jitter=False, size=30, dodge=False, ax=ax)
+# Recolor dots using TwoSlopeNorm — seaborn applies a linear norm by default
+cmap_obj = plt.cm.get_cmap(gradient)
+for coll_idx, cond in enumerate(cat_order):
+    if coll_idx >= len(ax.collections):
+        break
+    subset_nes = gsealist[gsealist['condition'] == cond]['NES'].values
+    ax.collections[coll_idx].set_facecolor(cmap_obj(norm(subset_nes)))
 ax.yaxis.tick_right()
 cbar = plt.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=gradient), ax=ax, location = 'left')
 cbar.set_label('Enrichment')
@@ -309,7 +317,7 @@ ax.set_ylabel('')
 ax.get_legend().remove()
 # plt.show()
 plt.close()
-gseaplot.savefig(os.path.join(fig_out, 'protacs_10_GSEA_ChemicalSeries_1and10uM.pdf'))
+gseaplot.savefig(os.path.join(fig_out, 'protacs_10_de_gsea_chemicalseries_1and10uM.pdf'))
 
 # %% Extract t-matrices
 matrix_0p1 = pd.read_csv(os.path.join(filepath3, 'Cluster_LFCxPval_0p1uM_250305a.csv'), sep = ';', index_col = 0, decimal = ',').T

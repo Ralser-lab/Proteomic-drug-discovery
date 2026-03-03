@@ -21,11 +21,9 @@ Inputs
 
 Outputs
 -------
-- figures/protacs_09_3D_PCA_ChemicalSeries.pdf
-- figures/protacs_09_PMF_ontargetHBD.pdf
-- figures/protacs_09_PMF_ARHBD.pdf
-- figures/protacs_09_PDF_FDA_HBD_Zcentered.pdf
-- figures/protacs_09_PDF_violinbox_FDA_HBD.pdf
+- figures/protacs_09_de_pca_chemicalseries.pdf
+- figures/protacs_09_de_kde_fda_v_hbd_zcentered.pdf
+- figures/protacs_09_de_kde_fda_v_hbd_boxplot.pdf
 - data/NCB_ProteomeGuidedDiscovery_TableS2_250606a.csv
 
 Requirements
@@ -46,17 +44,17 @@ import numpy as np
 
 # Import custom statistics module
 import sys
-import importlib
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 import device_summarystatistics
 
 # Set relative paths
 dir1 = os.path.dirname(__file__)
-filepath2 = os.path.join(dir1, '..', 'data/')
-filepath3 = os.path.join(dir1, '..', 'figures/')
+filepath2 = os.path.join(dir1, '..', 'data')
+filepath3 = os.path.join(dir1, '..', 'figures')
+workflow = 'protacs_09'
 
 # Load differential expression matrix for HBD library screen (chemical series vs DMSO)
-t_matrix = pd.read_csv(filepath2 + 'Cluster_LFCxPval_10uM_250305a.csv',
+t_matrix = pd.read_csv(filepath2 + '/Cluster_LFCxPval_10uM_250305a.csv',
                        delimiter=';', decimal=',', index_col=0, header=0).T
 
 # %% Perform principal component analysis on differential expression profiles (PCA on chemical series vs DMSO)
@@ -136,10 +134,10 @@ handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color, ma
 legend = ax.legend(handles, label_colors.index, bbox_to_anchor=(1.05, 1), loc='upper left', title='Drug Target', title_fontsize=26, fontsize=26)
 plt.title('Principal Component Analysis')
 #plt.show()
-
 # Export PCA on DE profiles in HBD screen (chemical series vs DMSO)
-fig.savefig(filepath3 + 'protacs_09_3D_PCA_ChemicalSeries.pdf')
+fig.savefig(os.path.join(filepath3,f'{workflow}_de_pca_chemicalseries.pdf'))
 plt.close(fig)
+
 # %% Probability mass function (PMF) plots based on DE counts
 # Cleans index of differential expression profiles to align with metadatafile
 def clean_drug_index(df):
@@ -161,32 +159,8 @@ mask = abs(LFCxadjPval_matrix) > -np.log10(0.05)
 # Counts after conditioning on DE profiles
 counts = mask.sum(axis = 1).sort_values()/mask.shape[1]
 ontargetHBD = counts.loc[AZmeta['Drug_Type'] == 'Txn-PROTAC']
-ARHBD = counts.loc[AZmeta['Drug_Type'] == 'AR-PROTAC']
+arHBD = counts.loc[AZmeta['Drug_Type'] == 'AR-PROTAC']
 
-# Function to discretize and produce PMF weights and plots   
-def pmf(df, saveout):
-
-    # outcome frequencies
-    outcomes = df.value_counts().sort_index()
-
-    # discretize outcomes
-    intervals = pd.cut(outcomes.index, np.arange(-0.00001,df.max(), df.max()/100))
-
-    discretized = outcomes.groupby(intervals, observed = False).sum()
-
-    # calculate mass
-    discretized = discretized / len(discretized)
-
-    plt.stem(np.arange(0.00001, df.max(), df.max()/100), discretized, '-', markerfmt='o')
-    plt.axvline(df.mean())
-    plt.savefig(filepath3 + saveout)
-    #plt.show()
-
-    return discretized
-
-# Save PMF plots on compounds in HBD screen
-pmf(ontargetHBD, '/protacs_09_PMF_ontargetHBD.pdf')
-pmf(ARHBD, '/protacs_09_PMF_ARHBD.pdf')
 
 # %% Probability density function (PDF) plots based on DE counts
 # Load diffexp probabilities from FDA drug screen dataset
@@ -195,7 +169,7 @@ counter = pd.read_csv(os.path.join(filepath2, 'FDA_proba_250304.tsv'), index_col
 # Combine FDA and HBD drug screening profiles conditioned on DE alpha cut-off
 df = pd.DataFrame({
     'FDA approved drugs': counter,
-    'AR-directed HBDs': ARHBD,
+    'AR-directed HBDs': arHBD,
     'on-target HBDs': ontargetHBD
 })
 
@@ -212,7 +186,7 @@ plt.legend()
 plt.title("Density Plot with Custom Colors")
 
 # Save probability density function as a PDF
-plt.savefig(filepath3 + 'protacs_09_PDF_FDA_HBD_Zcentered.pdf')
+plt.savefig(os.path.join(filepath3, f'{workflow}_de_kde_fda_v_hbd_zcentered'))
 #plt.show()
 
 # %% Plot probability density functions as boxplot
@@ -228,7 +202,7 @@ plt.violinplot(data_no_nan)
 plt.boxplot(data_no_nan, labels = df.columns)
 plt.title("Boxplot with Columns of Varying Lengths")
 plt.ylabel("Values")
-plt.savefig(os.path.join(filepath3, 'protacs_09_PDF_violinbox_FDA_HBD.pdf'))
+plt.savefig(os.path.join(filepath3, f'{workflow}_de_kde_fda_v_hbd_boxplot'))
 #plt.show()
 
 # Perform z-test with CDF

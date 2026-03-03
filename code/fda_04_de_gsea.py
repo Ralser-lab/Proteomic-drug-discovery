@@ -30,6 +30,7 @@ Dependencies: pandas, numpy, matplotlib, seaborn, gseapy
 # %% Import packages
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.colors import TwoSlopeNorm
 import seaborn as sns
 import gseapy as gp
 import os
@@ -38,12 +39,12 @@ import os
 data_out = os.path.dirname(__file__)
 figure_out = os.path.join(data_out, '..', 'figures')
 data_out = os.path.join(data_out, '..', 'data')
-filepath = data_out + '/'
+workflow = 'fda_04'
 
 # %% Read in limma contrast data vs DMSO from FDA test set & clean
-t_matrix = pd.read_csv(filepath + 'FDA_LimmaMatrix_250304a.csv',
+t_matrix = pd.read_csv(os.path.join(data_out,'FDA_LimmaMatrix_250304a.csv'),
                      delimiter = ';', decimal = ',', index_col=0, header = 0).T
-adj_matrix = pd.read_csv(filepath + 'FDA_adjLimmaMatrix_250304a.csv',
+adj_matrix = pd.read_csv(os.path.join(data_out,'FDA_adjLimmaMatrix_250304a.csv'),
                      delimiter = ';', decimal = ',', index_col=0, header = 0).T
 t_matrix.index = t_matrix.index.str.replace('Drug_', '')
 t_matrix.index = t_matrix.index.str.replace(' - DMSO', '')
@@ -119,7 +120,7 @@ df_store['Term'] = ['_'.join(idx.split('_')[-9:]) if idx.count('_') >= 6 else id
 df_store['Term'] = df_store['Term'].str.lower().str.replace('_', ' ')
 
 # Setup GSEA result plot
-norm = plt.Normalize(vmin=df_store['NES'].min(), vmax=df_store['NES'].max())
+norm = TwoSlopeNorm(vmin=df_store['NES'].min(), vcenter=0, vmax=df_store['NES'].max())
 gradient = 'RdBu_r'
 custom_palette = ['blue','red'] 
 plt.rcParams['axes.labelsize'] = '30'   
@@ -141,7 +142,7 @@ ax.tick_params(axis='x', labelsize=30, rotation=90)
 ax.tick_params(axis='y', labelsize = 30)  
 ax.set_xlabel('') 
 #plt.show()
-gseaplot.savefig(os.path.join(figure_out, 'fda_04_gsea_targets.pdf')) # Export dotplot plot of GSEA on limma contrasts in FDA-test set
+gseaplot.savefig(os.path.join(figure_out, f'{workflow}_gsea_targets.pdf')) # Export dotplot plot of GSEA on limma contrasts in FDA-test set
 
 # %% Export GSEA protein matrix within leading edge for a target pathway as a heatmap
 mtx = df4.copy()
@@ -160,5 +161,6 @@ g.ax_heatmap.set_ylabel('Proteins', fontsize = 16, rotation = 90)
 g.cax.set_title('Moderated t-test \n-log10(adjpval) \nx sign(LFC)')
 plt.setp(g.ax_heatmap.get_yticklabels(), rotation=0, fontsize = 16)
 plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90, fontsize = 16)
-plt.savefig(os.path.join(figure_out, 'fda_04_leadingedge_oxdetox_MTX.pdf')) # Export leading edge member protein heatmap (target GO term) for Methotrexate contrast vs DMSO
+plt.savefig(os.path.join(figure_out, f'{workflow}_leadingedge_oxdetox_MTX.pdf')) # Export leading edge member protein heatmap (target GO term) for Methotrexate contrast vs DMSO
+plt.close()
 #plt.show()

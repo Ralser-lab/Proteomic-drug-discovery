@@ -46,7 +46,7 @@ import xgboost as xgb
 import optuna
 import json
 from sklearn.model_selection import (GridSearchCV, 
-                                     StratifiedKFold, KFold, 
+                                     StratifiedKFold, 
                                      cross_val_score)
 from sklearn.metrics import (classification_report, 
                              confusion_matrix, 
@@ -137,6 +137,20 @@ class GBDT:
     # Helper functions
     ##############################################################################
     
+    @staticmethod
+    def load_params(path) -> dict:
+        """
+        Loads config file containing hyperparameter search-space.
+        
+        """
+        with open(path, "r") as f:
+            return json.load(f)
+    
+    @staticmethod
+    def configure_font() -> None:
+        plt.rcParams["font.family"] = "sans-serif"
+        plt.rcParams["font.sans-serif"] = ["Helvetica"]
+
     def out(self, filename, params = False) -> str:
         """
         Build a full output path under the figures directory, prefixed with the
@@ -159,7 +173,7 @@ class GBDT:
             return os.path.join(self.dout, f"{self.dout_prefix}{self.name}{filename}")
         else: 
             return os.path.join(self.modelout, f"{self.dout_prefix}{self.name[:-1]}{filename}")
-
+        
     ##############################################################################
     # Feature importance 
     ##############################################################################
@@ -206,6 +220,82 @@ class GBDT:
 
         return self.top_n
 
+    def get_cv_shap_features(self, n=20, splits=5, random_state=42, plot=True) -> pd.Series:
+        """
+        Compute cross-validated SHAP feature importance to avoid selection leakage.
+
+        The standard approach (get_model_features) computes SHAP on a model trained
+        on all training data. When those importances are used to select features for
+        round 2 CV, the feature selection is biased toward the training distribution,
+        inflating apparent round 2 CV performance.
+
+        This method fixes the leakage by:
+          1. Re-running k-fold CV with self.best_params (from gbdt_optuna).
+          2. In each fold, training on the fold's train split and computing SHAP
+             values on the held-out validation split only.
+          3. Averaging mean |SHAP| across all folds.
+          4. Returning the top-n features by unbiased cross-validated importance.
+
+        Parameters
+        ----------
+        n : int, default 20
+            Number of top features to return.
+        splits : int, default 5
+            Number of CV folds. Should match the splits used in gbdt_optuna.
+        random_state : int, default 42
+            Random seed for StratifiedKFold.
+        plot : bool, default True
+            If True, save a bar plot of top features by mean CV SHAP importance.
+
+        Returns
+        -------
+        pandas.Index
+            Index of the top-n feature names.
+
+        """
+        kf = StratifiedKFold(n_splits=splits, shuffle=True, random_state=random_state)
+        shap_accumulator = np.zeros(self.X_train.shape[1])
+
+        for train_idx, val_idx in kf.split(self.X_train, self.y_train):
+            X_fold_train = self.X_train.iloc[train_idx]
+            y_fold_train = self.y_train.iloc[train_idx]
+            X_fold_val   = self.X_train.iloc[val_idx]
+
+            fold_model = xgb.XGBClassifier(
+                random_state=random_state, eval_metric="logloss", n_jobs=1, **self.best_params
+            )
+            fold_model.fit(X_fold_train, y_fold_train)
+
+            explainer = shap.TreeExplainer(fold_model)
+            shap_vals = explainer.shap_values(X_fold_val)
+            shap_accumulator += np.abs(shap_vals).mean(axis=0)
+
+        mean_shap = shap_accumulator / splits
+
+        self.df_importances = pd.DataFrame({
+            'Feature': self.X_train.columns,
+            'CV_SHAP': mean_shap
+        }).sort_values('CV_SHAP', ascending=False).reset_index(drop=True)
+
+        if plot:
+            top_df = self.df_importances.head(n)
+            plt.rcParams['axes.labelsize'] = '20'
+            plt.rcParams['axes.titlesize'] = '20'
+            plt.rcParams['xtick.labelsize'] = '20'
+            plt.rcParams['ytick.labelsize'] = '20'
+            plt.rcParams['legend.fontsize'] = '20'
+            plt.figure(figsize=(10, 6))
+            plt.bar(x=top_df['Feature'], height=top_df['CV_SHAP'])
+            plt.ylabel(f'Top {n} / {len(self.df_importances)} Features', rotation=90)
+            plt.xlabel('Mean |SHAP| across CV folds (validation splits)')
+            plt.xticks(rotation=90, ha='right')
+            plt.yticks(rotation=90)
+            plt.savefig(self.out('top_features_cv_shap.pdf'))
+            plt.close()
+
+        self.top_n = self.df_importances.head(n)['Feature']
+        return self.top_n
+
     ##############################################################################
     # Train / tune / evaluate
     ##############################################################################
@@ -243,7 +333,7 @@ class GBDT:
         self.baseline_proba = baseline_model.predict_proba(self.Xb_test)[:, 1]
         self.baseline_model = baseline_model
 
-    def gbdt_gridcv(self, params, X_train, y_train) -> xgb.XGBClassifier:
+    def gbdt_gridcv(self, params, X_train, y_train, score = 'average_precision') -> xgb.XGBClassifier:
         """
         Run a 5-fold GridSearchCV over the provided hyperparameter grid, refit
         the best XGBClassifier on all training data, and store the tuned model.
@@ -263,120 +353,182 @@ class GBDT:
             The fitted best model found by grid search.
 
         """
+
         self.X_train = X_train
         self.y_train = y_train
         self.params = params
-        kf = KFold(n_splits=5, shuffle=True, random_state=42)
+
+        kf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+        # Score on multiple metrics; HP selection still driven by primary score
+        scoring = {
+            score: score,
+            'roc_auc': 'roc_auc',
+        }
+
         grid_search = GridSearchCV(
-            estimator=xgb.XGBClassifier(),
+            estimator=xgb.XGBClassifier(random_state=42),
             param_grid=params,
             cv=kf,
-            scoring='accuracy',
-            n_jobs=-1
+            scoring=scoring,
+            n_jobs=-1,
+            refit=score,   # HP selection unchanged: still uses primary score
+            return_train_score=True
         )
+
         grid_search.fit(X_train, y_train)
-        best_params = grid_search.best_params_
-        best_model = xgb.XGBClassifier(**best_params, random_state=42)
-        best_model.fit(X_train, y_train)
-        self.best_model = best_model
-        self.best_params = best_params
-        print(params)
-        print(best_params)
-        params_df = pd.DataFrame(list(params.items()), columns = ['parameter', 'values'])
-        params_df.to_csv(self.out('-search_space.csv', params = True))
-        best_params_df = pd.DataFrame(list(best_params.items()), columns = ['parameter', 'value'])
-        best_params_df.to_csv(self.out('-final_metrics.csv', params = True))
-        return best_model
+
+        # store the whole CV object
+        self.grid_search = grid_search
+        self.cv_results_ = pd.DataFrame(grid_search.cv_results_)
+
+        # best model already refit on all training data
+        self.best_model = grid_search.best_estimator_
+        self.best_params = grid_search.best_params_
+
+        # mean and sd for best config (across folds) — per metric
+        i = grid_search.best_index_
+
+        def _fold_scores(metric):
+            cols = [c for c in self.cv_results_.columns
+                    if c.startswith('split') and c.endswith(f'_test_{metric}')]
+            return self.cv_results_.loc[i, cols].to_numpy(dtype=float)
+
+        fold_scores     = _fold_scores(score)
+        fold_scores_auc = _fold_scores('roc_auc')
+
+        self.best_cv_scores_ = fold_scores
+        self.best_cv_mean_   = float(np.mean(fold_scores))
+        self.best_cv_sd_     = float(np.std(fold_scores, ddof=1))
+
+        print("Best params:", self.best_params)
+        print(f"CV {score}:  {self.best_cv_mean_:.4f} ± {self.best_cv_sd_:.4f}")
+        print(f"CV roc_auc: {np.mean(fold_scores_auc):.4f} ± {np.std(fold_scores_auc, ddof=1):.4f}")
+
+        # save search space + best params + cv summary
+        pd.DataFrame(list(params.items()), columns=['parameter', 'values']) \
+            .to_csv(self.out('-search_space.csv', params=True), index=False)
+
+        pd.DataFrame(list(self.best_params.items()), columns=['parameter', 'value']) \
+            .to_csv(self.out('-best_params.csv', params=True), index=False)
+
+        pd.DataFrame([{
+            "metric": score,
+            "cv_mean": self.best_cv_mean_,
+            "cv_sd": self.best_cv_sd_,
+            "roc_auc_mean": float(np.mean(fold_scores_auc)),
+            "roc_auc_sd": float(np.std(fold_scores_auc, ddof=1)),
+            "n_splits": kf.get_n_splits()
+        }]).to_csv(self.out('-cv_summary.csv', params=True), index=False)
+
+        # optionally save full cv_results_
+        self.cv_results_.to_csv(self.out('-cv_results.csv', params=True), index=False)
+
+        return self.best_model
     
-    def gbdt_optuna(self, params, X_train, y_train, n_trials=50, score='accuracy',
-                timeout=None, random_state=42, enqueue_params=None) -> xgb.XGBClassifier:
-        """
-        Run Bayesian search over the provided hyperparameter grid using 5 stratified-splits
-        then refit the best XGBClassifier on all training data, and store the tuned model.
+    def gbdt_optuna(
+        self,
+        params,
+        X_train,
+        y_train,
+        n_trials=50,
+        score="average_precision",
+        splits=5,
+        timeout=None,
+        random_state=42,
+    ) -> xgb.XGBClassifier:
 
-        Parameters
-        ----------
-        params : dict
-            Grid of hyperparameters for XGBClassifier.
-        X_train : pandas.DataFrame
-            Training feature matrix.
-        y_train : pandas.Series or numpy.ndarray
-            Training labels (binary).
-
-        Returns
-        -------
-        xgboost.XGBClassifier
-            The fitted best model found by grid search.
-
-        """
         self.X_train = X_train
         self.y_train = y_train
         self.params = params
 
-        kf = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_state)
+        kf = StratifiedKFold(n_splits=splits, shuffle=True, random_state=random_state)
 
-        def objective(trial: optuna.Trial) ->float:
-            tp = {}
+        # Convert params spec to Optuna distributions
+        def objective(trial):
+            # Suggest hyperparameters
+            param_dict = {}
             for name, spec in params.items():
                 t = spec["type"]
                 if t == "float":
-                    tp[name] = trial.suggest_float(
-                        name, float(spec["low"]), float(spec["high"]),
-                        log=(spec.get("scale") == "log")
+                    param_dict[name] = trial.suggest_float(
+                        name,
+                        float(spec["low"]),
+                        float(spec["high"]),
+                        log=(spec.get("scale") == "log"),
                     )
                 elif t == "int":
-                    tp[name] = trial.suggest_int(
-                        name, int(spec["low"]), int(spec["high"]),
-                        step=int(spec.get("step", 1))
+                    param_dict[name] = trial.suggest_int(
+                        name,
+                        int(spec["low"]),
+                        int(spec["high"]),
+                        step=int(spec.get("step", 1)),
+                        log=(spec.get("scale") == "log"),
                     )
                 elif t == "categorical":
-                    tp[name] = trial.suggest_categorical(name, list(spec["choices"]))
-                else:
-                    raise ValueError(f"Unknown type for {name}: {t}")
+                    param_dict[name] = trial.suggest_categorical(
+                        name, list(spec["choices"])
+                    )
+            
+            # Train and evaluate with cross-validation
+            estimator = xgb.XGBClassifier(random_state=random_state, eval_metric="logloss", n_jobs=1, **param_dict)
+            scores = cross_val_score(estimator, X_train, y_train, cv=kf, scoring=score, n_jobs=1)
+            return scores.mean()
 
-            tp.setdefault("random_state", random_state)
-            tp.setdefault("eval_metric", "logloss")
-            tp.setdefault("n_jobs", -1)
-
-            model = xgb.XGBClassifier(**tp)
-            scores = cross_val_score(model, X_train, y_train, cv=kf, scoring=score, n_jobs=-1)
-            return float(np.mean(scores))
-
-        study = optuna.create_study(
-            direction="maximize",
-            sampler=optuna.samplers.TPESampler(seed=random_state)
-        )
-
-        # Enqueue a known-good starting point (optional)
-        if enqueue_params is not None:
-            # Only pass params that are actually in your search space
-            filtered = {k: v for k, v in enqueue_params.items() if k in params}
-            study.enqueue_trial(filtered)
-
+        # Create study with seeded sampler for reproducibility
+        sampler = optuna.samplers.TPESampler(seed=random_state, n_startup_trials=50)
+        study = optuna.create_study(sampler=sampler, direction='maximize')
         study.optimize(objective, n_trials=n_trials, timeout=timeout, show_progress_bar=False)
 
-        best_params = study.best_trial.params.copy()
-        best_params.setdefault("random_state", random_state)
-        best_params.setdefault("eval_metric", "logloss")
-        best_params["n_jobs"] = -1
+        # Extract best parameters
+        self.best_params = dict(study.best_params)
+        
+        # Train final model on all training data with best params
+        estimator = xgb.XGBClassifier(random_state=random_state, eval_metric="logloss", n_jobs=1, **self.best_params)
+        self.best_model = estimator.fit(X_train, y_train)
 
-        best_model = xgb.XGBClassifier(**best_params)
-        best_model.fit(X_train, y_train)
+        # Store CV results
+        self.grid_search = study
+        self.cv_results_ = study.trials_dataframe()
 
-        self.best_model = best_model
-        self.best_params = best_params
+        # Fold scores for best config — primary score and roc_auc
+        best_estimator = xgb.XGBClassifier(random_state=random_state, eval_metric="logloss", n_jobs=1, **self.best_params)
+        fold_scores     = cross_val_score(best_estimator, X_train, y_train, cv=kf, scoring=score,     n_jobs=1)
+        fold_scores_auc = cross_val_score(best_estimator, X_train, y_train, cv=kf, scoring='roc_auc', n_jobs=1)
 
-        pd.DataFrame([(k, json.dumps(v)) for k, v in params.items()], columns=["parameter", "values"])\
-        .to_csv(self.out("-search_space.csv", params=True), index=False)
-        pd.DataFrame(list(best_params.items()), columns=["parameter", "value"])\
-        .to_csv(self.out("-final_metrics.csv", params=True), index=False)
+        self.best_cv_scores_ = fold_scores
+        self.best_cv_mean_ = float(np.mean(fold_scores))
+        self.best_cv_sd_   = float(np.std(fold_scores, ddof=1)) if len(fold_scores) > 1 else 0.0
 
-        print("[Optuna] best value:", study.best_value)
-        print("[Optuna] best params:", best_params)
-        return best_model
+        print("Best params:", self.best_params)
+        print(f"CV {score}:  {self.best_cv_mean_:.4f} ± {self.best_cv_sd_:.4f}")
+        print(f"CV roc_auc: {np.mean(fold_scores_auc):.4f} ± {np.std(fold_scores_auc, ddof=1):.4f}")
 
+        # Save search space + best params + cv summary
+        pd.DataFrame([(k, json.dumps(v)) for k, v in params.items()],
+                    columns=["parameter", "values"]) \
+            .to_csv(self.out("-search_space.csv", params=True), index=False)
 
-    def gbdt_evaluate(self, X_test, y_test, model):
+        pd.DataFrame(list(self.best_params.items()),
+                    columns=["parameter", "value"]) \
+            .to_csv(self.out("-best_params.csv", params=True), index=False)
+
+        pd.DataFrame([{
+            "metric": score,
+            "cv_mean": self.best_cv_mean_,
+            "cv_sd": self.best_cv_sd_,
+            "roc_auc_mean": float(np.mean(fold_scores_auc)),
+            "roc_auc_sd":   float(np.std(fold_scores_auc, ddof=1)),
+            "n_splits": kf.get_n_splits()
+        }]).to_csv(self.out("-cv_summary.csv", params=True), index=False)
+
+        # Optional: full trials dataframe
+        self.cv_results_.to_csv(self.out("-cv_results.csv", params=True), index=False)
+
+        return self.best_model
+    
+    def gbdt_evaluate(self, X_test, y_test, model,
+                      plot_prc=True, plot_roc=True):
         """
         Evaluate a model on held-out data. Computes predicted probabilities and
         saves ROC and Precision-Recall curves for test (and optionally train) sets,
@@ -402,18 +554,18 @@ class GBDT:
         self.model = model
         self.proba_test = self.model.predict_proba(X_test)[:, 1]
         self.proba_train = self.model.predict_proba(self.X_train)[:, 1]
-        self.plot_roc(y_test=y_test, proba=self.proba_test, baseline=self.baseline_proba,
-                      y_train=self.y_train, proba2=self.proba_train)
-        self.plot_pr(y_test=y_test, proba=self.proba_test, baseline=self.baseline_proba,
+        if plot_roc:
+            self.plot_roc(y_test=y_test, proba=self.proba_test, baseline=self.baseline_proba,
+                        y_train=self.y_train, proba2=self.proba_train)
+        if plot_prc:
+            self.plot_pr(y_test=y_test, proba=self.proba_test, baseline=self.baseline_proba,
                      y_train=self.y_train, proba2=self.proba_train)
 
-    def gbdt_classify(self, X, y, model='best', threshold='auto', all = False):
+    def gbdt_classify(self, X, y, model='best', threshold='auto', all = False, plot = False,
+                      baseline = False, report = False, verbose = False):
         """
         Generate binary classifications from predicted probabilities using either
-        the stored best model or a provided model. Select a decision boundary
-        automatically (max F1) or use a specified threshold, then save confusion
-        matrices and a compact classification-report summary plot.
-
+        the stored best model or a provided model. 
         Parameters
         ----------
         X : pandas.DataFrame
@@ -460,14 +612,17 @@ class GBDT:
         self.prediction = self.proba >= self.threshold
         self.predict_test = (self.proba_test >= self.threshold)
         self.predict_train = (self.proba_train >= self.threshold)
-        self.predict_baseline = (self.baseline_proba >= self.threshold)
 
-        if all is not True:
+        if baseline: 
+            self.predict_baseline = (self.baseline_proba >= self.threshold)
+
+        if plot:
             self.plot_confusion(self.y_test, self.proba_test, name='test', boundary=self.threshold)
             self.plot_confusion(self.y_train, self.proba_train, name='train', boundary=self.threshold)
             self.plot_confusion(self.y, self.proba, name='all', boundary=self.threshold)
 
-        print(classification_report(self.y_test, self.predict_test))
+        if verbose:
+            print(classification_report(self.y_test, self.predict_test))
 
         def format_report(df, idx):
             df['accuracy'] = df.loc['accuracy'].mean()
@@ -476,22 +631,26 @@ class GBDT:
             df = df * 100
             return df
 
-        final_report = format_report(pd.DataFrame(
-            classification_report(self.y_test, self.predict_test, output_dict=True)
-        ).T, 'final test')
+        if report:
+            final_report = format_report(pd.DataFrame(
+                classification_report(self.y_test, self.predict_test, output_dict=True)
+            ).T, 'final test')
 
-        baseline_report = format_report(pd.DataFrame(
-            classification_report(self.yb_test, self.predict_baseline, output_dict=True)
-        ).T, 'baseline test')
+            if baseline:
+                baseline_report = format_report(pd.DataFrame(
+                    classification_report(self.yb_test, self.predict_baseline, output_dict=True)
+                ).T, 'baseline test')
 
-        train_report = format_report(pd.DataFrame(
-            classification_report(self.y_train, self.predict_train, output_dict=True)
-        ).T, 'final train')
+            train_report = format_report(pd.DataFrame(
+                classification_report(self.y_train, self.predict_train, output_dict=True)
+            ).T, 'final train')
 
-        self.report = pd.concat([baseline_report, final_report, train_report])
-        self.plot_classification_report(self.report, round(self.threshold * 100))
+            self.report = pd.concat([baseline_report, final_report, train_report])
 
-    def gbdt_SHAP(self, top_interactors=None):
+            if plot: 
+                self.plot_classification_report(self.report, round(self.threshold * 100))
+
+    def gbdt_SHAP(self,  top_interactors=None, interaction_summary = False):
         """
         Compute SHAP values for the best model to quantify feature influence,
         save a SHAP summary plot, derive top features, and visualize SHAP
@@ -513,46 +672,48 @@ class GBDT:
 
         """
         self.explainer = shap.TreeExplainer(self.best_model)
-        self.shap_values = self.explainer.shap_values(self.X_test)
+        self.shap_values = self.explainer.shap_values(self.X_train)
 
-        shap.summary_plot(self.shap_values, self.X_test, show=False, plot_size=[5, 10])
+        shap.summary_plot(self.shap_values, self.X_train, show=False, plot_size=[5, 10])
         plt.savefig(self.out('shap_explainer.pdf'))
         plt.close()
 
         self.shap_abs_mean = np.abs(self.shap_values).mean(axis=0)
         self.shap_feature_importance = pd.DataFrame({
-            'feature': self.X_test.columns,
+            'feature': self.X_train.columns,
             'importance': self.shap_abs_mean
         }).sort_values(by='importance', ascending=False).head(20)
 
-        self.df_shap_values = pd.DataFrame(self.shap_values, index=self.X_test.index, columns=self.X_test.columns)
+        self.df_shap_values = pd.DataFrame(self.shap_values, index=self.X_train.index, columns=self.X_train.columns)
 
-        interaction_values = self.explainer.shap_interaction_values(self.X_train)
-        shap.summary_plot(interaction_values, self.X_train, show=False)
-        plt.savefig(self.out('shap_interactions.pdf'))
-        plt.close()
+        if interaction_summary:
+            interaction_values = self.explainer.shap_interaction_values(self.X_train)
+            shap.summary_plot(interaction_values, self.X_train, show=False)
+            plt.savefig(self.out('shap_interactions.pdf'))
+            plt.close()
 
-        if top_interactors is None:
-            top_interactors = self.X_train.columns
-        self.top_interactors = top_interactors
+            if top_interactors is None:
+                top_interactors = self.X_train.columns
 
-        variances = np.std(interaction_values, axis=0)
-        variance_df = pd.DataFrame(variances, index=self.X_train.columns, columns=self.X_test.columns)
-        filtered_variance_df = variance_df.loc[top_interactors, top_interactors]
+            self.top_interactors = top_interactors
 
-        plt.figure(figsize=(10, 8))
-        plt.rcParams['axes.labelsize'] = 35
-        plt.rcParams['axes.titlesize'] = 35
-        plt.rcParams['xtick.labelsize'] = 26
-        plt.rcParams['ytick.labelsize'] = 26
-        plt.rcParams['legend.fontsize'] = 28
-        sns.clustermap(filtered_variance_df, annot=False, cmap='magma_r', linewidths=.5)
-        plt.title('SHAP Interactions in Test set')
-        plt.savefig(self.out('shap_interactions_heatmap.pdf'))
-        # plt.show()
-        plt.close()
+            variances = np.std(interaction_values, axis=0)
+            variance_df = pd.DataFrame(variances, index=self.X_train.columns, columns=self.X_train.columns)
+            filtered_variance_df = variance_df.loc[top_interactors, top_interactors]
 
-    def gbdt_calibrate(self):
+            plt.figure(figsize=(10, 8))
+            plt.rcParams['axes.labelsize'] = 35
+            plt.rcParams['axes.titlesize'] = 35
+            plt.rcParams['xtick.labelsize'] = 26
+            plt.rcParams['ytick.labelsize'] = 26
+            plt.rcParams['legend.fontsize'] = 28
+            sns.clustermap(filtered_variance_df, annot=False, cmap='magma_r', linewidths=.5)
+            plt.title('SHAP Interactions in Test set')
+            plt.savefig(self.out('shap_interactions_heatmap.pdf'))
+            # plt.show()
+            plt.close()
+
+    def gbdt_calibrate(self, baseline = False):
         """
         Calibrate class probabilities for both best and baseline models using
         isotonic regression on the test set, then plot and save a calibration
@@ -576,10 +737,11 @@ class GBDT:
         calibrated_model = CalibratedClassifierCV(self.best_model, method='isotonic', cv='prefit')
         calibrated_model.fit(self.X_test, self.y_test)
 
-        calibrated_baseline = CalibratedClassifierCV(self.baseline_model, method='isotonic', cv='prefit')
-        calibrated_baseline.fit(self.Xb_test, self.yb_test)
-        self.baseline_predictions = calibrated_baseline.predict(self.Xb_test)
-        self.baseline_proba = calibrated_baseline.predict_proba(self.Xb_test)[:, 1]
+        if baseline:
+            calibrated_baseline = CalibratedClassifierCV(self.baseline_model, method='isotonic', cv='prefit')
+            calibrated_baseline.fit(self.Xb_test, self.yb_test)
+            self.baseline_predictions = calibrated_baseline.predict(self.Xb_test)
+            self.baseline_proba = calibrated_baseline.predict_proba(self.Xb_test)[:, 1]
 
         prob_pos = calibrated_model.predict_proba(self.X_test)[:, 1]
         fraction_before, mean_predicted_before = calibration_curve(self.y_test, self.proba_test, n_bins=10)
@@ -608,7 +770,7 @@ class GBDT:
     # Export functions
     ##############################################################################
 
-    def export_all_predictions(self, AZmeta, model):
+    def export_all_predictions(self, X, y, AZmeta, model, workflow):
         """
         Export per-sample predictions and probabilities (plus SHAP feature columns)
         merged with metadata (Drug ID, Cluster). Produces a tidy CSV for R
@@ -616,6 +778,8 @@ class GBDT:
 
         Parameters
         ----------
+        X : Dataset for Predicting
+        y : Labels
         AZmeta : pandas.DataFrame
             Metadata table indexed like X/y with at least ['Drug ID','Dend'].
         model : xgboost.XGBClassifier or CalibratedClassifierCV
@@ -629,6 +793,8 @@ class GBDT:
             - self.dotplotforR
 
         """
+        self.X = X
+        self.y = y
         self.proba = model.predict_proba(self.X)[:, 1]
         self.prediction = self.proba >= self.threshold
         self.outcome = pd.DataFrame({'Actual': self.y,
@@ -646,7 +812,7 @@ class GBDT:
         dotplotforR = pd.merge(clusters, cluster_shap, left_index=True, right_index=True)
 
         self.dotplotforR = dotplotforR
-        dotplotforR.to_csv(os.path.join(self.dpath, 'Rplot_Figure4.csv'))
+        dotplotforR.to_csv(os.path.join(self.dpath, f'Rplot_Figure4_{workflow}.csv'))
 
     def export_subset_predictions(self, AZmeta, targets):
         """
@@ -722,7 +888,8 @@ class GBDT:
     # Plotting functions
     ##############################################################################
 
-    def plot_roc(self, y_test, proba, baseline=None, y_train=None, proba2=None):
+    def plot_roc(self, y_test, proba, baseline=None, y_train=None, proba2=None, 
+                 plot = False):
         """
         Save ROC curves comparing the evaluated model on test (and optional train)
         data, with an optional overlay of the baseline model evaluated on test.
@@ -748,30 +915,33 @@ class GBDT:
         """
         fpr, tpr, _ = roc_curve(y_test, proba)
         roc_auc = auc(fpr, tpr)
-        if y_train is not None and proba2 is not None:
-            fpr_train, tpr_train, _ = roc_curve(y_train, proba2)
-            roc_auc_train = auc(fpr_train, tpr_train)
+        print(f'Test set performance [AUROC]: {roc_auc}')
 
-        plt.rcParams['axes.labelsize'] = 35
-        plt.rcParams['axes.titlesize'] = 35
-        plt.rcParams['xtick.labelsize'] = 26
-        plt.rcParams['ytick.labelsize'] = 26
-        plt.rcParams['legend.fontsize'] = 28
-        plt.figure(figsize=(10, 10))
-        plt.plot(fpr, tpr, color='blue', lw=2, label=f'final (test) \nAUC = {roc_auc:.2f}')
-        if y_train is not None and proba2 is not None:
-            plt.plot(fpr_train, tpr_train, color='purple', lw=2, label=f'final (train) \nAUC = {roc_auc_train:.2f}')
-        if baseline is not None:
-            fpr_b, tpr_b, _ = roc_curve(y_test, baseline)
-            baseline_roc = auc(fpr_b, tpr_b)
-            plt.plot(fpr_b, tpr_b, color='red', lw=2, label=f'baseline (test) \nAUC = {baseline_roc:.2f}')
-        plt.plot([0, 1], [0, 1], color='black', lw=2, linestyle='--')
-        plt.xlim([0.0, 1.0]); plt.ylim([0.0, 1.05])
-        plt.xlabel('False Positive Rate'); plt.ylabel('True Positive Rate')
-        plt.title('Performance on Test Set'); plt.legend(loc='lower right')
-        plt.savefig(self.out('roc.pdf'))
-        plt.close()
-        # plt.show()
+        if plot:
+            if y_train is not None and proba2 is not None:
+                fpr_train, tpr_train, _ = roc_curve(y_train, proba2)
+                roc_auc_train = auc(fpr_train, tpr_train)
+
+            plt.rcParams['axes.labelsize'] = 35
+            plt.rcParams['axes.titlesize'] = 35
+            plt.rcParams['xtick.labelsize'] = 26
+            plt.rcParams['ytick.labelsize'] = 26
+            plt.rcParams['legend.fontsize'] = 28
+            plt.figure(figsize=(10, 10))
+            plt.plot(fpr, tpr, color='blue', lw=2, label=f'final (test) \nAUC = {roc_auc:.2f}')
+            if y_train is not None and proba2 is not None:
+                plt.plot(fpr_train, tpr_train, color='purple', lw=2, label=f'final (train) \nAUC = {roc_auc_train:.2f}')
+            if baseline is not None:
+                fpr_b, tpr_b, _ = roc_curve(y_test, baseline)
+                baseline_roc = auc(fpr_b, tpr_b)
+                plt.plot(fpr_b, tpr_b, color='red', lw=2, label=f'baseline (test) \nAUC = {baseline_roc:.2f}')
+            plt.plot([0, 1], [0, 1], color='black', lw=2, linestyle='--')
+            plt.xlim([0.0, 1.0]); plt.ylim([0.0, 1.05])
+            plt.xlabel('False Positive Rate'); plt.ylabel('True Positive Rate')
+            plt.title('Performance on Test Set'); plt.legend(loc='lower right')
+            plt.savefig(self.out('roc.pdf'))
+            plt.close()
+            # plt.show()
 
     def plot_pr(self, y_test, proba, baseline=None, y_train=None, proba2=None):
         """
@@ -801,6 +971,8 @@ class GBDT:
         """
         precision, recall, _ = precision_recall_curve(y_test, proba)
         pr_auc = auc(recall, precision)
+        print(f'Test set performance [AUPRC]: {pr_auc}')
+
         if y_train is not None and proba2 is not None:
             precision_train, recall_train, _ = precision_recall_curve(y_train, proba2)
             pr_auc_train = auc(recall_train, precision_train)
@@ -896,7 +1068,7 @@ class GBDT:
         plt.close()
         # plt.show()
 
-    def plot_f1_and_pick_threshold(self, y_true, proba, xline) -> float:
+    def plot_f1_and_pick_threshold(self, y_true, proba, xline, plot = False) -> float:
         """
         Sweep decision thresholds in [0, 1] to compute F1 scores, plot the
         F1 curve, and return the threshold that maximizes F1.
@@ -926,23 +1098,23 @@ class GBDT:
         max_f1 = max(f1_scores)
         candidate_thresholds = thresholds[np.isclose(f1_scores, max_f1)]
         max_f1_threshold = float(candidate_thresholds.max())
-
-        plt.rcParams['axes.labelsize'] = '20'
-        plt.rcParams['axes.titlesize'] = '20'
-        plt.rcParams['xtick.labelsize'] = '20'
-        plt.rcParams['ytick.labelsize'] = '20'
-        plt.rcParams['legend.fontsize'] = '20'
-        plt.figure(figsize=(10, 10))
-        plt.plot(thresholds, f1_scores, marker='o')
-        plt.xlabel('Model Boundary')
-        plt.ylabel('F1 Score')
-        plt.title('F1 Score vs. Model Boundary')
-        plt.axvline(x=max_f1_threshold)
-        plt.axvline(x=xline, c='red')
-        plt.grid(True)
-        plt.savefig(self.out('f1thresh.pdf'))
-        plt.close()
-        # plt.show()
+        if plot: 
+            plt.rcParams['axes.labelsize'] = '20'
+            plt.rcParams['axes.titlesize'] = '20'
+            plt.rcParams['xtick.labelsize'] = '20'
+            plt.rcParams['ytick.labelsize'] = '20'
+            plt.rcParams['legend.fontsize'] = '20'
+            plt.figure(figsize=(10, 10))
+            plt.plot(thresholds, f1_scores, marker='o')
+            plt.xlabel('Model Boundary')
+            plt.ylabel('F1 Score')
+            plt.title('F1 Score vs. Model Boundary')
+            plt.axvline(x=max_f1_threshold)
+            plt.axvline(x=xline, c='red')
+            plt.grid(True)
+            plt.savefig(self.out('f1thresh.pdf'))
+            plt.close()
+            # plt.show()
         self.threshold = max_f1_threshold
         return max_f1_threshold
 
@@ -978,84 +1150,3 @@ class GBDT:
         plt.savefig(self.out('classif_report.pdf'))
         plt.close()
         # plt.show()
-
-def get_relative_paths()->tuple[str, str, str]:
-    '''
-    Helper function to get relative paths for ML scripts.
-    
-    '''
-    path = os.path.join(os.path.dirname(__file__), '..', 'data')
-    model_out = os.path.join(path, '..' ,'scoring_models')
-    dpath = os.path.dirname(__file__)
-    return path, model_out, dpath
-
-def clean_drug_index(df)->pd.DataFrame:
-    '''
-    Helper function to format DE matrix index when loading.
-    
-    '''
-    df.index = df.index.map(lambda x: '_'.join(x.split('_')[1:3]) if len(x.split('_')) > 2 else None)
-    df.index = df.index.str.replace(' - Compound', '')
-    return df
-
-def get_inputs(path)->tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    '''
-    Load differential expression profiles and proteome from HBD screen.
-    
-    '''
-    LFC_matrix = clean_drug_index(pd.read_csv(os.path.join(path, 
-                                                        'Drug_LFCxadjPval_250305a.csv'
-                                                        ), delimiter = ';', decimal = ',', index_col=0, header = 0).T)
-    expression_matrix = pd.read_csv(os.path.join(path,
-                                                'SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_forlimma_240611a.tsv'
-                                                ),delimiter = ',', decimal = '.', index_col=0, header = 0).T
-    
-    # Load metadata containing unformatted response var
-    AZmeta= pd.read_csv(os.path.join(path, 
-                                     'AZcompound_metadata_clustered_240611a.tsv'
-                                     ),index_col=0)
-    
-    return LFC_matrix, expression_matrix, AZmeta
-
-def format_response_var(AZmeta, LFC_matrix)->pd.DataFrame:
-    '''
-    Formats response variable and aligns to predictor index.
-    
-    '''
-    AZmeta.index = AZmeta.index.str.replace('-','_') # Format index
-    AZmeta['Gal'] = AZmeta['Gal'].str.replace('>','').astype(float) # Convert IC50 to float
-    IC50s = pd.DataFrame({'Gal_IC50': AZmeta['Gal']}, dtype = float) # Extract IC50s
-    IC50s = IC50s.loc[LFC_matrix.index] # Match to proteome index
-    IC50snoNA = IC50s[IC50s['Gal_IC50'].isna()==False] # remove NAs
-    BinaryTox = pd.DataFrame({ 'IC50' : (IC50snoNA['Gal_IC50']<10).astype(int)}) # binarize
-    return BinaryTox
-
-def extract_genes(df, pathways, matrix, boundary, outpath)->list[str]:
-    """
-    For each pathway enriched in split, the function collects the listed proteins, 
-    and saves the final set to 'enriched_proteins.csv'.
-
-    Parameters
-    ----------
-    df : pandas.DataFrame
-    pathways : list of str
-    matrix : pandas.DataFrame
-    boundary : float
-    outpath : str
-
-    Returns
-    -------
-    List of genes from enrichment analysis on split. 
-
-    """
-    all_genes = set()
-    for pathway in pathways:
-        path_genes = df[df[
-            'term description'] == pathway]['matching proteins in your input (labels)'
-                                            ].values[0].split(',')
-        all_genes.update(set(path_genes))
-    mask = matrix.mean(axis=0) > boundary
-    strong_genes = matrix.columns[mask]
-    selected_genes = [g for g in matrix.columns if g in strong_genes and g in all_genes]
-    pd.Series(selected_genes).to_csv(os.path.join(outpath, 'enriched_proteins.csv'), index=0)
-    return list(selected_genes)

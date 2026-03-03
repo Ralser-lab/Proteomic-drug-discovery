@@ -16,9 +16,7 @@ Inputs
 
 Outputs
 -------
-- figures/fda_01_heatmap.pdf
-- figures/fda_01_global_PCA_scree.pdf
-- figures/fda_01_global_PCA.pdf
+- figures/fda_01_raw_heatmap.pdf
 - figures/fda_01_dispersion_kde.pdf
 
 Requirements
@@ -39,26 +37,22 @@ import seaborn as sns
 from sklearn.decomposition import PCA
 from scipy.cluster.hierarchy import leaves_list
 import os
-import sys
-
-# Reload custom modules
 import importlib
-sys.path.append(os.path.join(os.path.dirname(__file__)))
 import device_summarystatistics 
 
 # Set relative paths 
 data_out = os.path.dirname(__file__)
 figure_out = os.path.join(data_out, '..', 'figures')
 data_out = os.path.join(data_out, '..', 'data')
-export_path = data_out + '/'
-path = os.path.join(data_out, 'SB_FDA_metadata_250304a.tsv')
+meta_fp = os.path.join(data_out, 'SB_FDA_metadata_250304a.tsv')
+workflow = 'fda_01'
 
 # %% Load summarized proteomes and metadata mapping from FDA test set 
 pasef_summarized = pd.read_csv(os.path.join(data_out, 'SB_FDA_prmatrix_filtered_50_imputed_50_ltrfm_batched_summarized_250304.tsv'),
                      decimal='.', 
                      sep=',', 
                      index_col = 0)
-metadata = pd.read_csv(path, index_col = 0, sep = ',')
+metadata = pd.read_csv(meta_fp, index_col = 0, sep = ',')
 
 # %% Reorder the heatmap (based on sns.clustermap Euclidian Ward) 
 euclidian_ward = sns.clustermap(pasef_summarized)
@@ -112,7 +106,7 @@ ax2.set_title('Batch', fontsize = 24)
 sns.heatmap(metadata_encoded, cmap='Greys', ax=ax3, cbar=False, yticklabels=False)
 ax3.set_xticks(np.arange(len(metadata_encoded.columns)))
 ax3.set_xticklabels(metadata_encoded.columns.values, rotation = 45, fontsize = 24)
-plt.savefig(os.path.join(figure_out, 'fda_01_heatmap.png')) # Export clustered heatmap on proteomes (all samples in FDA testing set)
+plt.savefig(os.path.join(figure_out, f'{workflow}_raw_heatmap.png')) # Export clustered heatmap on proteomes (all samples in FDA testing set)
 
 # %% Extract PCA loadings
 output = pasef_summarized_clustered.copy()
@@ -122,24 +116,9 @@ pca = PCA(n_components = 20)
 pca_result = pca.fit_transform(output)  
 explained_variance_ratios = pca.explained_variance_ratio_
 
-# Plot Scree Plot
+# Caclualte cumulative variance
 n_components = np.arange(len(explained_variance_ratios)) + 1
 cumulative_variance = np.cumsum(explained_variance_ratios)
-fig = plt.figure(figsize = (10,10))
-plt.rcParams['axes.labelsize'] = '30'   
-plt.rcParams['axes.titlesize'] = '30' 
-plt.rcParams['xtick.labelsize'] = '26'  
-plt.rcParams['ytick.labelsize'] = '26' 
-
-# Create plot
-colors = ['skyblue' if i < 4 else 'grey' for i in n_components]
-bar = plt.bar(n_components, explained_variance_ratios*100, color=colors)
-plt.title('Scree Plot')
-plt.xlabel('Principal Component')
-plt.ylabel('Explained Variance Ratio (%)')
-plt.xticks(n_components)
-plt.legend(loc='upper left')
-plt.savefig(os.path.join(figure_out, 'fda_01_global_PCA_scree.pdf')) # Export screeplot on proteomes (all samples in FDA testing set)
 
 #  %% PCA with drug targets
 x = pca_result[:, 0]
@@ -148,37 +127,6 @@ z = pca_result[:, 2]
 df_pca = pd.DataFrame({'PC1':x, 'PC2':y, 'PC3':x, 'Target':metadata['Target'], 'Drug': metadata['Drug']}, index = pasef_summarized_clustered.index)
 df_pca.loc[df_pca['Target'].isna(),'Target'] = 'DMSO'
 df_pca.loc[df_pca['Drug'].isna(),'Drug'] = 'DMSO'
-
-# Plot PCA with drug labels
-plt.figure(figsize=(10, 10))
-plt.rcParams['axes.labelsize'] = '30'   
-plt.rcParams['axes.titlesize'] = '30' 
-plt.rcParams['xtick.labelsize'] = '26'  
-plt.rcParams['ytick.labelsize'] = '26' 
-plt.scatter(x=df_pca['PC1'], y=df_pca['PC2'], c=df_pca['Drug'].astype('category').cat.codes, cmap='jet_r')
-
-# Annotate each point with the corresponding target label
-for i, label in enumerate(df_pca['Drug']):
-    plt.annotate(label, (df_pca['PC1'][i], df_pca['PC2'][i]), fontsize=9)
-plt.xlabel('PC1')
-plt.ylabel('PC2')
-plt.title('PCA Scatter Plot')
-
-# Plot PCA with target labels
-plt.figure(figsize=(10, 10))
-plt.rcParams['axes.labelsize'] = '30'   
-plt.rcParams['axes.titlesize'] = '30' 
-plt.rcParams['xtick.labelsize'] = '26'  
-plt.rcParams['ytick.labelsize'] = '26' 
-plt.scatter(x=df_pca['PC1'], y=df_pca['PC2'], c=df_pca['Target'].astype('category').cat.codes, cmap='jet_r')
-
-# Annotate each point with the corresponding target label
-for i, label in enumerate(df_pca['Target']):
-    plt.annotate(label, (df_pca['PC1'][i], df_pca['PC2'][i]), fontsize=9) 
-plt.xlabel('PC1')
-plt.ylabel('PC2')
-plt.title('PCA Scatter Plot')
-plt.savefig(os.path.join(figure_out, 'fda_01_global_PCA.pdf')) # Export PCA on proteomes (all samples in FDA testing set)
 
 # %% Dispersion plots (Kernal Density Estimations, DMSO vs Controls)
 pasef_summarized = pd.read_csv(os.path.join(data_out, 'SB_FDA_prmatrix_filtered_50_imputed_50_ltrfm_batched_summarized_250304.tsv'),
@@ -207,4 +155,4 @@ plt.ylim(-0.05, 0.45)
 plt.legend(fontsize = '26')
 plt.xlabel('Mean Protein Abundance (' + str(pasef_summarized_clustered.columns.size) + ')')
 plt.ylabel('Standard Deviation (' + str(pasef_summarized_clustered.columns.size) + ')')
-plt.savefig(os.path.join(figure_out, 'fda_01_dispersion_kde.pdf')) # Export dispersion plot on proteomes (all samples in FDA testing set)
+plt.savefig(os.path.join(figure_out, f'{workflow}_dispersion_kde.pdf')) # Export dispersion plot on proteomes (all samples in FDA testing set)

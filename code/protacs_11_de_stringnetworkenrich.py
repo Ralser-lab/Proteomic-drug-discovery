@@ -20,7 +20,7 @@ Inputs
 
 Outputs
 -------
-- figures/protacs_11_STRINGenrich_PROTACs_OnandOfftarg.pdf
+- figures/protacs_11_de_stringb_onoff_targ.pdf
 
 Requirements
 ------------
@@ -32,6 +32,7 @@ Dependencies: pandas, numpy, matplotlib, seaborn, os
 # %% Import modules
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.colors import TwoSlopeNorm
 import seaborn as sns
 import os
 
@@ -39,6 +40,7 @@ import os
 dir_main = os.path.dirname(__file__)
 filepath2 = os.path.join(dir_main, '..', 'data/')
 filepath3 = os.path.join(dir_main, '..', 'figures')
+workflow = 'protacs_11'
 
 # Load string network enrichment values (FDR, NES)
 # https://string-db.org/, queried 10 uM DE profiles from 
@@ -78,7 +80,7 @@ for idx, df in nx_dict.items():
 
 # Rename pathways to be readable
 dogma.loc[dogma['enrichment score'] == dogma['enrichment score'].min(), 'enrichment score'] = dogma['enrichment score'].sort_values()[1]
-norm = plt.Normalize(vmin=dogma['enrichment score'].min(), vmax=dogma['enrichment score'].max())
+norm = TwoSlopeNorm(vmin=dogma['enrichment score'].min(), vcenter=0, vmax=dogma['enrichment score'].max())
 gradient = 'RdBu_r'
 custom_palette = ['blue','red'] 
 plt.rcParams['axes.labelsize'] = '30'   
@@ -101,4 +103,4 @@ ax.tick_params(axis='y', labelsize = 18)
 ax.set_xlabel('')  
 ax.set_ylabel('') 
 #plt.show()
-gseaplot.savefig(os.path.join(filepath3, 'protacs_11_STRINGenrich_PROTACs_OnandOfftarg.pdf'))
+gseaplot.savefig(os.path.join(filepath3, f'{workflow}_de_stringdb_onoff_targ.pdf'))

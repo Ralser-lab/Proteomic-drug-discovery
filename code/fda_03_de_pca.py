@@ -18,12 +18,8 @@ Inputs
 
 Outputs
 -------
-- figures/fda_03_PMF_full.pdf
-- figures/fda_03_PMF_conditioned.pdf
-- figures/fda_03_PDF_stats.pdf
-- figures/fda_03_PDF_all.pdf
-- figures/fda_03_2D_PCA_tmatrix.pdf
-- figures/fda_03_3D_PCA_tmatrix.pdf
+- figures/fda_03_de_kde.pdf
+- figures/fda_03_de_pca.pdf
 - data/FDA_proba_250304.tsv
 - data/NCB_ProteomeGuidedDiscovery_TableS1_250606a.csv
 
@@ -46,8 +42,7 @@ import matplotlib.pyplot as plt
 data_out = os.path.dirname(__file__)
 figure_out = os.path.join(data_out, '..', 'figures')
 data_out = os.path.join(data_out, '..', 'data')
-filepath = data_out + '/'
-filepath2 = figure_out + '/'
+workflow = 'fda_03'
 
 def idx_clean(df):
     """
@@ -59,13 +54,13 @@ def idx_clean(df):
 
 # %% load log fold changes from limma on FDA dataset vs DMSO
 
-t_matrix = idx_clean(pd.read_csv(filepath + 'FDA_LimmaMatrix_250304a.csv',
+t_matrix = idx_clean(pd.read_csv(os.path.join(data_out,'FDA_LimmaMatrix_250304a.csv'),
                      delimiter = ';', decimal = ',', index_col=0, header = 0).T)
 
-adj_matrix = idx_clean(pd.read_csv(filepath + 'FDA_adjLimmaMatrix_250304a.csv',
+adj_matrix = idx_clean(pd.read_csv(os.path.join(data_out,'FDA_adjLimmaMatrix_250304a.csv'),
                      delimiter = ';', decimal = ',', index_col=0, header = 0).T)
 
-metadata = pd.read_csv(filepath + 'FDA_LimmaMetadata_250304a.csv', delimiter = ';', index_col = 0)
+metadata = pd.read_csv(os.path.join(data_out,'FDA_LimmaMetadata_250304a.csv'), delimiter = ';', index_col = 0)
 
 # %% Find significant counts
 
@@ -109,12 +104,12 @@ counter('Doxorubicin..Adriamycin..HCl', adj_matrix, -np.log10(0.05))
 mask = abs(adj_matrix) > -np.log10(0.05)
 
 # counting, normalizing, then conditioning based on 0 cut-off
-counter = mask.sum(axis = 1).sort_values()/mask.shape[1]
+counts = mask.sum(axis = 1).sort_values()/mask.shape[1]
 #counter = mask.sum(axis = 1).sort_values()
-conditioned = counter.loc[counter>0]
+conditioned = counts.loc[counts>0]
 
 # function to discretize and produce PMF weights
-def pmf(df, saveout):
+def pmf(df):
     """
     Compute and plot a discretized probability mass function (PMF) from data.
 
@@ -139,38 +134,17 @@ def pmf(df, saveout):
 
     # calculate mass
     discretized = discretized / len(discretized)
-
-    plt.stem(np.arange(0.00001, df.max(), df.max()/100), discretized, '-', markerfmt='o')
-    plt.axvline(df.mean())
-    plt.savefig(os.path.join(figure_out,saveout))
-    #plt.show()
     return discretized
 
-pmf(counter, 'fda_03_PMF_full.pdf') # save probability mass function plot on FDA dataset
-counter.to_csv(os.path.join(data_out, 'FDA_proba_250304.tsv')) 
-pmf(conditioned, 'fda_03_PMF_conditioned.pdf') # save probability mass function plot on FDA dataset
+pmf(counts) # save probability mass function plot on FDA dataset
+counts.to_csv(os.path.join(data_out, 'FDA_proba_250304.tsv')) 
+pmf(conditioned) # save probability mass function plot on FDA dataset
 
-sns.kdeplot(counter, fill = True, clip = (0, None))
-sns.kdeplot(counter, fill = True, clip = (0, counter.mean()), color = 'Green')
-sns.kdeplot(counter, fill = True, clip = (counter.max(),None), color = 'Orange')
-plt.axvline(counter.mean(), color = 'red', linestyle = '--')
-plt.savefig(os.path.join(figure_out, 'fda_03_PDF_stats.pdf')) # save probability density function plot on FDA dataset
-
-# %% Plot PDF 
-# set target frame
-df1 = counter.copy()
-df2 = counter[counter == 0]
-
-# Plot density for each column with specified colors
-plt.figure(figsize=(8,6))  # Adjust figure size for better visualization
-
-sns.kdeplot(df1.dropna(), clip=(0, None), fill=True, alpha=0.5, color='grey')
-plt.axvline(0)
-plt.axvline(df1['Clotrimazole'])
-
-# Save the probability density function plot with sample stats as a PDF
-plt.savefig(filepath2 + 'fda_03_PDF_all.pdf')
-#plt.show()
+sns.kdeplot(counts, fill = True, clip = (0, None))
+sns.kdeplot(counts, fill = True, clip = (0, counts.mean()), color = 'Green')
+sns.kdeplot(counts, fill = True, clip = (counts.max(),None), color = 'Orange')
+plt.axvline(counts.mean(), color = 'red', linestyle = '--')
+plt.savefig(os.path.join(figure_out, f'{workflow}_de_kde.pdf')) # save probability density function plot on FDA dataset
 
 # %% Sort drug labels on t-Matrix
 
@@ -198,31 +172,6 @@ tolabel = ['Amonafide', 'Doripenem.Hydrate', 'Methotrexate', 'Doxorubicin..Adria
 df_pca.loc[~df_pca['Drug_'].isin(tolabel), 'labels'] = ''
 df_pca['labels'] = df_pca['labels'].str.split('.').str[0]
 df_pca['Drug_'] = df_pca['Drug_'].str.replace('/progestogen', 'Progesterone')
-
-# %% 2D PCA
-df_labels = df_pca.loc[df_pca['labels']!='']
-df_empty = df_pca.loc[df_pca['n5'].isna()]
-df_class = df_pca.loc[~df_pca['n5'].isna()]
-explained_variance_ratios = pca.explained_variance_ratio_
-plt.rcParams['axes.labelsize'] = '30'   
-plt.rcParams['axes.titlesize'] = '30' 
-plt.rcParams['xtick.labelsize'] = '26'  
-plt.rcParams['ytick.labelsize'] = '26' 
-fig = plt.figure(figsize=(10, 10))
-ax = fig.add_subplot()
-scatter = ax.scatter(df_class['PC1'], df_class['PC2'], c=df_class['colors'], cmap='rainbow', s = 200, alpha = 1)
-scatter2 = ax.scatter(df_empty['PC1'], df_empty['PC2'], c='grey', s = 100, alpha = 0.2)
-
-# Annotate each point with the corresponding target label
-for i, label in enumerate(df_labels['labels']):
-    ax.text(df_labels['PC1'][i]- 5, df_labels['PC2'][i] + 1, label, fontsize=10)
-ax.set_xlabel(f"PC1 ({explained_variance_ratios[0]*100:.2f}%)")
-ax.set_ylabel(f"PC2 ({explained_variance_ratios[1]*100:.2f}%)")
-handles, labels = scatter.legend_elements(prop="colors", alpha=1, size = 20)
-labels = fivecounts
-legend = ax.legend(handles, labels, bbox_to_anchor=(1.05, 1), loc='upper left', title = 'Drug Target', title_fontsize = 26, fontsize = 26)
-#plt.show()
-fig.savefig(filepath2 + 'fda_03_2D_PCA_tmatrix.pdf') # save 2 Dimensional PCA on DE of FDA library vs DMSO
 
 # %% 3D PCA
 
@@ -255,22 +204,22 @@ labels = fivecounts
 legend = ax.legend(handles, labels, bbox_to_anchor=(1.05, 1), loc='upper left', title = 'Drug Target', title_fontsize = 26, fontsize = 26)
 plt.title('Principal Component Analysis')
 #plt.show()
-fig.savefig(filepath2 + 'fda_03_3D_PCA_tmatrix.pdf') # save 2 Dimensional PCA on DE of FDA library vs DMSO
+fig.savefig(os.path.join(figure_out,f'{workflow}_de_pca.pdf')) # save 2 Dimensional PCA on DE of FDA library vs DMSO
 
 # %% Export datasets and supplementary tables
 
 # create df with count info by drug
 count_matrix = pd.DataFrame({'deg count': mask.sum(axis = 1),
-'total proteins': mask.shape[1], 
-'probability': mask.sum(axis=1)/mask.shape[1]
-})
+                'total proteins': mask.shape[1], 
+                'probability': mask.sum(axis=1)/mask.shape[1]
+                })
 
 # merge with metadata
 tableS1 = pd.merge(df_pca[['Drug_','Target_']], 
-count_matrix, 
-left_on = 'Drug_',
-right_index = True,
-how = 'inner')
+            count_matrix, 
+            left_on = 'Drug_',
+            right_index = True,
+            how = 'inner')
 
 # reset index
 tableS1.index = tableS1['Drug_']

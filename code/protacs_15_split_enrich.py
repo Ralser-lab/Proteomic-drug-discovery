@@ -133,4 +133,4 @@ for idx, df in nx_dict.items():
     dogma = pd.concat([dogma,df_subset], axis =0)
 dogma.sort_values('enrichment score', ascending = True)
 dogma['term description'] = pd.Categorical(dogma['term description'], ordered = True)
-dogma.to_csv(outpath + '/top5_FDR_reactome.csv')
+dogma.to_csv(outpath + '/top10_FDR_reactome.csv')

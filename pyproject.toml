@@ -1,0 +1,6 @@
+[tool.setuptools]
+package-dir = {"" = "code"}
+
+[project]
+name = "proteomic-drug-discovery"
+version = "0.1.0"

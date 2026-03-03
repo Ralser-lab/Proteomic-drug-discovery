@@ -1,10 +1,12 @@
-,parameter,values
-0,learning_rate,[0.01]
-1,n_estimators,"[75, 100]"
-2,max_depth,"[1, 2, 3]"
-3,min_child_weight,"[4, 5, 6]"
-4,subsample,[0.8]
-5,colsample_bytree,[0.8]
-6,gamma,"[4, 5]"
-7,alpha,"[1, 2, 3]"
-8,lambda,"[1, 2, 3]"
+parameter,values
+learning_rate,"{""type"": ""float"", ""low"": 0.01, ""high"": 0.2, ""scale"": ""log""}"
+n_estimators,"{""type"": ""int"", ""low"": 50, ""high"": 2000, ""step"": 25}"
+max_depth,"{""type"": ""int"", ""low"": 1, ""high"": 10}"
+min_child_weight,"{""type"": ""float"", ""low"": 1.0, ""high"": 5.0}"
+gamma,"{""type"": ""float"", ""low"": 3.0, ""high"": 6.0}"
+reg_alpha,"{""type"": ""float"", ""low"": 0.001, ""high"": 3.0, ""scale"": ""log""}"
+reg_lambda,"{""type"": ""float"", ""low"": 0.001, ""high"": 3.0, ""scale"": ""log""}"
+subsample,"{""type"": ""float"", ""low"": 0.7, ""high"": 0.9}"
+colsample_bytree,"{""type"": ""float"", ""low"": 0.7, ""high"": 0.9}"
+tree_method,"{""type"": ""categorical"", ""choices"": [""hist""]}"
+grow_policy,"{""type"": ""categorical"", ""choices"": [""depthwise""]}"

@@ -204,6 +204,7 @@ print('Top Proteins (descending by R^2 of linear fits)')
 for gene, r2 in zip(reversed(sorted_gene_names_r2),
                     reversed(sorted_r2_scores)):
     print(f"{gene}\t{r2}")
+    
 # %% Choose a gene for visualization of measured vs predicted pIC50 values using regression model
 # Gene select
 selected_gene = 'NDUFA5'
@@ -221,35 +222,6 @@ result = model.fit()
 
 # Predict pIC50 from fitted model
 Y_pred = result.predict(X_gene)
-
-# Define colors for chemical series (not used in final plots, but stored)
-color = ['red', 'darkorange', 'gold', 'gold',  'gold', 'gold','gold', 'gold', 'gold', 
-         'khaki', 'red', 'greenyellow', 'green', 'lightseagreen', 'blue']
-color.reverse()
-
-# Plot observed vs predicted pIC50 for the selected gene
-fig, ax = plt.subplots(figsize=(10, 8))
-ax.scatter(Y, Y_pred, s=200, c = 'grey')  # scatter of observed vs predicted
-max_value = max(Y.max(), Y_pred.max())
-min_value = min(Y.min(), Y_pred.min())
-
-# Annotate each point with its index (chemical series number)
-for i, (observed, predicted) in enumerate(zip(Y, Y_pred)):
-    ax.text(observed, predicted, str(i+1), fontsize=12, ha='right', va='bottom')
-
-# Add diagonal reference line (perfect prediction)
-ax.plot([min_value, max_value], [min_value, max_value], 'k--', c = 'blue')
-
-# Title and axis labels
-plt.title('Linear modelling using {} fold change\n'.format(selected_gene), fontsize = 26)
-plt.xlabel('Measured Mitochondrial Toxicity (pIC50)', fontsize = 26)
-plt.ylabel('Predicted Mitochondrial Toxicity (pIC50)', fontsize = 26)
-plt.grid(True)
-
-# Save observed vs predicted plot
-plt.savefig(outpath + 'protacs_12_regression_' + selected_gene + '_pred.pdf')
-plt.close()
-#plt.show()
 
 # %% Gene expression vs IC50 scatter plot
 X_val = X[[selected_gene]]  # expression values of the selected gene

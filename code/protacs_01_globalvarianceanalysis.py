@@ -19,15 +19,15 @@ Inputs
 Outputs
 -------
 Figures:
-- figures/protacs_01_heatmap.png
+- figures/protacs_01_raw_heatmap.png
 - figures/protacs_01_dispersion_kde.pdf
-- figures/protacs_01_global_PCA_scree.pdf
-- figures/protacs_01_global_PCA_concentration.pdf
-- figures/protacs_01_global_PCA_MSBatch.pdf
-- figures/protacs_01_global_PCA_GSEA.pdf
-- figures/protacs_01_global_PC1_GSEA.pdf
-- figures/protacs_01_global_PC2_GSEA.pdf
-- figures/protacs_01_global_PC3_GSEA.pdf
+- figures/protacs_01_raw_pca_scree.pdf
+- figures/protacs_01_raw_pca_concentration.pdf
+- figures/protacs_01_raw_pca_MSBatch.pdf
+- figures/protacs_01_raw_pca_GSEA.pdf
+- figures/protacs_01_raw_pc1_GSEA.pdf
+- figures/protacs_01_raw_pc2_GSEA.pdf
+- figures/protacs_01_raw_pc3_GSEA.pdf
 - data/PC1_GSEA_C5.csv
 - data/PC2_GSEA_C5.csv
 - data/PC3_GSEA_C5.csv
@@ -61,10 +61,10 @@ import device_summarystatistics
 dir_main = os.path.dirname(__file__)
 export_path = os.path.join(dir_main, '..', 'data')
 figure_out = os.path.join(dir_main, '..', 'figures')
-filepath3 = str(export_path)
+workflow = 'protacs_01'
 
 # %% Load proteome data from HBD screen 
-pasef_summarized = pd.read_csv(os.path.join(filepath3, 'SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_251027.tsv'),
+pasef_summarized = pd.read_csv(os.path.join(export_path, 'SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_251027.tsv'),
                      decimal=',', 
                      delimiter=';', 
                      index_col = 0) 
@@ -126,7 +126,7 @@ ax2.set_xticks(np.arange(len(metadata_encoded.columns)))
 ax2.set_xticklabels(metadata_encoded.columns.values, rotation = 45)
 sns.heatmap(batch.to_frame(), cmap = 'jet_r', ax = ax3, cbar = False, yticklabels = False, xticklabels = False)
 ax3.set_title('Batch')
-plt.savefig(os.path.join(figure_out, 'protacs_01_heatmap.png'))
+plt.savefig(os.path.join(figure_out, f'{workflow}_raw_heatmap.png'))
 # plt.show()
 
 # %% Dispersion plot of summarized proteins
@@ -149,7 +149,7 @@ plt.ylim(-0.1, 1.0)
 plt.legend(fontsize = '26')
 plt.xlabel('Mean Protein Abundance (' + str(pasef_summarized_clustered.columns.size) + ')')
 plt.ylabel('Standard Deviation (' + str(pasef_summarized_clustered.columns.size) + ')')
-plt.savefig(os.path.join(figure_out, 'protacs_01_dispersion_kde.pdf'))
+plt.savefig(os.path.join(figure_out, f'{workflow}_dispersion_kde.pdf'))
 
 # %% Extract PCA loadings
 output = pasef_summarized_clustered.copy()
@@ -176,7 +176,7 @@ plt.xlabel('Principal Component')
 plt.ylabel('Explained Variance Ratio (%)')
 plt.xticks(n_components)
 plt.legend(loc='upper left')
-plt.savefig(os.path.join(figure_out, 'protacs_01_global_PCA_scree.pdf'))
+plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pca_scree.pdf'))
 # plt.show()
 
 # %% Plot 3D PCA with drug concentration
@@ -216,7 +216,7 @@ ax.legend(handles=legend_patches, bbox_to_anchor=(1.05, 1), loc='upper left')
 
 # Title for the plot
 plt.title("Principal Component Analysis")
-plt.savefig(os.path.join(figure_out, 'protacs_01_global_PCA_concentration.pdf'))
+plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pca_concentration.pdf'))
 # plt.show()
 
 # %% Plot 3D PCA with batch effect
@@ -264,7 +264,7 @@ ax.legend(handles=legend_patches, bbox_to_anchor=(1.05, 1), loc='upper left')
 
 # Title for the plot
 plt.title("Principal Component Analysis")
-plt.savefig(os.path.join(figure_out, 'protacs_01_global_PCA_MSBatch.pdf'))
+plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pca_MSBatch.pdf'))
 # plt.show()
 
 # %% Extract loadings for PC1 - 3 from PCA on proteomes in HBD screen
@@ -304,9 +304,9 @@ load2 = run_gsea(pc2_loadings)
 load3 = run_gsea(pc3_loadings)
 
 # %% Save GSEA results
-load1.to_csv(filepath3 + '/PC1_GSEA_C5.csv')
-load2.to_csv(filepath3 + '/PC2_GSEA_C5.csv')
-load3.to_csv(filepath3 + '/PC3_GSEA_C5.csv')
+load1.to_csv(os.path.join(export_path,'PC1_GSEA_C5.csv'))
+load2.to_csv(os.path.join(export_path,'PC2_GSEA_C5.csv'))
+load3.to_csv(os.path.join(export_path,'PC3_GSEA_C5.csv'))
 
 # %% Merge PC1, PC2 and PC3 GSEA dataframes
 # Set global variables used in gsea_filter() 
@@ -337,9 +337,9 @@ def gsea_filter(x):
     combined = pd.concat([forward, reverse])
     return combined
 
-PC1_gsea = gsea_filter(pd.read_csv(filepath3 + '/PC1_GSEA_C5.csv', index_col = 'Term'))
-PC2_gsea = gsea_filter(pd.read_csv(filepath3 + '/PC2_GSEA_C5.csv', index_col = 'Term'))
-PC3_gsea = gsea_filter(pd.read_csv(filepath3 + '/PC3_GSEA_C5.csv', index_col = 'Term'))
+PC1_gsea = gsea_filter(pd.read_csv(export_path + '/PC1_GSEA_C5.csv', index_col = 'Term'))
+PC2_gsea = gsea_filter(pd.read_csv(export_path + '/PC2_GSEA_C5.csv', index_col = 'Term'))
+PC3_gsea = gsea_filter(pd.read_csv(export_path + '/PC3_GSEA_C5.csv', index_col = 'Term'))
 gsea_merged1 = pd.merge(PC1_gsea, PC2_gsea, left_index = True, right_index = True, how = 'outer')
 gsea_merged = pd.merge(gsea_merged1, PC3_gsea, left_index = True, right_index = True, how = 'outer')
 gsea_redux = gsea_merged.iloc[:,[3,5,13,15,23,25]]
@@ -348,7 +348,7 @@ gsea_redux.columns = ['PC1_NES', 'PC1_FDR',
                       'PC2_NES', 'PC2_FDR',
                       'PC3_NES', 'PC3_FDR']
 top20_redux = gsea_redux.copy()
-top20_redux.to_csv(filepath3 + '/PCA_GSEA_C5.csv')
+top20_redux.to_csv(export_path + '/PCA_GSEA_C5.csv')
 print(top20_redux)
 
 # %% Plot NES of top 6 enriched pathways (PC1, PC2, PC3)
@@ -403,8 +403,9 @@ ax.set_ylabel(None)
 ax.set_title(f'GSEA on PC loadings\nTop {top_pathways} Up Down by NES (FDR < {cutoff})')
 plt.colorbar(scatter, ax=ax, label='Normalized Enrichment Score')
 plt.tight_layout()
-plt.savefig(os.path.join(figure_out, 'protacs_01_global_PCA_GSEA.pdf'))
+plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pca_gsea.pdf'))
 # plt.show()
+plt.close()
 
 # %% Calculate GSEA curves on PC loadings
 gseaPC1 = gp.prerank(rnk=pc1_loadings, 
@@ -431,12 +432,6 @@ gseaPC3 = gp.prerank(rnk=pc3_loadings,
 
 # %% Plot curves of top 5 enriched pathways (PC1, PC2, PC3) 
 # PC1 enriched pathways
-pc1_targets = ["GOBP_CELL_CELL_RECOGNITION",
-                                "GOCC_TRANSLATION_PREINITIATION_COMPLEX",
-                                "GOBP_BRANCHED_CHAIN_AMINO_ACID_METABOLIC_PROCESS",
-                                "GOCC_ORGANELLAR_RIBOSOME",
-                                "HP_HYPERAMMONEMIA"
-                                ]
 pc1_targets = ["GOBP_DNA_REPLICATION_INITIATION",
                                 "GOBP_TOXIN_TRANSPORT",
                                 "GOBP_CHAPERONE_MEDIATED_PROTEIN_FOLDING",
@@ -453,9 +448,11 @@ fig = plt.gcf()
 plt.title('GSEA on PC1 loadings', size = 18)
 fig.set_size_inches(5,8)
 plt.tick_params(axis='y', labelsize=14) 
-plt.savefig(os.path.join(figure_out, 'protacs_01_global_PC1_GSEA.pdf'))
+plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pc1_gsea.pdf'))
 # plt.show()
+plt.close()
 
+# %%
 # PC2 enriched pathways
 pc2_targets = ["GOBP_TRICARBOXYLIC_ACID_CYCLE",
                                 "GOCC_MITOCHONDRIAL_MATRIX",
@@ -472,9 +469,11 @@ fig = plt.gcf()
 plt.title('GSEA on PC2 loadings', size = 18)
 fig.set_size_inches(5,8)
 plt.tick_params(axis='y', labelsize=14) 
-plt.savefig(os.path.join(figure_out, 'protacs_01_global_PC2_GSEA.pdf'))
+plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pc2_gsea.pdf'))
 # plt.show()
+plt.close()
 
+# %%
 # PC3 enriched pathways
 pc3_targets = ["GOCC_ORGANELLE_INNER_MEMBRANE",
                                 "GOCC_MITOCHONDRIAL_ENVELOPE",
@@ -491,7 +490,8 @@ fig = plt.gcf()
 plt.title('GSEA on PC3 loadings', size = 18)
 fig.set_size_inches(5,8)
 plt.tick_params(axis='y', labelsize=14) 
-plt.savefig(os.path.join(figure_out, 'protacs_01_global_PC3_GSEA.pdf'))
+plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pc3_gsea.pdf'))
 # plt.show()
+plt.close()
 
 
