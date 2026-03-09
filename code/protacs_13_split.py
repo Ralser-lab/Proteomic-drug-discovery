@@ -76,3 +76,4 @@ y = BinaryTox.copy()
 Xb_train, Xb_test, yb_train, yb_test = train_test_split(X, BinaryTox, test_size=0.2, random_state=42) # Baseline Split
 AZmeta_input.loc[Xb_train.index.str.replace('_','-'), 'GBDT_split_idx'] = 1
 AZmeta_input.to_csv(os.path.join(path, 'AZcompound_metadata_clustered_split_240611a.tsv'))
+

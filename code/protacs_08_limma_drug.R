@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #'
-#' Script Name: protacs_06_limma_drug_10uM.R
+#' Script Name: protacs_06_limma_drug.R
 #' Description: Differential expression analysis of PROTAC proteomes at 10 µM
 #'              using limma (drug vs DMSO contrasts), with export of matrices
 #'

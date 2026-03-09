@@ -49,29 +49,29 @@ outpath = os.path.join(base, '..', 'data')
 figures = os.path.join(base, '..', 'figures')
 
 # Load differential expression profiles (chemical series vs DMSO) from split
-DE_VHL = pd.read_csv(outpath + '/Cluster_VHL_Limma_250306a.csv',
+de_vhl_df = pd.read_csv(outpath + '/Cluster_VHL_Limma_250306a.csv',
                      delimiter = ';', decimal = ',', index_col=0, header = 0)
-DE_T6N = pd.read_csv(outpath + '/Cluster_T6N_Limma_250306a.csv',
+de_t6n_df = pd.read_csv(outpath + '/Cluster_T6N_Limma_250306a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-DE_T5N = pd.read_csv(outpath + '/Cluster_T5N_Limma_250306a.csv',
+de_t5n_df = pd.read_csv(outpath + '/Cluster_T5N_Limma_250306a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-DE_L5N = pd.read_csv(outpath + '/Cluster_L5N_Limma_250306a.csv',
+de_l5n_df = pd.read_csv(outpath + '/Cluster_L5N_Limma_250306a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-DE_URA = pd.read_csv(outpath + '/Cluster_URA_Limma_250306a.csv',
+de_ura_df = pd.read_csv(outpath + '/Cluster_URA_Limma_250306a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
-DE_TXN = pd.read_csv(outpath + '/Cluster_TXN_Limma_250306a.csv',
+de_txn_df = pd.read_csv(outpath + '/Cluster_TXN_Limma_250306a.csv',
                      delimiter = ';', decimal = ',', index_col=0)
 
 # Load string network enrichment values (FDR, NES)
 # https://string-db.org/, queried 10 uM DE profiles from 
 # chemical series in split (listed below) for GO pathways
 DE_list = {
-    "DE_VHL": DE_VHL,
-    "DE_T6N": DE_T6N,
-    "DE_T5N": DE_T5N,
-    "DE_URA": DE_URA,
-    "DE_L5N": DE_L5N,
-    "DE_TXN": DE_TXN,
+    "DE_VHL": de_vhl_df,
+    "DE_T6N": de_t6n_df,
+    "DE_T5N": de_t5n_df,
+    "DE_URA": de_ura_df,
+    "DE_L5N": de_l5n_df,
+    "DE_TXN": de_txn_df,
 }
 
 def process_for_network(df):
@@ -120,7 +120,7 @@ for n, df in nx_dict.items():
 
 cat_order = ['Thalidomide 5N','Lenalinomide 5N','VHL amide','Thalidomide 6N', 'Dihydrouracyl','Transcription']
 cat_order.reverse() 
-dogma = pd.DataFrame()
+enrich_df = pd.DataFrame()
 filter = 0.01 #FDR cutoff
 
 # Assemble a cross-condition summary table of enriched pathways in split and export 
@@ -130,7 +130,7 @@ for idx, df in nx_dict.items():
     if df_subset['direction'][0] == 'top':
         df_subset['enrichment score'] = -(df_subset['enrichment score'])
     df_subset['condition'] = idx
-    dogma = pd.concat([dogma,df_subset], axis =0)
-dogma.sort_values('enrichment score', ascending = True)
-dogma['term description'] = pd.Categorical(dogma['term description'], ordered = True)
-dogma.to_csv(outpath + '/top10_FDR_reactome.csv')
+    enrich_df = pd.concat([enrich_df,df_subset], axis =0)
+enrich_df.sort_values('enrichment score', ascending = True)
+enrich_df['term description'] = pd.Categorical(enrich_df['term description'], ordered = True)
+enrich_df.to_csv(outpath + '/top10_FDR_reactome.csv')

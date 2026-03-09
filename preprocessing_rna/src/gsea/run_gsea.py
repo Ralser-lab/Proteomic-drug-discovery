@@ -62,7 +62,6 @@ def main(ranked_path:str):
     contrast = pd.read_csv(
         os.path.join(
             os.path.dirname(__file__),
-            '..',
             config['input_dir'],
             ranked_path
         ),
@@ -81,7 +80,6 @@ def main(ranked_path:str):
     gsea_obj.res2d.to_csv(
         os.path.join(
             os.path.dirname(__file__),
-            '..',
             config["output_dir"], # output directory from config
             f'{argparser.parse_args().c.split("/")[-1].replace(".csv", "")}_gsea_results_{gs_name}.csv',
         )

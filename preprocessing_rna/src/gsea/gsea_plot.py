@@ -1,5 +1,6 @@
 # %%
 import os
+import re
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -9,6 +10,12 @@ from matplotlib.colors import TwoSlopeNorm
 from config_loader import load_config
 
 # %%
+
+def configure_font() -> None:
+    plt.rcParams["font.family"] = "sans-serif"
+    plt.rcParams["font.sans-serif"] = ["Helvetica"]
+    plt.rcParams["pdf.fonttype"] = 42   # embed TrueType fonts (Type 42)
+
 def list_files(dir_path: str):
     """Return full paths for all files in directory (skip subfolders/hidden)."""
     return [
@@ -65,7 +72,7 @@ def plot_gsea_list(file_path: str, out_dir: str):
 
     os.makedirs(out_dir, exist_ok=True)
     stem, _ = os.path.splitext(os.path.basename(file_path))
-    fig.savefig(os.path.join(out_dir, f"gsea_{stem}.png"), dpi=120)
+    fig.savefig(os.path.join(out_dir, f"gsea_{stem}.pdf"))
     plt.close(fig)
 
 
@@ -78,14 +85,16 @@ def plot_all_gsea_lists(input_dir: str, output_dir: str):
 
 if __name__ == "__main__":
     config = load_config()
+    configure_font()
+    gs_name = config["gs_name"]
     plot_all_gsea_lists(
-        os.path.join('..',config["output_dir"]), 
-        os.path.join('..',config["plot_dir"], 'gsea_by_contrast'))
-
+        os.path.join(os.path.dirname(__file__), config["output_dir"], f'{gs_name}_pval'),
+        os.path.join(os.path.dirname(__file__), config["plot_dir"], 'gsea_by_contrast'))
 
 
 def gsea_summary_plot(
-        dir_name:str, 
+        dir_name:str,
+        out_path:str = None,
         topN:int = 10,
         target:str = 'C4_2',
         metric:str = 'NES',
@@ -105,7 +114,7 @@ def gsea_summary_plot(
 
     nes_df = subset_df.loc[subset_df['Term'].isin(topN_terms)].assign(
         filepath = lambda df: df['filepath']
-        .str.replace('../../gsea_output/h_pval/','')
+        .str.replace(re.escape(dir_name.rstrip('/') + '/'),'', regex=True)
         .str.replace('_gsea_results_h.csv','')
         .str.replace('_0', '')
         .str.replace(f'{target}_', '')
@@ -161,12 +170,17 @@ def gsea_summary_plot(
     plt.ylabel('Contrast')
     plt.colorbar(sc, label=metric)
     plt.tight_layout()
+    if out_path is not None:
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
+        plt.savefig(out_path)
     plt.show()
     return
 
 # %%
 
-gsea_summary_plot('../../gsea_output/h_pval/', 
+gsea_summary_plot(
+        os.path.join(os.path.dirname(__file__), '../../gsea_output/h_pval/'),
+        out_path=os.path.join(os.path.dirname(__file__), '../../plots/gsea_summary_C4_2.pdf'),
         topN = 10,
         target = 'C4_2',
         metric = 'NES',

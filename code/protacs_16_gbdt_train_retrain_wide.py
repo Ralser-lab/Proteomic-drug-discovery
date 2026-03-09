@@ -16,15 +16,11 @@ Date: 2025-09-29
 Inputs
 ------
 - data/Drug_LFCxadjPval_250305a.csv
-- data/SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_forlimma_240611a.tsv
 - data/AZcompound_metadata_clustered_240611a.tsv
-- data/top5_FDR_reactome.csv
 - configs/hyperparam_space_config.json
 
 Outputs
 -------
-- data/enriched_proteins.csv
-- data/predictions.csv 
 - figures/*.png
 - scoring_models/protacs_16_xgb_first-pass-model.json
 - scoring_models/protacs_16_xgb_first-pass-search_space.csv
@@ -46,7 +42,6 @@ from device_gradientboostingmachine import GBDT
 from device_supportfunctions import GBDTUtils
 from device_supportfunctions import load_gbdt_inputs
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import brier_score_loss
 import os, joblib
 
 # %% Gradient boosting workflow
@@ -55,7 +50,7 @@ def main():
     workflow = 'protacs_16'
 
     # Load hyperparameters from config
-    config_path = os.path.join(os.path.dirname(__file__), '..', 'configs', 'hyperparam_space_config_narrow.json')
+    config_path = os.path.join(os.path.dirname(__file__), '..', 'configs', 'hyperparam_space_config.json')
     params = GBDT.load_params(config_path)
 
     input = load_gbdt_inputs()
@@ -69,16 +64,17 @@ def main():
     round1.gbdt_optuna(params, X_train, y_train, score='average_precision', splits=5, n_trials=200)
     round1.gbdt_evaluate(X_test, y_test, round1.best_model)
     round1.gbdt_classify(X_test,y_test, round1.best_model)
-    top_features = round1.get_cv_shap_features(plot = True, n = X_train.shape[0]//10) # Get top features
+    top_weights = round1.get_model_features(plot = True, n = X_train.shape[0]//10)
+    top_features = round1.get_cv_shap_features(plot = True, n = X_train.shape[0]//10) 
     round1.gbdt_SHAP()
 
-    print('Round1 top features:')
-    print(top_features)
+    print('Round1 top weights:')
+    print(top_weights)
     
     # Second pass GBDT 
     round2 = GBDT(input.dpath, workflow, 'xgb_second-pass')
     round2.gbdt_baseline(Xb_train, Xb_test, yb_train, yb_test)
-    round2.gbdt_optuna(params, X_train[top_features], y_train, score='average_precision', splits=5, n_trials=200)
+    round2.gbdt_optuna(params,X_train[top_features], y_train, score='average_precision', splits=5, n_trials=200)
     round2.gbdt_evaluate(X_test[top_features], y_test, round2.best_model)
     round2.gbdt_classify(X_test[top_features],y_test, round2.best_model)
     round2.gbdt_SHAP() # Top interactors from shap.summary
@@ -89,14 +85,6 @@ def main():
 
     # Model calibration
     round2.gbdt_calibrate()
-    round2.gbdt_evaluate(X_test[top_features], y_test, round2.calibrated_model)
-    round2.gbdt_classify(X_test[top_features], y_test, round2.calibrated_model)
-
-    # Brier score before and after calibration 
-    y_pred = round2.best_model.predict(X_test[top_features])
-    print(brier_score_loss(y_test, y_pred, pos_label = 2))
-    y_pred = round2.calibrated_model.predict(X_test[top_features])
-    print(brier_score_loss(y_test, y_pred, pos_label = 2))
 
     # Export all predictions
     round2.gbdt_classify(X[top_features], y['IC50'], round2.calibrated_model, all = True)
@@ -111,7 +99,7 @@ def main():
         input.model_out, f'{round2.dout_prefix}xgb_second-pass-calibrated-model.pkl')) 
 
 if __name__ == "__main__":
-    GBDT.configure_font()
+    GBDTUtils.configure_font()
     main()
 
 

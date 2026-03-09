@@ -67,7 +67,7 @@ __marimo__/
 # 
 ──────────────────────────────────────────────────────────────────────────────
 
-# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL / local files
 __pycache__/
 *.py[codz]
 *$py.class
@@ -76,6 +76,8 @@ __pycache__/
 *test.py
 *test_3.py
 *recovered.py
+*protacs_25*
+*drug_0p1.R
 
 # C extensions
 *.so

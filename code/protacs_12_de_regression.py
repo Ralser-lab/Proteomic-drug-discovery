@@ -58,18 +58,25 @@ LFC_matrix = pd.read_csv(filepath + 'Cluster_LFC_10uM_250305a.csv',
 
 # Format predictor variable (X: Log Fold Change)
 
-def extract_genes(df, pathways, matrix, boundary):
+def extract_genes(dfs, pathways, matrix, boundary):
     """
-    Extract gene list for given pathways, then filter for genes 
-    with mean expression above boundary.
+    Extract gene list for given pathways.
+    dfs: single dataframe or list of dataframes to search for each pathway.
     """
+    if not isinstance(dfs, list):
+        dfs = [dfs]
+
     all_genes = set()
 
     for pathway in pathways:
-        # Get comma-separated list of genes for each pathway
-        path_genes = df.loc[pathway]['matching proteins in your input (labels)'].split(',')
-        # Add to global set
-        all_genes.update(set(path_genes))
+        for df in dfs:
+            if pathway in df.index:
+                row = df.loc[pathway]
+                if isinstance(row, pd.DataFrame):
+                    row = row.iloc[0]
+                path_genes = row['matching proteins in your input (labels)'].split(',')
+                all_genes.update(set(path_genes))
+                break
 
     # Select genes with mean expression > boundary
     mask = matrix.mean(axis=0) > boundary
@@ -77,15 +84,16 @@ def extract_genes(df, pathways, matrix, boundary):
 
     # Keep only overlapping genes
     selected_genes = strong_genes.intersection(all_genes)
-    
+
     return list(selected_genes)
 
 # Extract genes from enriched pathways
-cluster14 = pd.read_csv(filepath + 'Cluster14_enrichment.Component.tsv', index_col = 1, sep = '\t')
-cluster4 = pd.read_csv(filepath + 'Cluster4_enrichment.Component.tsv', index_col = 1, sep = '\t')
+ar_directed = pd.read_csv(filepath + 'ar_directed_enrichment.Component.csv', index_col = 1)
+on_target = pd.read_csv(filepath + 'on_target_enrichment.Component.csv', index_col = 1)
 
 n_cut = 5
-path_genes = extract_genes(cluster14, list(cluster14.index[0:n_cut]) + list(cluster4.index[0:n_cut]), expression_matrix, 11.85)  # filtered pathway genes
+path_genes = extract_genes([on_target, ar_directed], list(on_target.index[0:n_cut]) + list(ar_directed.index[0:n_cut]), expression_matrix, 11.85)  # filtered pathway genes
+# path_genes = extract_genes(enrichment_df, list(enrichment_df.index[0:n_cut]), expression_matrix, 11.85)  # filtered pathway genes
 
 # Clean and sort index (order by chemical series)
 LFC_matrix.index = LFC_matrix.index.str.extract(r'_(\d+(?:\.\d+)?)')[0]
@@ -250,3 +258,6 @@ plt.grid(True)
 # Save gene expression vs IC50 plot
 plt.savefig(outpath + 'protacs_12_regression_' + selected_gene + '.pdf')
 #plt.show()
+
+# %%
+

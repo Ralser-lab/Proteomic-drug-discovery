@@ -146,11 +146,6 @@ class GBDT:
         with open(path, "r") as f:
             return json.load(f)
     
-    @staticmethod
-    def configure_font() -> None:
-        plt.rcParams["font.family"] = "sans-serif"
-        plt.rcParams["font.sans-serif"] = ["Helvetica"]
-
     def out(self, filename, params = False) -> str:
         """
         Build a full output path under the figures directory, prefixed with the

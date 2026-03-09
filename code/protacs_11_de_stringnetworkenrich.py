@@ -69,7 +69,7 @@ for n, df in nx_dict.items():
 
 # Create top GSEA table
 dogma = pd.DataFrame()
-filter = 0.0001 #FDR cutoff
+filter = 0.01 #FDR cutoff
 for idx, df in nx_dict.items():
     df_subset = df.loc[df['false discovery rate'] < filter]
     df_subset.index = df_subset['term description']
@@ -104,3 +104,5 @@ ax.set_xlabel('')
 ax.set_ylabel('') 
 #plt.show()
 gseaplot.savefig(os.path.join(filepath3, f'{workflow}_de_stringdb_onoff_targ.pdf'))
+TXNreact.to_csv(filepath2 + 'on_target_enrichment.Component.csv')
+L5Nreact.to_csv(filepath2 + 'ar_directed_enrichment.Component.csv')

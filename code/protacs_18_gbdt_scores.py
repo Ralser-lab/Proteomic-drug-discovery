@@ -40,10 +40,10 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-from device_gradientboostingmachine import GBDT
+from device_supportfunctions import GBDTUtils
 
 # Set relative paths
-GBDT.configure_font()
+GBDTUtils.configure_font()
 workflow = 'protacs_18'
 path = os.path.dirname(__file__)
 inputout = os.path.join(path, '..', 'data')
@@ -83,7 +83,7 @@ tableS3.loc[tableS3['Drug'].isin(['Compound 1', 'Compound 2', 'Compound 3'])]
 tableS3.sort_values('Cluster', inplace=True)
 tableS3
 
-# Add inptu weights to probabilities
+# Add input weights to probabilities
 tableS3 = pd.merge(tableS3, modelvalues, left_index=True, right_index=True)
 tableS3.to_csv(os.path.join(inputout, 'NCB_ProteomeGuidedDiscovery_TableS3_250606a.csv'))
 

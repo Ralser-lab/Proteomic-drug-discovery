@@ -45,8 +45,9 @@ HERE = os.path.dirname(__file__)
 class PlotterCfg:
     dir_name: str = "../preprocessing_rna/gsea_output/h_pval/"
     cells: tuple[str, ...] = ("LNCaP", "C4_2")
-    priority_terms = ["HALLMARK_ANDROGEN_RESPONSE", "HALLMARK_OXIDATIVE_PHOSPHORYLATION",
-                      "HALLMARK_E2F_TARGETS", "HALLMARK_MYC_TARGETS_V1", "HALLMARK_MYC_TARGETS_V2", "HALLMARK_G2M_CHECKPOINT"]
+    priority_terms = ["HALLMARK_ANDROGEN_RESPONSE", "HALLMARK_SPERMATOGENESIS",
+                      "HALLMARK_E2F_TARGETS", "HALLMARK_MYC_TARGETS_V1", "HALLMARK_MYC_TARGETS_V2", "HALLMARK_G2M_CHECKPOINT",
+                       "HALLMARK_OXIDATIVE_PHOSPHORYLATION"]
     metrics: tuple[str, ...] = ("NES", "absNES")
     fig_path_suffix: str = "figures/protacs_23_rna_"
 
@@ -161,7 +162,7 @@ def gsea_selection_plot(
 
     if vmin < 0 < vmax:
         norm = TwoSlopeNorm(vmin=vmin, vcenter=0, vmax=vmax)
-        cmap = cm.get_cmap("RdBu_r")
+        cmap = mpl.colormaps["RdBu_r"]
     else:
         norm = Normalize(vmin=vmin, vmax=vmax)
         base = plt.cm.Blues

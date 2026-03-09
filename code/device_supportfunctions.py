@@ -11,6 +11,12 @@ class GBDTUtils:
     
     """
     @staticmethod
+    def configure_font() -> None:
+        plt.rcParams["font.family"] = "sans-serif"
+        plt.rcParams["font.sans-serif"] = ["Helvetica"]
+        plt.rcParams["pdf.fonttype"] = 42   # embed TrueType fonts (Type 42)
+        
+    @staticmethod
     def cv_perform(round1, round2, workflow):
         """
         Compare performance across CV folds of two models with boxplot. 

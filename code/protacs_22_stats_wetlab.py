@@ -48,12 +48,15 @@ import numpy as np
 import seaborn as sns
 import os
 import device_summarystatistics
+from device_supportfunctions import GBDTUtils
 
 # %% Set relative paths
 path = os.path.dirname(__file__) 
 data_path = os.path.join(path, '..', 'data')
 fig_path = os.path.join(path, '..', 'figures')
 workflow = 'protacs_22'
+
+GBDTUtils.configure_font()
 
 def add_title(func):
     """Title wrapper for sheet reader. """
