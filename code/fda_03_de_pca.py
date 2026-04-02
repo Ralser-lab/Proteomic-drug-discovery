@@ -203,7 +203,7 @@ handles, labels = scatter.legend_elements(prop="colors", alpha=1, size = 20)
 labels = fivecounts
 legend = ax.legend(handles, labels, bbox_to_anchor=(1.05, 1), loc='upper left', title = 'Drug Target', title_fontsize = 26, fontsize = 26)
 plt.title('Principal Component Analysis')
-#plt.show()
+# plt.show()
 fig.savefig(os.path.join(figure_out,f'{workflow}_de_pca.pdf')) # save 2 Dimensional PCA on DE of FDA library vs DMSO
 
 # %% Export datasets and supplementary tables

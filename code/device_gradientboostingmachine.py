@@ -25,7 +25,7 @@ Class architecture:
     gbdt_SHAP : Explain predictions with SHAP values and interaction structure.
     gbdt_calibrate : Calibrate predicted probabilities (isotonic).
     get_model_features : Rank and (optionally) plot feature importance.
-    plot_* : Visualization utilities (ROC, PR, F1, confusion, summary bars).
+    plot_* : Visualization utilities (ROC, PR, cross-validation).
     export_all_predictions : Save predictions + SHAP features for all samples.
     export_subset_predictions : Export a focused subset with per-feature barplots.
 
@@ -677,7 +677,12 @@ class GBDT:
         self.shap_feature_importance = pd.DataFrame({
             'feature': self.X_train.columns,
             'importance': self.shap_abs_mean
-        }).sort_values(by='importance', ascending=False).head(20)
+        }).sort_values(by='importance', ascending=False).head(17)
+
+        self.shap_feature_importance.to_csv(
+            os.path.join(self.dpath, f'{self.dout_prefix}{self.name}shap_top_features.csv'),
+            index=False
+        )
 
         self.df_shap_values = pd.DataFrame(self.shap_values, index=self.X_train.index, columns=self.X_train.columns)
 
@@ -703,7 +708,7 @@ class GBDT:
             plt.rcParams['ytick.labelsize'] = 26
             plt.rcParams['legend.fontsize'] = 28
             sns.clustermap(filtered_variance_df, annot=False, cmap='magma_r', linewidths=.5)
-            plt.title('SHAP Interactions in Test set')
+            plt.title('SHAP Interactions in Training')
             plt.savefig(self.out('shap_interactions_heatmap.pdf'))
             # plt.show()
             plt.close()
@@ -748,7 +753,7 @@ class GBDT:
         plt.rcParams['xtick.labelsize'] = 26 
         plt.rcParams['ytick.labelsize'] = 26
         plt.rcParams['legend.fontsize'] = 28
-        plt.plot(fraction_before, mean_predicted_before, "s-", label="Not Calibrated")
+        plt.plot(mean_predicted_before, fraction_before, "s-", label="Not Calibrated")
         plt.plot(mean_predicted_value, fraction_of_positives, "s-", label="Calibrated")
         plt.plot([0, 1], [0, 1], "k--", label="Perfectly calibrated")
         plt.xlabel("Mean predicted probability")
@@ -783,7 +788,7 @@ class GBDT:
         Returns
         -------
         None
-            Saves 'Rplot_Figure4.csv' to the data path; updates:
+            Saves 'R2_Model_Prediction_*.csv' to the data path; updates:
             - self.outcome
             - self.dotplotforR
 
@@ -807,7 +812,7 @@ class GBDT:
         dotplotforR = pd.merge(clusters, cluster_shap, left_index=True, right_index=True)
 
         self.dotplotforR = dotplotforR
-        dotplotforR.to_csv(os.path.join(self.dpath, f'Rplot_Figure4_{workflow}.csv'))
+        dotplotforR.to_csv(os.path.join(self.dpath, f'R2_Model_Prediction_{workflow}.csv'))
 
     def export_subset_predictions(self, AZmeta, targets):
         """

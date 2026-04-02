@@ -41,14 +41,17 @@ Dependencies: pandas, numpy, matplotlib, statsmodels, os
 # %% Import modules
 import pandas as pd
 import os
+from scipy import stats
 import matplotlib.pyplot as plt
 import numpy as np
 import statsmodels.api as sm
+from device_supportfunctions import GBDTUtils
 
 # Set relative paths
 dir_main = os.path.dirname(__file__)
 filepath = os.path.join(dir_main, '..', 'data/')
 outpath = os.path.join(dir_main, '..', 'figures/')
+GBDTUtils.configure_font()
 
 # Load expression matrix, differential expression profiles, and enrichment data from HBD proteomic screen. 
 expression_matrix =  pd.read_csv(filepath + 'SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_forlimma_240611a.tsv',
@@ -137,7 +140,13 @@ plt.xlabel('Cluster')
 plt.savefig(outpath + 'protacs_12_barplot_IC50_mean.pdf')
 plt.close()
 
-# Bar plot of means
+fig, ax = plt.subplots(figsize=(6, 6))
+stats.probplot(bars['IC50'], dist='norm', plot=ax)
+ax.set_title('Q-Q Plot of IC50')
+plt.savefig(outpath + 'protacs_12_qq_IC50.pdf')
+plt.close()
+
+# %% Bar plot of means
 np.log10(bars['IC50']).plot(kind = 'bar', capsize = 2, color = cmap(rescale(y)))
 plt.title('Reponse Variable (Y)')
 plt.ylabel('log(IC50 [uM])') 
@@ -153,7 +162,14 @@ plt.xlabel('Cluster')
 plt.savefig(outpath + 'protacs_12_barplot_IC50.pdf')
 plt.close()
 
-# Univariate OLS regression of log10(IC50) on individual protein LFCs
+fig, ax = plt.subplots(figsize=(6, 6))
+stats.probplot(np.log10(bars['IC50']), dist='norm', plot=ax)
+ax.set_title('Q-Q Plot of log10IC50')
+plt.savefig(outpath + 'protacs_12_qq_log10_IC50.pdf')
+plt.show()
+plt.close()
+
+# %% Univariate OLS regression of log10(IC50) on individual protein LFCs
 tomodel = sigpath.copy()
 
 X = tomodel[path_genes]   # predictor variables

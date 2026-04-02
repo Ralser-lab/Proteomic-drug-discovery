@@ -43,7 +43,7 @@ fig_dir  <- file.path(getwd(), "figures")
 setwd(data_dir)
 
 # Read in xgb finalmodel input/output related data
-plot_df = read.csv2('Rplot_Figure4.csv', sep = ',', dec = '.')
+plot_df = read.csv2('predictions_shap.csv', sep = ',', dec = '.')
 plot_df$Actual <- as.factor(plot_df$Actual)
 plot_df$Predicted <- as.factor(plot_df$Predicted)
 plot_df$Drug <- as.factor(plot_df$Drug)

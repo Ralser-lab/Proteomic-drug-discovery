@@ -21,7 +21,7 @@ Inputs
 Outputs
 -------
 - data/NCB_ProteomeGuidedDiscovery_TableS3_250606a.csv
-- data/analog_dataout.csv
+- data/
 - figures/protacs_17_series15_toxscores.pdf
 - figures/protacs_17_analogues_signature_PCA.pdf
 - figures/protacs_17_analogues_signature_barplot.pdf
@@ -40,51 +40,66 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import xgboost as xgb
 from device_supportfunctions import GBDTUtils
+from device_supportfunctions import load_gbdt_inputs
 
 # Set relative paths
 GBDTUtils.configure_font()
+ml_inputs = load_gbdt_inputs()
+
 workflow = 'protacs_18'
 path = os.path.dirname(__file__)
 inputout = os.path.join(path, '..', 'data')
 figout = os.path.join(path, '..','figures')
-modelvalues_w = pd.read_csv(os.path.join(inputout,'Rplot_Figure4_protacs_16.csv'), index_col = 0)
-modelvalues_n = pd.read_csv(os.path.join(inputout,'Rplot_Figure4_protacs_17.csv'), index_col = 0)
+model_dir = os.path.join(os.path.dirname(__file__), '..', 'scoring_models')
+modelvalues_w = pd.read_csv(os.path.join(inputout,'R2_Model_Prediction_protacs_16.csv'), index_col = 0)
+modelvalues_n = pd.read_csv(os.path.join(inputout,'R2_Model_Prediction_protacs_17.csv'), index_col = 0)
 cols_only_in_w = modelvalues_w.columns.difference(modelvalues_n.columns)
 modelvalues = modelvalues_n.join(modelvalues_w[cols_only_in_w]).iloc[:,5:]
 cols_df = modelvalues.columns.difference(modelvalues_n)
-modelvalues_f = pd.merge(modelvalues_n.iloc[:,:5], modelvalues, left_index=True, right_index=True)
-modelvalues_f.to_csv(os.path.join(inputout, 'Rplot_Figure4.csv'))
 softvote_df = pd.DataFrame()
 softvote_df = softvote_df.assign(
     probability = (modelvalues_w.Probability + modelvalues_n.Probability)/2,
     drug_id = modelvalues_n.Drug,
     cluster = modelvalues_n.Cluster)
 
-# %%                 
+# %%
+r1_wide_shap_feat = pd.read_csv(
+    os.path.join(inputout, 'protacs_16_xgb_first-pass_shap_top_features.csv'))
+r1_narrow_shap_feat = pd.read_csv(
+    os.path.join(inputout, 'protacs_17_xgb_first-pass_shap_top_features.csv'))
+shap_feat = set(r1_wide_shap_feat.feature.values).union(set(r1_narrow_shap_feat.feature.values))
 
+modelvalues_f = pd.merge(modelvalues_n.iloc[:,:5], ml_inputs.X.loc[:,list(shap_feat)], left_index=True, right_index=True)
+modelvalues_f['Probability'] = softvote_df['probability']
+modelvalues_f.to_csv(os.path.join(inputout, 'predictions_shap.csv'))
+
+# %%                 
 # Export Table S3
 tableS3 = softvote_df.copy().rename(columns = {
-    'probability': 'Toxic Probability',
-    'drug_id': 'Drug',
-    'cluster': 'Cluster'
-})
-
+    'probability': 'toxic_score',
+    'drug_id': 'drug',
+    'cluster': 'cluster'
+}).assign(
+    model_n_score= modelvalues_n.Probability,
+    model_w_score= modelvalues_w.Probability,
+)
 
 # Map internal AZ IDs to friendly series names
-tableS3.loc[pd.Series(tableS3.index).str.contains('AZ14183816').values, 'Drug'] = 'Compound 1'
-tableS3.loc[pd.Series(tableS3.index).str.contains('AZ14196658').values, 'Drug'] = 'Compound 2'
-tableS3.loc[pd.Series(tableS3.index).str.contains('AZ14197166').values, 'Drug'] = 'Compound 3'
+tableS3.loc[pd.Series(tableS3.index).str.contains('AZ14183816').values, 'drug'] = 'Compound 1'
+tableS3.loc[pd.Series(tableS3.index).str.contains('AZ14196658').values, 'drug'] = 'Compound 2'
+tableS3.loc[pd.Series(tableS3.index).str.contains('AZ14197166').values, 'drug'] = 'Compound 3'
 
 # Quick  check of relabeling (no assignment; used when debugging)
-tableS3.loc[tableS3['Drug'].isin(['Compound 1', 'Compound 2', 'Compound 3'])]
+tableS3.loc[tableS3['drug'].isin(['Compound 1', 'Compound 2', 'Compound 3'])]
 
 # Order by cluster and export
-tableS3.sort_values('Cluster', inplace=True)
+tableS3.sort_values('cluster', inplace=True)
 tableS3
 
 # Add input weights to probabilities
-tableS3 = pd.merge(tableS3, modelvalues, left_index=True, right_index=True)
+tableS3 = pd.merge(tableS3, ml_inputs.X.loc[:,list(shap_feat)], left_index=True, right_index=True)
 tableS3.to_csv(os.path.join(inputout, 'NCB_ProteomeGuidedDiscovery_TableS3_250606a.csv'))
 
 # %% Cluster 15 probability plot
@@ -120,7 +135,7 @@ values = list(values.index.values)  # keep original indices if needed downstream
 # Select specific analogues; align to modelvalues and append probability
 cpd_targets = 'AZ14183816-005, AZ14183816-006, AZ14196658-003, AZ14197166-003, AZ14197166-004, AZ14197166-005'
 cpd_targets = cpd_targets.replace('-', '_').replace(' ', '').split(',')
-cpd_targets = modelvalues_f.iloc[:, 5:].assign(probability=modelvalues_f['Probability']).loc[cpd_targets]
+cpd_targets = modelvalues_f.iloc[:, 5:].assign(probability=softvote_df['probability']).loc[cpd_targets]
 cpd_targets['analogue'] = cpd_targets.index.str.split('_').str[0]
 
 # %% PCA on analogues
@@ -183,7 +198,7 @@ plt.close()
 # %% PC2 top features
 # Pick features with strongest PC2 loadings, then plot analogue means
 pca_features = loadings.sort_values(by='PC_2').index[0:4]
-etc_features = ['NDUFA5', 'NDUFA4', 'CYC1']  # override with Complex I panel
+etc_features = ['CYC1', 'NDUFA13', 'NDUFA5', 'NDUFB10']  # override with Complex I panel
 
 barplot_df = analog[etc_features]
 
@@ -193,4 +208,3 @@ plt.savefig(os.path.join(figout, f'{workflow}_analogues_signature_barplot.pdf'))
 plt.ylim([-0.4,1.2])
 # plt.show()
 plt.close()
-# %%

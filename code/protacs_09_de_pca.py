@@ -133,7 +133,7 @@ label_colors = df_pca.drop_duplicates('clusterlabs').set_index('clusterlabs')['c
 handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color, markersize=12) for color in label_colors]
 legend = ax.legend(handles, label_colors.index, bbox_to_anchor=(1.05, 1), loc='upper left', title='Drug Target', title_fontsize=26, fontsize=26)
 plt.title('Principal Component Analysis')
-#plt.show()
+# plt.show()
 # Export PCA on DE profiles in HBD screen (chemical series vs DMSO)
 fig.savefig(os.path.join(filepath3,f'{workflow}_de_pca_chemicalseries.pdf'))
 plt.close(fig)
@@ -188,6 +188,7 @@ plt.title("Density Plot with Custom Colors")
 # Save probability density function as a PDF
 plt.savefig(os.path.join(filepath3, f'{workflow}_de_kde_fda_v_hbd_zcentered'))
 #plt.show()
+plt.close()
 
 # %% Plot probability density functions as boxplot
 from matplotlib import pyplot as plt

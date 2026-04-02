@@ -82,7 +82,7 @@ def main():
     round2.gbdt_baseline(Xb_train, Xb_test, yb_train, yb_test)
     round2.gbdt_gridcv(params, X_train[top_features], y_train, score = 'average_precision')
     round2.gbdt_evaluate(X_test[top_features], y_test, round2.best_model)
-    round2.gbdt_classify(X_test[top_features],y_test, round2.best_model) 
+    round2.gbdt_classify(X_test[top_features],y_test, round2.best_model)
     round2.gbdt_SHAP()
 
     # Evaluate rounds 

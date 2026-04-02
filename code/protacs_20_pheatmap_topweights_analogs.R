@@ -54,7 +54,7 @@ metadata = plot_df[ncol(plot_df)]
 annotation_col <- data.frame(
                            Probability = metadata$probability)
 row.names(annotation_col) <- plot_df$analogue
-de_matrix = plot_df[c('NDUFA5','CYC1','NDUFA4')]
+de_matrix = plot_df[c('NDUFA5','CYC1','NDUFB10','NDUFA13')]
 row.names(de_matrix) = plot_df$analogue
 de_matrix = as.matrix(de_matrix)
 proba_color = c('black', 'green')
@@ -66,8 +66,8 @@ annotation_colors <- list(
 # Proportional split: 33 colours for [-0.5, 0], 67 colours for [0, 1]
 n_neg   <- 33
 n_pos   <- 67
-color   <- c(colorRampPalette(c("blue",  "white"))(n_neg),
-             colorRampPalette(c("white", "red"  ))(n_pos))
+color   <- c(colorRampPalette(c("blue", "white"))(n_neg),
+             colorRampPalette(c("white", "red"))(n_pos))
 breaks  <- c(seq(-0.5, 0, length.out = n_neg + 1),
              seq( 0,   1, length.out = n_pos + 1)[-1])
 ordered <- de_matrix[order(de_matrix[,1],decreasing=TRUE),]

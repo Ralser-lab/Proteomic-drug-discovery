@@ -68,16 +68,16 @@ cluster_mappings = {1 : 'AR-VHL-Other',
                15: 'AR-L5N-Pip'} 
 
 # Plot and save join probability density function of toxicity scores
-sns.kdeplot(data=tableS3, x='Cluster', y='Toxic Probability', common_norm=False)
-plt.title('KDE: Toxic Probability by Cluster')
+sns.kdeplot(data=tableS3, x='cluster', y='model_n_score', common_norm=False)
+plt.title('KDE: Toxic Score by Cluster')
 plt.xlabel('Chemical Series')
 plt.savefig(os.path.join(fig_dir, 'protacs_21_joint_KDE_toxscores.pdf'))
-# plt.show()
+plt.show()
 plt.close()
 
 # %% Violin plots for chemical series that display bimodality
 # Group toxicity scores by chemical series
-cluster_summary = tableS3.groupby('Cluster')['Toxic Probability'].describe().sort_values(
+cluster_summary = tableS3.groupby('cluster')['model_n_score'].describe().sort_values(
     ['mean', 'std'], ascending=False)
 cluster_summary['chemistry'] = cluster_summary.index.map(cluster_mappings)
 print(cluster_summary)
@@ -91,20 +91,22 @@ cluster_filter1 = cluster_summary.loc[cluster_filter1_idx]
 n_thresh = 5
 cluster_filter2_idx = cluster_filter1.loc[cluster_filter1['count']>n_thresh].index
 cluster_filter2 = cluster_filter1.loc[cluster_filter2_idx]
-toplot = tableS3.loc[tableS3['Cluster'].isin(cluster_filter2_idx)].copy()
-toplot['Chemistry'] = toplot['Cluster'].map(cluster_mappings)
+toplot = tableS3.loc[tableS3['cluster'].isin(cluster_filter2_idx)].copy()
+toplot['Chemistry'] = toplot['cluster'].map(cluster_mappings)
 
 # Plot and save violin plots on toxicity scores (chemotypic, bimodal series)
 # Drop series 6 (not bimodal) 
-toplot_bimodal = toplot.loc[toplot['Cluster'].isin([1,10,11,14,15])]
-sns.violinplot(toplot_bimodal, x = 'Chemistry', y = 'Toxic Probability',
+toplot_bimodal = toplot.loc[toplot['cluster'].isin([1,10,11,14,15])]
+sns.violinplot(toplot_bimodal, x = 'Chemistry', y = 'toxic_score',
                hue = 'Chemistry', palette = 'pastel', common_norm=False)
 plt.legend().remove()
 plt.xticks(rotation = 90)
 plt.xlabel(None)
 plt.savefig(os.path.join(fig_dir, 'protacs_21_violin_toxscores.pdf'))
-# plt.show()
+plt.show()
 plt.close()
+
+# %%
 
 # %% Read in wetlab source data of AR degradation efficacy (IC50s)
 degrader_data = pd.read_excel(os.path.join(data_dir, 'Figure4_ARdegdata_SafetyScores_250523a.xlsx'),
@@ -120,8 +122,8 @@ deg_df = degrader_data.groupby('Label').agg(
 tx_score_df = tableS3.assign(
     Compound = (lambda df: df['Unnamed: 0'].str.split('_').str[0])
 ).groupby('Compound').agg(
-    Toxic_Probability = ('Toxic Probability', 'mean'),
-    Drug = ('Drug', 'first')
+    Toxic_Probability = ('model_n_score', 'mean'),
+    Drug = ('drug', 'first')
 )
 
 trog_score = tx_score_df.loc[tx_score_df['Drug']=='Troglitazone']['Toxic_Probability'].values
@@ -135,5 +137,5 @@ plt.xlim(-0.3, 3.4)
 sns.scatterplot(scatter_df, x = 'AR_DEG_IC50', y = 'Toxic_Probability', hue = scatter_df.index, s = 400)
 plt.axhline(trog_score, linestyle = '--', color = 'red')
 plt.savefig(os.path.join(fig_dir, 'protacs_21_scatterplot_toxscores_v_IC50.pdf'))
-# plt.show()
+plt.show()
 plt.close()

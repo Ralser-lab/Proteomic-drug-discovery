@@ -69,8 +69,8 @@ pip install -e .
 # run python3 code/protacs_17_gbdt_train_retrain_narrow.py 
 run python3 code/protacs_18_gbdt_scores.py
 run Rscript code/protacs_19_pheatmap_topweights_all.R
-# run Rscript code/protacs_20_pheatmap_topweights_analogs.R
-run python3 code/protacs_21_scores_v_degradation.py
+run Rscript code/protacs_20_pheatmap_topweights_analogs.R
+# run python3 code/protacs_21_scores_v_degradation.py
 # run python3 code/protacs_22_stats_wetlab.py
 # run python3 code/protacs_23_rna_gsea.py
 # run python3 code/protacs_24_rna_gex.py

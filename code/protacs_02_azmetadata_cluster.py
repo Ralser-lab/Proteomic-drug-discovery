@@ -110,6 +110,9 @@ remapping = {
 }
 AZ_cluster['Dend'] = AZ_cluster['Cluster'].map(remapping)
 
+# %%
+AZ_cluster
+
 # %% Export cleaned AstraZeneca metadata 
 AZ_cleaned = pd.merge(AZ_meta, AZ_cluster, left_index = True, right_index = True)
 AZ_export = AZ_cleaned.copy()

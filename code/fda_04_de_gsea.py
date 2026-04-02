@@ -44,12 +44,8 @@ workflow = 'fda_04'
 # %% Read in limma contrast data vs DMSO from FDA test set & clean
 t_matrix = pd.read_csv(os.path.join(data_out,'FDA_LimmaMatrix_250304a.csv'),
                      delimiter = ';', decimal = ',', index_col=0, header = 0).T
-adj_matrix = pd.read_csv(os.path.join(data_out,'FDA_adjLimmaMatrix_250304a.csv'),
-                     delimiter = ';', decimal = ',', index_col=0, header = 0).T
 t_matrix.index = t_matrix.index.str.replace('Drug_', '')
 t_matrix.index = t_matrix.index.str.replace(' - DMSO', '')
-adj_matrix.index = adj_matrix.index.str.replace('Drug_', '')
-adj_matrix.index = adj_matrix.index.str.replace(' - DMSO', '')
 
 # %% GSEA on limma contrasts
 def run_gsea(x):
@@ -145,6 +141,11 @@ ax.set_xlabel('')
 gseaplot.savefig(os.path.join(figure_out, f'{workflow}_gsea_targets.pdf')) # Export dotplot plot of GSEA on limma contrasts in FDA-test set
 
 # %% Export GSEA protein matrix within leading edge for a target pathway as a heatmap
+adj_matrix = pd.read_csv(os.path.join(data_out,'FDA_adjLimmaMatrix_250304a.csv'),
+                     delimiter = ';', decimal = ',', index_col=0, header = 0).T
+adj_matrix.index = adj_matrix.index.str.replace('Drug_', '')
+adj_matrix.index = adj_matrix.index.str.replace(' - DMSO', '')
+
 mtx = df4.copy()
 term = 'GOBP_CELLULAR_OXIDANT_DETOXIFICATION' # Selected term (target pathway
 mtx = mtx[mtx['Term']==term]['Lead_genes'].iloc[0].split(';')

@@ -47,6 +47,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import os
+import matplotlib.lines as mlines
 import device_summarystatistics
 from device_supportfunctions import GBDTUtils
 
@@ -274,22 +275,36 @@ cell_order = ['LNCAP','VCAP','SU-8686','LU99','MiaPaCa2']
 cell_summ['Cell'] = pd.Categorical(cell_summ['Cell'], categories=cell_order, ordered=True)
 
 # Plot and save cell panel data with compound series treatment (Figure 5).
-plt.figure(figsize=(6, 6))  # Reduce width
+fig, ax = plt.subplots(figsize=(6, 6))
+vmin, vmax = 0.1, 30
+norm = plt.Normalize(vmin=vmin, vmax=vmax)
 sns.scatterplot(
-    data=cell_summ, 
-    x='Compound', 
-    y='Cell', 
-    size=-np.log(cell_summ['mean']), 
-    hue=-np.log(cell_summ['mean']), 
-    palette='Reds',
-    sizes=(50, 500), 
-    alpha=0.7
+    data=cell_summ,
+    x='Compound',
+    y='Cell',
+    s=300,
+    hue=cell_summ['mean'],
+    palette='Reds_r',
+    hue_norm=norm,
+    alpha=0.7,
+    ax=ax
 )
-plt.xticks(rotation=45, ha='right')  # Rotate labels
-plt.xticks(np.arange(0, len(cell_summ['Compound'].unique()), step=1))  # Adjust tick frequency
-plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-plt.margins(x=0.3, y=0.3) 
-plt.tight_layout()  # Adjust layout to reduce excess white space
+ax.set_xticks(np.arange(0, len(cell_summ['Compound'].unique()), step=1))
+ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+
+# Build fully custom legend with fixed reference values
+cmap = plt.get_cmap('Reds_r')
+legend_values = [0.1, 1, 5, 10, 20, 30]
+legend_labels = [f'{v} µM' for v in legend_values[:-1]] + ['>30 µM']
+custom_handles = [
+    mlines.Line2D([], [], color=cmap(norm(v)), marker='o',
+                  linestyle='None', markersize=8, label=lbl)
+    for v, lbl in zip(legend_values, legend_labels)
+]
+ax.legend(handles=custom_handles, loc='center left', bbox_to_anchor=(1, 0.5))
+
+plt.margins(x=0.3, y=0.3)
+plt.tight_layout()
 plt.savefig(os.path.join(fig_path, f'{workflow}_GI50_dotplot.pdf'))
 # plt.show()
 plt.close()
