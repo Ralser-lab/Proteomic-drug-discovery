@@ -50,8 +50,8 @@ from sklearn.model_selection import (GridSearchCV,
                                      cross_val_score)
 from sklearn.metrics import (classification_report, 
                              confusion_matrix, 
-                             roc_curve, auc, 
-                             f1_score, precision_recall_curve, 
+                             auc,
+                             f1_score, precision_recall_curve,
                              ConfusionMatrixDisplay)
 from sklearn.calibration import CalibratedClassifierCV, calibration_curve
 
@@ -355,11 +355,7 @@ class GBDT:
 
         kf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
-        # Score on multiple metrics; HP selection still driven by primary score
-        scoring = {
-            score: score,
-            'roc_auc': 'roc_auc',
-        }
+        scoring = {score: score}
 
         grid_search = GridSearchCV(
             estimator=xgb.XGBClassifier(random_state=42),
@@ -389,8 +385,7 @@ class GBDT:
                     if c.startswith('split') and c.endswith(f'_test_{metric}')]
             return self.cv_results_.loc[i, cols].to_numpy(dtype=float)
 
-        fold_scores     = _fold_scores(score)
-        fold_scores_auc = _fold_scores('roc_auc')
+        fold_scores = _fold_scores(score)
 
         self.best_cv_scores_ = fold_scores
         self.best_cv_mean_   = float(np.mean(fold_scores))
@@ -398,7 +393,6 @@ class GBDT:
 
         print("Best params:", self.best_params)
         print(f"CV {score}:  {self.best_cv_mean_:.4f} ± {self.best_cv_sd_:.4f}")
-        print(f"CV roc_auc: {np.mean(fold_scores_auc):.4f} ± {np.std(fold_scores_auc, ddof=1):.4f}")
 
         # save search space + best params + cv summary
         pd.DataFrame(list(params.items()), columns=['parameter', 'values']) \
@@ -411,8 +405,6 @@ class GBDT:
             "metric": score,
             "cv_mean": self.best_cv_mean_,
             "cv_sd": self.best_cv_sd_,
-            "roc_auc_mean": float(np.mean(fold_scores_auc)),
-            "roc_auc_sd": float(np.std(fold_scores_auc, ddof=1)),
             "n_splits": kf.get_n_splits()
         }]).to_csv(self.out('-cv_summary.csv', params=True), index=False)
 
@@ -486,10 +478,9 @@ class GBDT:
         self.grid_search = study
         self.cv_results_ = study.trials_dataframe()
 
-        # Fold scores for best config — primary score and roc_auc
+        # Fold scores for best config
         best_estimator = xgb.XGBClassifier(random_state=random_state, eval_metric="logloss", n_jobs=1, **self.best_params)
-        fold_scores     = cross_val_score(best_estimator, X_train, y_train, cv=kf, scoring=score,     n_jobs=1)
-        fold_scores_auc = cross_val_score(best_estimator, X_train, y_train, cv=kf, scoring='roc_auc', n_jobs=1)
+        fold_scores = cross_val_score(best_estimator, X_train, y_train, cv=kf, scoring=score, n_jobs=1)
 
         self.best_cv_scores_ = fold_scores
         self.best_cv_mean_ = float(np.mean(fold_scores))
@@ -497,7 +488,6 @@ class GBDT:
 
         print("Best params:", self.best_params)
         print(f"CV {score}:  {self.best_cv_mean_:.4f} ± {self.best_cv_sd_:.4f}")
-        print(f"CV roc_auc: {np.mean(fold_scores_auc):.4f} ± {np.std(fold_scores_auc, ddof=1):.4f}")
 
         # Save search space + best params + cv summary
         pd.DataFrame([(k, json.dumps(v)) for k, v in params.items()],
@@ -512,8 +502,6 @@ class GBDT:
             "metric": score,
             "cv_mean": self.best_cv_mean_,
             "cv_sd": self.best_cv_sd_,
-            "roc_auc_mean": float(np.mean(fold_scores_auc)),
-            "roc_auc_sd":   float(np.std(fold_scores_auc, ddof=1)),
             "n_splits": kf.get_n_splits()
         }]).to_csv(self.out("-cv_summary.csv", params=True), index=False)
 
@@ -523,7 +511,7 @@ class GBDT:
         return self.best_model
     
     def gbdt_evaluate(self, X_test, y_test, model,
-                      plot_prc=True, plot_roc=True):
+                      plot_prc=True):
         """
         Evaluate a model on held-out data. Computes predicted probabilities and
         saves ROC and Precision-Recall curves for test (and optionally train) sets,
@@ -549,9 +537,6 @@ class GBDT:
         self.model = model
         self.proba_test = self.model.predict_proba(X_test)[:, 1]
         self.proba_train = self.model.predict_proba(self.X_train)[:, 1]
-        if plot_roc:
-            self.plot_roc(y_test=y_test, proba=self.proba_test, baseline=self.baseline_proba,
-                        y_train=self.y_train, proba2=self.proba_train)
         if plot_prc:
             self.plot_pr(y_test=y_test, proba=self.proba_test, baseline=self.baseline_proba,
                      y_train=self.y_train, proba2=self.proba_train)
@@ -620,7 +605,6 @@ class GBDT:
             print(classification_report(self.y_test, self.predict_test))
 
         def format_report(df, idx):
-            df['accuracy'] = df.loc['accuracy'].mean()
             df = df.iloc[:, [0, 1, 4]].iloc[[1]]
             df.rename(index={'1': idx}, inplace=True)
             df = df * 100
@@ -887,61 +871,6 @@ class GBDT:
     ##############################################################################
     # Plotting functions
     ##############################################################################
-
-    def plot_roc(self, y_test, proba, baseline=None, y_train=None, proba2=None, 
-                 plot = False):
-        """
-        Save ROC curves comparing the evaluated model on test (and optional train)
-        data, with an optional overlay of the baseline model evaluated on test.
-
-        Parameters
-        ----------
-        y_test : pandas.Series or numpy.ndarray
-            True labels for the test set.
-        proba : numpy.ndarray
-            Predicted probabilities on X_test.
-        baseline : numpy.ndarray or None, default None
-            Baseline model probabilities on the same test labels, if available.
-        y_train : pandas.Series or numpy.ndarray or None, default None
-            Training labels.
-        proba2 : numpy.ndarray or None, default None
-            Predicted probabilities on X_train .
-
-        Returns
-        -------
-        None
-            Saves 'roc.pdf' to figures directory.
-
-        """
-        fpr, tpr, _ = roc_curve(y_test, proba)
-        roc_auc = auc(fpr, tpr)
-        print(f'Test set performance [AUROC]: {roc_auc}')
-
-        if plot:
-            if y_train is not None and proba2 is not None:
-                fpr_train, tpr_train, _ = roc_curve(y_train, proba2)
-                roc_auc_train = auc(fpr_train, tpr_train)
-
-            plt.rcParams['axes.labelsize'] = 35
-            plt.rcParams['axes.titlesize'] = 35
-            plt.rcParams['xtick.labelsize'] = 26
-            plt.rcParams['ytick.labelsize'] = 26
-            plt.rcParams['legend.fontsize'] = 28
-            plt.figure(figsize=(10, 10))
-            plt.plot(fpr, tpr, color='blue', lw=2, label=f'final (test) \nAUC = {roc_auc:.2f}')
-            if y_train is not None and proba2 is not None:
-                plt.plot(fpr_train, tpr_train, color='purple', lw=2, label=f'final (train) \nAUC = {roc_auc_train:.2f}')
-            if baseline is not None:
-                fpr_b, tpr_b, _ = roc_curve(y_test, baseline)
-                baseline_roc = auc(fpr_b, tpr_b)
-                plt.plot(fpr_b, tpr_b, color='red', lw=2, label=f'baseline (test) \nAUC = {baseline_roc:.2f}')
-            plt.plot([0, 1], [0, 1], color='black', lw=2, linestyle='--')
-            plt.xlim([0.0, 1.0]); plt.ylim([0.0, 1.05])
-            plt.xlabel('False Positive Rate'); plt.ylabel('True Positive Rate')
-            plt.title('Performance on Test Set'); plt.legend(loc='lower right')
-            plt.savefig(self.out('roc.pdf'))
-            plt.close()
-            # plt.show()
 
     def plot_pr(self, y_test, proba, baseline=None, y_train=None, proba2=None):
         """

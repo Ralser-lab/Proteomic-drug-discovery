@@ -17,31 +17,21 @@ Repository containing scripts to regenerate all figures, training and analytics 
    docker run --rm -v "$PWD":/image prot-env bash run_all.sh
 ```
 
-## Machine learning workflow: Hyperparameter search 
-
-To replicate or adjust the hyperparameters used for ML training: 
-1. Edit [./configs/HYPER.json](./configs/HYPER.json).
-2. Run `deepsearch.smk` in a docker container (copy-paste in CLI):
-```bash
-   docker run --rm -v "$PWD":/image prot-env snakemake -s snakefiles/deepsearch.smk -j 12
-```
-
-## Pre-processing workflow: Data-independent-aquisition mass spectrometry
+## Pre-processing workflow:
 
 To reproduce pre-processing pipeline on DIA-NN prmatrix:
-1. Download [input files](https://doi.org/10.6084/m9.figshare.30469304.v1) and place it into ./preprocessing-dia/input.
+1. Download [input files](https://doi.org/10.6084/m9.figshare.30469304.v1) and place it into ./preprocessing_dia/input.
 2. Run `preprocessing-dia.smk` in a docker container (copy-paste in CLI):
 ```bash
-   docker run --rm -v "$PWD":/image prot-env snakemake -s snakefiles/preprocessing-dia.smk -j 12
+   docker run --rm -v "$PWD":/image prot-env snakemake -s snakefiles/preprocessing_dia.smk -j 1
 ```
 
-## Pre-processing workflow: Next generation sequencing
+## Machine learning workflow
 
-To reproduce pre-processing pipeline on Illumina sequencing outputs:
-1. Download [data]() and place it into ./preprocessing-ngs/data`.
-2. Run `preprocessing-ngs.smk` in a docker container (copy-paste in CLI):
+To run the ML component only (after completion of run_all.sh): 
+1. Run `gbdt_train.smk` in a docker container (copy-paste in CLI):
 ```bash
-   docker run --rm -v "$PWD":/image prot-env snakemake -s snakefiles/preprocessing-ngs.smk -j 12
+   docker run --rm -v "$PWD":/image prot-env snakemake -s snakefiles/gbdt_train.smk -j 1
 ```
 
 ## Environment
@@ -196,7 +186,6 @@ The following [software environment](./docker/Dockerfile) was used for developme
 │   ├── protacs_17_xgb_second-pass-model.json
 │   └── protacs_17_xgb_second-pass-search_space.csv
 └── snakefiles
-    ├── ml_train_wide.smk
-    ├── preprocessing_dia.smk
-    └── preprocessing_rna.smk
+    ├── gbdt_train.smk
+    └── preprocessing_dia.smk
 ```

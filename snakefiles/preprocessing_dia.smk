@@ -1,12 +1,12 @@
 rule run_preprocessingdia:
     input:
-        script = "preprocessing-dia/src/preprocessingdevice.py",
-        metadata = "preprocessing-dia/input/20240314_AF_50-0121_metadata.xlsx",
-        prmatrix = "preprocessing-dia/input/SB_PROTAC_prmatrix_240314a.tsv"
+        script = "preprocessing_dia/src/preprocessingdevice.py",
+        metadata = "preprocessing_dia/input/20240314_AF_50-0121_metadata.xlsx",
+        prmatrix = "preprocessing_dia/input/SB_PROTAC_prmatrix_240314a.tsv"
     log: 
-        "preprocessing-dia/logs/preprocessing-dia.log"
+        "preprocessing_dia/logs/preprocessing_dia.log"
     output:
-        "preprocessing-dia/logs/preprocessing-dia.done"
+        "preprocessing_dia/logs/preprocessing_dia.done"
     shell:
         """
         python3 {input.script} > {log} 2>&1

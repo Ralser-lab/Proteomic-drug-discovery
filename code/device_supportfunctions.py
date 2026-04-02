@@ -15,6 +15,23 @@ class GBDTUtils:
         plt.rcParams["font.family"] = "sans-serif"
         plt.rcParams["font.sans-serif"] = ["Helvetica"]
         plt.rcParams["pdf.fonttype"] = 42   # embed TrueType fonts (Type 42)
+
+        import os
+        from matplotlib.figure import Figure
+        _orig_savefig = Figure.savefig
+
+        def _savefig_quiet(self, *args, **kwargs):
+            devnull_fd = os.open(os.devnull, os.O_WRONLY)
+            old_fd = os.dup(2)
+            os.dup2(devnull_fd, 2)
+            try:
+                return _orig_savefig(self, *args, **kwargs)
+            finally:
+                os.dup2(old_fd, 2)
+                os.close(old_fd)
+                os.close(devnull_fd)
+
+        Figure.savefig = _savefig_quiet
         
     @staticmethod
     def cv_perform(round1, round2, workflow):
