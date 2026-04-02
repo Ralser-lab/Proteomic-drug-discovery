@@ -24,7 +24,7 @@ ENV RUSTUP_HOME=/usr/local/rust \
     CARGO_HOME=/usr/local/rust \
     PATH=/usr/local/rust/bin:$PATH
 
-RUN curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.80.0 \
+RUN curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.85.0 \
  && rustc -V && cargo -V
 
 # 4. Build Python (pin release version)
@@ -34,7 +34,7 @@ WORKDIR /tmp
 RUN wget -q https://www.python.org/ftp/python/${PY_VER}/Python-${PY_VER}.tgz \
  && tar -xzf Python-${PY_VER}.tgz \
  && cd Python-${PY_VER} \
- && ./configure --enable-optimizations --with-lto --prefix=/usr/local \
+ && ./configure --prefix=/usr/local \
  && make -j"$(nproc)" \
  && make altinstall \
  && /usr/local/bin/python3.11 -m ensurepip --upgrade \
@@ -45,6 +45,8 @@ RUN wget -q https://www.python.org/ftp/python/${PY_VER}/Python-${PY_VER}.tgz \
  && cd / && rm -rf /tmp/Python-${PY_VER} /tmp/Python-${PY_VER}.tgz
 
 # 5. Python packages (pin package versions)
+RUN python -m pip install --no-cache-dir maturin==1.7.0
+
 RUN python -m pip install --no-cache-dir \
       gseapy==1.0.6 \
       joblib==1.3.2 \

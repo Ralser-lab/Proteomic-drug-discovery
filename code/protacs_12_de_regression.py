@@ -166,7 +166,7 @@ fig, ax = plt.subplots(figsize=(6, 6))
 stats.probplot(np.log10(bars['IC50']), dist='norm', plot=ax)
 ax.set_title('Q-Q Plot of log10IC50')
 plt.savefig(outpath + 'protacs_12_qq_log10_IC50.pdf')
-plt.show()
+# plt.show()
 plt.close()
 
 # %% Univariate OLS regression of log10(IC50) on individual protein LFCs

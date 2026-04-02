@@ -40,7 +40,6 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-import xgboost as xgb
 from device_supportfunctions import GBDTUtils
 from device_supportfunctions import load_gbdt_inputs
 
