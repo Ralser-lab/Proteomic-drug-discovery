@@ -130,26 +130,32 @@ AZ_forR.to_csv(os.path.join(data,'AZcompound_metadata_onehotencoded_240611a.tsv'
 
 # %% Metadata value count plots on drug labels in HBD screen
 plt.figure(figsize = (2,2))
+plt.title('Drug type', fontsize = 14)
 AZ_cluster['Drug_Type'].value_counts().plot(kind = 'bar')
 plt.ylabel('Count')
 plt.xlabel('')
+plt.tick_params(axis='x', labelsize=13)
 plt.savefig(os.path.join(figures,'protacs_02_class_metaplot.pdf'))
 
 AZ_metaplot = AZ_cluster[AZ_cluster['Drug_Type']!='Non-PROTAC']
 AZ_metaplot = AZ_metaplot[AZ_metaplot['Binned_ligase']!='Other']
 plt.figure(figsize = (2,2))
+plt.title('Recruiter', fontsize = 14)
 AZ_metaplot['Binned_ligase'].value_counts().plot(kind = 'bar')
 plt.axhline(y=20, c = 'red', linestyle = '--', linewidth = 0.5)
 plt.ylabel('Count')
 plt.xlabel('')
+plt.tick_params(axis='x', labelsize=13)
 plt.savefig(os.path.join(figures,'protacs_02_degrader_metaplot.pdf'))
 
 AZ_metaplot = AZ_cluster[AZ_cluster['Binned_Target']!='Non-PROTAC']
 AZ_metaplot = AZ_metaplot[AZ_metaplot['Binned_Target']!='Other']
 AZ_metaplot = AZ_metaplot[AZ_metaplot['Binned_Target']!='None']
 plt.figure(figsize = (2,2))
+plt.title('AR binder', fontsize = 14)
 AZ_metaplot['Binned_Target'].value_counts().plot(kind = 'bar')
 plt.axhline(y=20, c = 'red', linestyle = '--', linewidth = 0.5)
 plt.ylabel('Count')
 plt.xlabel('')
+plt.tick_params(axis='x', labelsize=13)
 plt.savefig(os.path.join(figures,'protacs_02_ligand_metaplot.pdf'))

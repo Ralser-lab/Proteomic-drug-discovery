@@ -47,7 +47,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import os
-import matplotlib.lines as mlines
 import device_summarystatistics
 from device_supportfunctions import GBDTUtils
 
@@ -107,13 +106,14 @@ def glu_gal_plotter(norm):
         gal_std=norm.iloc[:, 3:6].std(axis=1)
     )
     # Plot and save mean trend lines with error bars
-    plt.figure(figsize=(6, 4)) 
-    plt.title(norm.attrs['title'])
+    plt.figure(figsize=(6, 4))
+    plt.title(norm.attrs['title'] + ' glu/gal assay', fontsize=13)
     plt.errorbar(normsum.index, normsum["glu_mean"], yerr=normsum["glu_std"], fmt="o-", label="Glucose Mean", capsize=3, linestyle = '--')
     plt.errorbar(normsum.index, normsum["gal_mean"], yerr=normsum["gal_std"], fmt="s-", label="Galactose Mean", capsize=3, linestyle = '--')
     plt.plot(norm.index, normsum.iloc[:,3:6], color = 'orange', alpha = 0.5)
     plt.plot(norm.index, normsum.iloc[:,0:3], color = 'lightblue', alpha = 0.5)
     plt.ylim(-0.1,1.1)
+    plt.tick_params(axis='x', labelsize=12)
     plt.savefig(os.path.join(fig_path,f"{workflow}_{norm.attrs['title']}_glugal.pdf"))
     # plt.show()
     plt.close()
@@ -161,7 +161,8 @@ device_summarystatistics.t_test(cpd1_gal['AR-binder'], cpd1_gal['AR-HBD'])
 # Plot and save figure
 plt.figure(figsize=(1,3))
 sns.barplot(data = cpd1_gal, order = order_vec, capsize = 0.1, palette = ['grey','red','grey']) #make the ticks better
-plt.tick_params(labelbottom=False, labelleft=False) 
+plt.title('Galactose IC50\nCompound 1 & Constituents', fontsize=13)
+plt.tick_params(labelbottom=False, labelleft=False)
 plt.savefig(os.path.join(fig_path,f'{workflow}_galactose.pdf'))
 plt.close()
 
@@ -177,6 +178,8 @@ device_summarystatistics.t_test(pd.concat([seahorse['Enza '],seahorse['Control']
 plt.figure(figsize=(1.5,3))
 sns.boxplot(seahorse, order = ['Control','Enza ', 'Compound 1'])
 sns.swarmplot(seahorse, color = 'black')
+plt.title('Seahorse Max Respiration', fontsize=13)
+plt.tick_params(axis='x', labelsize=12)
 plt.savefig(os.path.join(fig_path, f'{workflow}_seahorsemax.pdf'))
 plt.close()
 
@@ -191,8 +194,10 @@ device_summarystatistics.one_test(pd.Series(complex2.loc[['AZ14197166', 'AZ14183
  
 # Plot and save figure
 plot_list = ['AZ14183816', 'AZ14196658','AZ14197166','DMSO']
-complex2.loc[plot_list].T.mean().plot(kind = 'bar', 
+complex2.loc[plot_list].T.mean().plot(kind = 'bar',
     yerr = complex2.loc[plot_list].T.std())
+plt.title('Complex II Activity', fontsize=13)
+plt.tick_params(axis='x', labelsize=12)
 plt.savefig(os.path.join(fig_path, f'{workflow}_complexII_all.pdf'))
 plt.close()
 
@@ -287,22 +292,20 @@ sns.scatterplot(
     palette='Reds_r',
     hue_norm=norm,
     alpha=0.7,
-    ax=ax
+    ax=ax,
+    legend=False
 )
 ax.set_xticks(np.arange(0, len(cell_summ['Compound'].unique()), step=1))
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
 
-# Build fully custom legend with fixed reference values
+# Add a continuous colorbar for mean GI50 values
 cmap = plt.get_cmap('Reds_r')
-legend_values = [0.1, 1, 5, 10, 20, 30]
-legend_labels = [f'{v} µM' for v in legend_values[:-1]] + ['>30 µM']
-custom_handles = [
-    mlines.Line2D([], [], color=cmap(norm(v)), marker='o',
-                  linestyle='None', markersize=8, label=lbl)
-    for v, lbl in zip(legend_values, legend_labels)
-]
-ax.legend(handles=custom_handles, loc='center left', bbox_to_anchor=(1, 0.5))
+sm = plt.cm.ScalarMappable(norm=norm, cmap=cmap)
+sm.set_array([])
+fig.colorbar(sm, ax=ax, label='Mean GI50 (µM)', fraction=0.046, pad=0.04)
 
+ax.set_title('Cell Panel GI50', fontsize=13)
+ax.tick_params(axis='x', labelsize=12)
 plt.margins(x=0.3, y=0.3)
 plt.tight_layout()
 plt.savefig(os.path.join(fig_path, f'{workflow}_GI50_dotplot.pdf'))
@@ -344,6 +347,8 @@ plt.figure(figsize = [1,3])
 sns.boxplot(degron, showfliers = False)
 sns.swarmplot(degron, color = 'black')
 plt.yscale('log')
+plt.title('Xenograft AR Degradation', fontsize=13)
+plt.tick_params(axis='x', labelsize=12)
 plt.savefig(os.path.join(fig_path, f'{workflow}_xenograft_ARdeg.pdf'))
 plt.close()
 

@@ -280,11 +280,13 @@ pmf.sort_values(['proba'], inplace = True, ascending = False)
 
 # Plot pmf for gsea terms
 fig, ax = plt.subplots(figsize =[6,5])
+plt.title('Degrader library \nproteomic signatures', fontsize=16)
 sns.barplot(x = pmf.index, y = pmf['proba'], hue = pmf['nes'], palette = 'RdBu_r')
 ax.tick_params(axis='x', labelsize=15, rotation=90)  # Adjust font size and rotation
 ax.tick_params(axis='y', labelsize=15)  # Adjust font size
 ax.set_xlabel('')  # This removes the x-axis label
 ax.set_ylabel('')
+ax.legend(loc='upper right', bbox_to_anchor=(1,1), fontsize=8, title='NES', title_fontsize=10, handlelength=0.5, labelspacing=0.5, borderpad=0.5)
 plt.savefig(os.path.join(fig_out, 'protacs_10_de_gsea_pmf.pdf'))
 # plt.show()
 plt.close()
@@ -298,12 +300,24 @@ plt.rcParams['xtick.labelsize'] = '26'
 plt.rcParams['ytick.labelsize'] = '26' 
 plt.rcParams['ytick.labelsize'] = '26'
 
+# Cluster name labels (series 1-15, ordered by PC1 distance)
+cluster_labels = {
+    1: 'AR-VHL-Other',    2: 'AR-T6N-Indole',    3: 'AR-Other-Other',
+    4: 'Txn-VHL/6N-Other', 5: 'AR-VHL-Indole',   6: 'AR-T5N-Other',
+    7: 'Txn-Other-Other',  8: 'AR-T6N/VHL-Pip',  9: 'AR-T6N-Other',
+    10: 'AR-T5N-Pip',     11: 'AR-DHU-Pip',       12: 'AR-Other-Pip',
+    13: 'Non PROTAC',     14: 'AR-L5N-Other',     15: 'AR-L5N-Pip'
+}
+# df16-df30 = clusters 1-15 at 1µM; df1-df15 = clusters 1-15 at 10µM
+label_map = {f'df{i+16}': f'{cluster_labels[i+1]}\n(1µM)' for i in range(15)}
+label_map.update({f'df{i+1}': f'{cluster_labels[i+1]}\n(10µM)' for i in range(15)})
+
 # Create a stripplot (dot plot)
 gseaplot = plt.figure(figsize=(30, 10))
 ax = plt.gca()
 sns.stripplot(x="condition", y="Term.1", data=gsealist, hue="NES", order=cat_order,
             palette=gradient, jitter=False, size=30, dodge=False, ax=ax)
-# Recolor dots using TwoSlopeNorm 
+# Recolor dots using TwoSlopeNorm
 cmap_obj = plt.cm.get_cmap(gradient)
 for coll_idx, cond in enumerate(cat_order):
     if coll_idx >= len(ax.collections):
@@ -314,10 +328,11 @@ ax.yaxis.tick_right()
 cbar = plt.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=gradient), ax=ax, location = 'left')
 cbar.set_label('Enrichment')
 plt.title("GSEA Cell Compartment, Top " + str(top) + ' by FDR', fontsize = '30')
-ax.tick_params(axis='x', labelsize=30, rotation=90) 
-ax.tick_params(axis='y', labelsize = 30)  
-ax.set_xlabel('') 
-ax.set_ylabel('') 
+ax.set_xticklabels([label_map[c] for c in cat_order])
+ax.tick_params(axis='x', labelsize=20, rotation=90)
+ax.tick_params(axis='y', labelsize = 30)
+ax.set_xlabel('')
+ax.set_ylabel('')
 ax.get_legend().remove()
 # plt.show()
 plt.close()

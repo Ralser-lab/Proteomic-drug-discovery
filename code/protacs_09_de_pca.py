@@ -103,7 +103,7 @@ df_pca['clusterlabs'] = df_pca['labels'].map(clusterlabs)
 
 # Set plot parameters
 plt.rcParams['axes.labelsize'] = '30'
-plt.rcParams['axes.titlesize'] = '30'
+plt.rcParams['axes.titlesize'] = '27'
 plt.rcParams['xtick.labelsize'] = '26'
 plt.rcParams['ytick.labelsize'] = '26'
 fig = plt.figure(figsize=(10, 10))
@@ -183,7 +183,7 @@ for column, color in zip(df.columns, colors):
 
 # Add legend and show plot
 plt.legend()
-plt.title("Density Plot with Custom Colors")
+plt.title("Proteome response to \ndegrader library")
 
 # Save probability density function as a PDF
 plt.savefig(os.path.join(filepath3, f'{workflow}_de_kde_fda_v_hbd_zcentered'))
@@ -201,10 +201,11 @@ data_no_nan = [df[col].dropna().values for col in df.columns]
 plt.figure(figsize=(8, 6))
 plt.violinplot(data_no_nan)
 plt.boxplot(data_no_nan, labels = df.columns)
-plt.title("Boxplot with Columns of Varying Lengths")
+plt.title("Proteome response to \ndegrader library")
 plt.ylabel("Values")
 plt.savefig(os.path.join(filepath3, f'{workflow}_de_kde_fda_v_hbd_boxplot'))
 #plt.show()
+plt.close()
 
 # Perform z-test with CDF
 device_summarystatistics.z_test(df.iloc[:,0], df.iloc[:,1])

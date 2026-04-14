@@ -70,12 +70,8 @@ def main():
     round1.gbdt_gridcv(params, X_train, y_train, score = 'average_precision')
     round1.gbdt_evaluate(X_test, y_test, round1.best_model)
     round1.gbdt_classify(X_test,y_test, round1.best_model) 
-    top_weights = round1.get_model_features(plot = True, n = X_train.shape[0]//10)
-    top_features = round1.get_cv_shap_features(plot = True, n = X_train.shape[0]//10) 
+    top_features = round1.get_cv_shap_features(n = X_train.shape[0]//10) 
     round1.gbdt_SHAP()
-
-    print('Round1 top weights:')
-    print(top_weights)
 
     # Second pass GBDT
     round2 = GBDT(input.dpath, workflow, 'xgb_second-pass')

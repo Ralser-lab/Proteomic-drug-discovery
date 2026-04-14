@@ -11,12 +11,11 @@ Date: 2025-09-16
 
 Inputs
 ------
-- data/SB_PROTACs_prmatrix_filtered_5_imputed_50_ltrfm_batched_summarized_240314.tsv
+- data/SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_240314.tsv
 - data/SB_PROTACs_metadata_240611a.tsv
 
 Outputs
 -------
-- data/SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_251027.tsv
 - data/SB_PROTAC_metadata_240611a.tsv
 
 Requirements
@@ -37,7 +36,7 @@ export_path = data
 import_path = data
 
 # %% Load summarized proteome and metadata from HBD screen
-pasef_summarized = pd.read_csv(os.path.join(import_path, 'SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_251027.tsv'),
+pasef_summarized = pd.read_csv(os.path.join(import_path, 'SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_240314.tsv'),
                      decimal=',', 
                      delimiter=';', 
                     index_col = 0)

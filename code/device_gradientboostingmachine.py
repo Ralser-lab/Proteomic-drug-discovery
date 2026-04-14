@@ -6,7 +6,7 @@ Script Name: device_gradientboostingmachine.py
 Description:
     End-to-end Gradient Boosted Decision Trees (GBDT) utilities for binary
     classification using XGBoost. Provides helpers to train a quick baseline,
-    run GridSearchCV, evaluate with ROC/PR curves, classify with threshold
+    run GridSearchCV, evaluate with PR curves, classify with threshold
     tuning, interpret with SHAP, calibrate probabilities, inspect feature
     importance, generate common plots, and export model outputs for downstream
     analysis (e.g., R plotting).
@@ -20,12 +20,12 @@ Class architecture:
     gbdt_baseline : Train a baseline XGBClassifier.
     gbdt_gridcv : Perform GridSearchCV hyperparameter tuning.
     gbdt_optuna : Perform Bayesian hyperparameter tuning. 
-    gbdt_evaluate : Evaluate model with ROC/PR plots.
+    gbdt_evaluate : Evaluate model with PR plots.
     gbdt_classify : Classify with adjustable thresholds; report confusion matrices and metrics.
     gbdt_SHAP : Explain predictions with SHAP values and interaction structure.
     gbdt_calibrate : Calibrate predicted probabilities (isotonic).
     get_model_features : Rank and (optionally) plot feature importance.
-    plot_* : Visualization utilities (ROC, PR, cross-validation).
+    plot_* : Visualization utilities (PR, cross-validation).
     export_all_predictions : Save predictions + SHAP features for all samples.
     export_subset_predictions : Export a focused subset with per-feature barplots.
 
@@ -215,7 +215,7 @@ class GBDT:
 
         return self.top_n
 
-    def get_cv_shap_features(self, n=20, splits=5, random_state=42, plot=True) -> pd.Series:
+    def get_cv_shap_features(self, n=20, splits=5, random_state=42, plot=False) -> pd.Series:
         """
         Compute cross-validated SHAP feature importance to avoid selection leakage.
 
@@ -511,10 +511,10 @@ class GBDT:
         return self.best_model
     
     def gbdt_evaluate(self, X_test, y_test, model,
-                      plot_prc=True):
+                      plot_prc=False):
         """
         Evaluate a model on held-out data. Computes predicted probabilities and
-        saves ROC and Precision-Recall curves for test (and optionally train) sets,
+        saves Precision-Recall curves for test (and optionally train) sets,
         including an overlay of the baseline model if available.
 
         Parameters
@@ -529,7 +529,7 @@ class GBDT:
         Returns
         -------
         None
-            Saves ROC and PR plots; stores probabilities for later steps.
+            Saves PR plots; stores probabilities for later steps.
 
         """
         self.X_test = X_test
@@ -538,8 +538,7 @@ class GBDT:
         self.proba_test = self.model.predict_proba(X_test)[:, 1]
         self.proba_train = self.model.predict_proba(self.X_train)[:, 1]
         if plot_prc:
-            self.plot_pr(y_test=y_test, proba=self.proba_test, baseline=self.baseline_proba,
-                     y_train=self.y_train, proba2=self.proba_train)
+            self.plot_pr(y_test=y_test, proba=self.proba_test, baseline=self.baseline_proba)
 
     def gbdt_classify(self, X, y, model='best', threshold='auto', all = False, plot = False,
                       baseline = False, report = False, verbose = False):
@@ -654,6 +653,7 @@ class GBDT:
         self.shap_values = self.explainer.shap_values(self.X_train)
 
         shap.summary_plot(self.shap_values, self.X_train, show=False, plot_size=[5, 10])
+        plt.gcf().axes[0].set_title(f'{self.name} SHAP beeswarm', fontsize = 20)
         plt.savefig(self.out('shap_explainer.pdf'))
         plt.close()
 
@@ -697,7 +697,7 @@ class GBDT:
             # plt.show()
             plt.close()
 
-    def gbdt_calibrate(self, baseline = False):
+    def gbdt_calibrate(self, baseline = False, plot = False):
         """
         Calibrate class probabilities for both best and baseline models using
         isotonic regression on the test set, then plot and save a calibration
@@ -731,21 +731,22 @@ class GBDT:
         fraction_before, mean_predicted_before = calibration_curve(self.y_test, self.proba_test, n_bins=10)
         fraction_of_positives, mean_predicted_value = calibration_curve(self.y_test, prob_pos, n_bins=10)
 
-        plt.figure(figsize=(10, 10))
-        plt.rcParams['axes.labelsize'] = 35
-        plt.rcParams['axes.titlesize'] = 35
-        plt.rcParams['xtick.labelsize'] = 26 
-        plt.rcParams['ytick.labelsize'] = 26
-        plt.rcParams['legend.fontsize'] = 28
-        plt.plot(mean_predicted_before, fraction_before, "s-", label="Not Calibrated")
-        plt.plot(mean_predicted_value, fraction_of_positives, "s-", label="Calibrated")
-        plt.plot([0, 1], [0, 1], "k--", label="Perfectly calibrated")
-        plt.xlabel("Mean predicted probability")
-        plt.ylabel("Fraction of positives")
-        plt.legend()
-        plt.savefig(self.out('calibration_curve.pdf'))
-        plt.close()
-        # plt.show()
+        if plot:
+            plt.figure(figsize=(10, 10))
+            plt.rcParams['axes.labelsize'] = 35
+            plt.rcParams['axes.titlesize'] = 35
+            plt.rcParams['xtick.labelsize'] = 26 
+            plt.rcParams['ytick.labelsize'] = 26
+            plt.rcParams['legend.fontsize'] = 28
+            plt.plot(mean_predicted_before, fraction_before, "s-", label="Not Calibrated")
+            plt.plot(mean_predicted_value, fraction_of_positives, "s-", label="Calibrated")
+            plt.plot([0, 1], [0, 1], "k--", label="Perfectly calibrated")
+            plt.xlabel("Mean predicted probability")
+            plt.ylabel("Fraction of positives")
+            plt.legend()
+            plt.savefig(self.out('calibration_curve.pdf'))
+            plt.close()
+            # plt.show()
         
         self.calibrated_model = calibrated_model
         self.name = self.name[:-1] + '-calibrated_'
@@ -918,7 +919,7 @@ class GBDT:
         if baseline is not None:
             precision_b, recall_b, _ = precision_recall_curve(y_test, baseline)
             baseline_auc = auc(recall_b, precision_b)
-            plt.plot(recall_b, precision_b, color='red', lw=2, label=f'baseline (test) \nAUC = {baseline_auc:.2f}')
+            plt.plot(recall_b, precision_b, color='red', lw=2, label=f'All proteins (test) \nAUC = {baseline_auc:.2f}')
         plt.xlim([0.0, 1.0]); plt.ylim([0.0, 1.05])
         plt.xlabel('Recall'); plt.ylabel('Precision')
         plt.title('Performance on Test Set'); plt.legend(loc='lower right')

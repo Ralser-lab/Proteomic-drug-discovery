@@ -140,6 +140,8 @@ pmf(counts) # save probability mass function plot on FDA dataset
 counts.to_csv(os.path.join(data_out, 'FDA_proba_250304.tsv')) 
 pmf(conditioned) # save probability mass function plot on FDA dataset
 
+
+plt.title('Proteome response \nto FDA test set', fontsize = 14)
 sns.kdeplot(counts, fill = True, clip = (0, None))
 sns.kdeplot(counts, fill = True, clip = (0, counts.mean()), color = 'Green')
 sns.kdeplot(counts, fill = True, clip = (counts.max(),None), color = 'Orange')

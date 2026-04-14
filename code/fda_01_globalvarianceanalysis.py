@@ -29,13 +29,9 @@ Dependencies: pandas, os
 # %% Import packages
 import pandas as pd
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg')  # Non-interactive backend for headless execution
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import numpy as np
-import seaborn as sns
-from sklearn.decomposition import PCA
-from scipy.cluster.hierarchy import leaves_list
 import os
 import importlib
 import device_summarystatistics 

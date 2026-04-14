@@ -21,12 +21,7 @@ Outputs
 -------
 - figures/protacs_21_joint_toxscores.pdf          # KDE of Toxic Probability vs Cluster
 - figures/protacs_21_bimodal_toxscores.pdf        # Violin plot for bimodal series
-- figures/protacs_21_barplot_toxscores.pdf        # Bar plot of tox scores by chemistry & category
-- figures/protacs_21_scatterplot_toxscores.pdf     # AR_DEG_IC50 vs Toxic Probability scatter
-- data/HTMSdrugsafety_Toxic_Subset_250522a.csv      
-- data/HTMSdrugsafety_Safe_SuperStrict_250522a.csv   
-- data/HTMSdrugsafety_Safe_Strict_250522a.csv        
-- data/HTMSdrugsafety_VHLsafe_250522a.csv            
+- figures/protacs_21_scatterplot_toxscores.pdf     # AR_DEG_IC50 vs Toxic Probability scatter      
 
 Requirements
 ------------
@@ -69,8 +64,9 @@ cluster_mappings = {1 : 'AR-VHL-Other',
 
 # Plot and save join probability density function of toxicity scores
 sns.kdeplot(data=tableS3, x='cluster', y='toxic_score', common_norm=False)
-plt.title('KDE: Toxic Score by Cluster')
+plt.title('KDE: Toxic Score by Cluster', fontsize=13)
 plt.xlabel('Chemical Series')
+plt.tick_params(axis='x', labelsize=12)
 plt.savefig(os.path.join(fig_dir, 'protacs_21_joint_KDE_toxscores.pdf'))
 # plt.show()
 plt.close()
@@ -97,11 +93,13 @@ toplot['Chemistry'] = toplot['cluster'].map(cluster_mappings)
 # Plot and save violin plots on toxicity scores (chemotypic, bimodal series)
 # Drop series 6 (not bimodal) 
 toplot_bimodal = toplot.loc[toplot['cluster'].isin([1,10,11,14,15])]
+plt.title('Toxicity score violin plots', fontsize=13)
 sns.violinplot(toplot_bimodal, x = 'Chemistry', y = 'toxic_score',
                hue = 'Chemistry', palette = 'pastel', common_norm=False)
 plt.legend().remove()
 plt.xticks(rotation = 90)
 plt.xlabel(None)
+plt.tick_params(axis='x', labelsize=12)
 plt.savefig(os.path.join(fig_dir, 'protacs_21_violin_toxscores.pdf'))
 # plt.show()
 plt.close()
@@ -130,11 +128,13 @@ trog_score = tx_score_df.loc[tx_score_df['Drug']=='Troglitazone']['Toxic_Probabi
 scatter_df = pd.merge(deg_df, tx_score_df, left_on = 'Compound', right_index=True, how='left')
 
 # Scatter plot of toxicity scores vs AR degradation IC50s
-plt.figure(figsize=(5, 5))  
+plt.figure(figsize=(5, 5))
 plt.ylim(0.3, 1.0)
 plt.xlim(-0.3, 3.4)
 sns.scatterplot(scatter_df, x = 'AR_DEG_IC50', y = 'Toxic_Probability', hue = scatter_df.index, s = 400)
 plt.axhline(trog_score, linestyle = '--', color = 'red')
+plt.title('AR Degradation IC50 vs Toxic Probability', fontsize=13)
+plt.tick_params(axis='x', labelsize=12)
 plt.savefig(os.path.join(fig_dir, 'protacs_21_scatterplot_toxscores_v_IC50.pdf'))
 # plt.show()
 plt.close()

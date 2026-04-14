@@ -119,11 +119,12 @@ values = (
 )
 # Plot toxicity probabilities (Series 15 vs. controls)
 plt.rcParams['axes.labelsize'] = '20'
-plt.rcParams['axes.titlesize'] = '20'
+plt.rcParams['axes.titlesize'] = '21'
 plt.rcParams['xtick.labelsize'] = '20'
 plt.rcParams['ytick.labelsize'] = '20'
 plt.rcParams['legend.fontsize'] = '20'
 plt.figure(figsize=(10, 6))
+plt.title('Series 15 Toxicty Scores')
 values.plot(kind='bar')
 plt.savefig(os.path.join(figout, f'{workflow}_series15_toxscores.pdf'))
 # plt.show()
@@ -173,7 +174,7 @@ components = pd.DataFrame(
 
 # Plot PCA scatter with biplot arrows
 plt.rcParams['axes.labelsize'] = '20'
-plt.rcParams['axes.titlesize'] = '20'
+plt.rcParams['axes.titlesize'] = '21'
 plt.rcParams['xtick.labelsize'] = '20'
 plt.rcParams['ytick.labelsize'] = '20'
 plt.rcParams['legend.fontsize'] = '20'
@@ -190,6 +191,7 @@ for i, feature in enumerate(loadings.index):
     plt.text(loadings_ratio[i, 0] * 2, loadings_ratio[i, 1] * 1.3,
              feature, color='black', ha='center', va='center')
 plt.legend(title='Analogue', fontsize='small', title_fontsize='medium')
+plt.title('Analogue Signature PCA')
 plt.savefig(os.path.join(figout, f'{workflow}_analogues_signature_PCA.pdf'))
 # plt.show()
 plt.close()
@@ -203,6 +205,7 @@ barplot_df = analog[etc_features]
 
 #barplot_df = (barplot_df - barplot_df.mean())/barplot_df.std()
 barplot_df.plot(kind='bar')
+plt.title('Analogue Signature Barplot')
 plt.savefig(os.path.join(figout, f'{workflow}_analogues_signature_barplot.pdf'))
 plt.ylim([-0.4,1.2])
 # plt.show()

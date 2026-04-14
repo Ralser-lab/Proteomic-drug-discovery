@@ -12,7 +12,7 @@ Date: 2025-09-16
 
 Inputs
 ------
-- data/SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_251027.tsv
+- data/SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_240314.tsv
 - data/SB_PROTAC_metadata_240611a.tsv
 - data/c5.all.v2023.1.Hs.symbols.gmt
 
@@ -45,6 +45,8 @@ Custom: device_summarystatistics (in same directory)
 import sys
 import gseapy as gp
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend for headless execution
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
@@ -64,13 +66,14 @@ figure_out = os.path.join(dir_main, '..', 'figures')
 workflow = 'protacs_01'
 
 # %% Load proteome data from HBD screen 
-pasef_summarized = pd.read_csv(os.path.join(export_path, 'SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_251027.tsv'),
+pasef_summarized = pd.read_csv(os.path.join(export_path, 'SB_PROTAC_prmatrix_filtered_95_imputed_50_ltrfm_batched_summarized_240314.tsv'),
                      decimal=',', 
                      delimiter=';', 
                      index_col = 0) 
 
 # %% Reorder the heatmap (based on sns.clustermap Euclidian Ward)
 euclidian_ward = sns.clustermap(pasef_summarized)
+plt.close()
 row_order = leaves_list(euclidian_ward.dendrogram_row.linkage)
 col_order = leaves_list(euclidian_ward.dendrogram_col.linkage)
 pasef_summarized_clustered = pasef_summarized.iloc[row_order, col_order]
@@ -128,6 +131,7 @@ sns.heatmap(batch.to_frame(), cmap = 'jet_r', ax = ax3, cbar = False, yticklabel
 ax3.set_title('Batch')
 plt.savefig(os.path.join(figure_out, f'{workflow}_raw_heatmap.png'))
 # plt.show()
+plt.close()
 
 # %% Dispersion plot of summarized proteins
 DMSO_frame = device_summarystatistics.calculate_cv(pasef_summarized_clustered[metadata_encoded['dmso\n']==True], 'dmso')
@@ -150,6 +154,7 @@ plt.legend(fontsize = '26')
 plt.xlabel('Mean Protein Abundance (' + str(pasef_summarized_clustered.columns.size) + ')')
 plt.ylabel('Standard Deviation (' + str(pasef_summarized_clustered.columns.size) + ')')
 plt.savefig(os.path.join(figure_out, f'{workflow}_dispersion_kde.pdf'))
+plt.close()
 
 # %% Extract PCA loadings
 output = pasef_summarized_clustered.copy()
@@ -178,6 +183,7 @@ plt.xticks(n_components)
 plt.legend(loc='upper left')
 plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pca_scree.pdf'))
 # plt.show()
+plt.close()
 
 # %% Plot 3D PCA with drug concentration
 x = pca_result[:, 0]
@@ -218,6 +224,7 @@ ax.legend(handles=legend_patches, bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.title("Principal Component Analysis")
 plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pca_concentration.pdf'))
 # plt.show()
+plt.close()
 
 # %% Plot 3D PCA with batch effect
 pca_metadata = pd.DataFrame({'Values' : batch}, index = pasef_summarized_clustered.index, dtype = 'string')
@@ -266,6 +273,7 @@ ax.legend(handles=legend_patches, bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.title("Principal Component Analysis")
 plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pca_MSBatch.pdf'))
 # plt.show()
+plt.close()
 
 # %% Extract loadings for PC1 - 3 from PCA on proteomes in HBD screen
 loadings = pca.components_
@@ -408,29 +416,31 @@ plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pca_gsea.pdf'))
 plt.close()
 
 # %% Calculate GSEA curves on PC loadings
-gseaPC1 = gp.prerank(rnk=pc1_loadings, 
-                          gene_sets=os.path.join(dir_main, '..', 'data', 'c5.all.v2023.1.Hs.symbols.gmt'), 
-                          outdir=export_path,
+# outdir=None prevents gseapy from internally creating/closing many matplotlib
+# figures for every enriched gene set, which corrupts plt.gcf() state in headless mode.
+gseaPC1 = gp.prerank(rnk=pc1_loadings,
+                          gene_sets=os.path.join(dir_main, '..', 'data', 'c5.all.v2023.1.Hs.symbols.gmt'),
+                          outdir=None,
                           min_size=15,  # Minimum size of gene set to consider
                           max_size=500, # Maximum size of gene set to consider
                           processes=4)
 
 
-gseaPC2 = gp.prerank(rnk=pc2_loadings, 
-                          gene_sets=os.path.join(dir_main, '..', 'data', 'c5.all.v2023.1.Hs.symbols.gmt'), 
-                          outdir=export_path,
+gseaPC2 = gp.prerank(rnk=pc2_loadings,
+                          gene_sets=os.path.join(dir_main, '..', 'data', 'c5.all.v2023.1.Hs.symbols.gmt'),
+                          outdir=None,
                           min_size=15,  # Minimum size of gene set to consider
                           max_size=500, # Maximum size of gene set to consider
                           processes=4)
 
-gseaPC3 = gp.prerank(rnk=pc3_loadings, 
-                          gene_sets=os.path.join(dir_main, '..', 'data', 'c5.all.v2023.1.Hs.symbols.gmt'), 
-                          outdir=export_path,
+gseaPC3 = gp.prerank(rnk=pc3_loadings,
+                          gene_sets=os.path.join(dir_main, '..', 'data', 'c5.all.v2023.1.Hs.symbols.gmt'),
+                          outdir=None,
                           min_size=15,  # Minimum size of gene set to consider
                           max_size=500, # Maximum size of gene set to consider
                           processes=4)
 
-# %% Plot curves of top 5 enriched pathways (PC1, PC2, PC3) 
+# %% Plot curves of top 5 enriched pathways (PC1, PC2, PC3)
 # PC1 enriched pathways
 pc1_targets = ["GOBP_DNA_REPLICATION_INITIATION",
                                 "GOBP_TOXIN_TRANSPORT",
@@ -439,18 +449,16 @@ pc1_targets = ["GOBP_DNA_REPLICATION_INITIATION",
                                 "HP_ABNORMALITY_OF_THE_MITOCHONDRION"
                                 ]
 pc1_targets.reverse()
-axs = gseaPC1.plot(
-   terms = pc1_targets, show_ranking=True, 
+fig = gseaPC1.plot(
+   terms = pc1_targets, show_ranking=True,
                                 legend_kws={'loc': (0, -1.15),
                                             'fontsize': 12}
-                                ) 
-fig = plt.gcf()
-plt.title('GSEA on PC1 loadings', size = 18)
+                                )
 fig.set_size_inches(5,8)
-plt.tick_params(axis='y', labelsize=14) 
-plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pc1_gsea.pdf'))
-# plt.show()
-plt.close()
+fig.suptitle('GSEA on PC1 loadings', size = 18)
+fig.axes[0].tick_params(axis='y', labelsize=14)
+fig.savefig(os.path.join(figure_out, f'{workflow}_raw_pc1_gsea.pdf'))
+plt.close(fig)
 
 # %%
 # PC2 enriched pathways
@@ -461,17 +469,15 @@ pc2_targets = ["GOBP_TRICARBOXYLIC_ACID_CYCLE",
                                 "GOBP_DNA_REPLICATION_INITIATION"
                                 ]
 pc2_targets.reverse()
-axs = gseaPC2.plot(terms = pc2_targets, show_ranking=True, 
+fig = gseaPC2.plot(terms = pc2_targets, show_ranking=True,
                                 legend_kws={'loc': (0, -1.15),
                                             'fontsize': 12}
-                                ) 
-fig = plt.gcf()
-plt.title('GSEA on PC2 loadings', size = 18)
+                                )
 fig.set_size_inches(5,8)
-plt.tick_params(axis='y', labelsize=14) 
-plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pc2_gsea.pdf'))
-# plt.show()
-plt.close()
+fig.suptitle('GSEA on PC2 loadings', size = 18)
+fig.axes[0].tick_params(axis='y', labelsize=14)
+fig.savefig(os.path.join(figure_out, f'{workflow}_raw_pc2_gsea.pdf'))
+plt.close(fig)
 
 # %%
 # PC3 enriched pathways
@@ -482,16 +488,14 @@ pc3_targets = ["GOCC_ORGANELLE_INNER_MEMBRANE",
                                 "GOBP_RNA_SPLICING",
                                 ]
 terms = gseaPC3.res2d.Term
-axs = gseaPC3.plot(terms = pc3_targets, show_ranking=True, 
+fig = gseaPC3.plot(terms = pc3_targets, show_ranking=True,
                                 legend_kws={'loc': (0, -1.15),
                                             'fontsize': 12}
-                                ) 
-fig = plt.gcf()
-plt.title('GSEA on PC3 loadings', size = 18)
+                                )
 fig.set_size_inches(5,8)
-plt.tick_params(axis='y', labelsize=14) 
-plt.savefig(os.path.join(figure_out, f'{workflow}_raw_pc3_gsea.pdf'))
-# plt.show()
-plt.close()
+fig.suptitle('GSEA on PC3 loadings', size = 18)
+fig.axes[0].tick_params(axis='y', labelsize=14)
+fig.savefig(os.path.join(figure_out, f'{workflow}_raw_pc3_gsea.pdf'))
+plt.close(fig)
 
 
