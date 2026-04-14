@@ -166,24 +166,7 @@ The following [software environment](./docker/Dockerfile) was used for developme
 │       ├── maxLFQ.R
 │       └── preprocessingdevice.py
 ├── preprocessing_rna
-│   ├── R
-│   │   ├── 01_filter_transform.R
-│   │   ├── 02_limma_all.R
-│   │   ├── 03_matrix_all.R
-│   │   ├── 04_gene2symbol.R
-│   │   ├── 05_volcanoes_all.R
-│   │   └── limma.slurm
-│   └── src
-│       ├── file_io
-│       │   ├── contrast_generator.py
-│       │   ├── etl_pipe.py
-│       │   └── meta_generator.py
-│       └── gsea
-│           ├── config.yaml
-│           ├── config_loader.py
-│           ├── create_ranked_lists.py
-│           ├── gsea_plot.py
-│           └── run_gsea.py
+│   └── R/
 ├── scoring_models
 │   ├── protacs_16_xgb_first-pass-model.json
 │   ├── protacs_16_xgb_first-pass-search_space.csv

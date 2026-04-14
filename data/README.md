@@ -19,10 +19,8 @@ Download the full dataset from Figshare and place all files directly into this f
 | `Cluster_LFCxPval_*uM_250305a.csv` | protacs_09, 10 | Signed -log10 adj. p-value matrices by concentration |
 | `Cluster{1..15}_{1p0,10}uM_Limma_250305a.csv` | protacs_10 | Per-cluster limma DE results |
 | `Drug_LFCxadjPval_250305a.csv` | protacs_09, 16, 17 | Drug-level signed DE matrix |
-| `FDA_proba_250304.tsv` | protacs_09 | FDA drug DE probability reference |
 | `Figure3_*.xlsx` | protacs_22 | Wet-lab source data (Figure 3) |
 | `Figure4_*.xlsx` | protacs_22 | Wet-lab source data (Figure 5) |
 | `FigureED_Glu_gal_260119a.xlsx` | protacs_22 | Glucose/galactose viability data |
 | `Figure4_ARdegdata_SafetyScores_250523a.xlsx` | protacs_21 | AR degradation IC50 + toxicity scores |
 
-Processed outputs (CSVs generated during the run) are also written here and are excluded from version control via `.gitignore`.
