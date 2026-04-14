@@ -21,12 +21,12 @@ Repository containing scripts to regenerate all figures, training and analytics 
 
 Two search strategies are available after successful completion of `run_all.sh`.
 
-**Narrow search** (grid search CV, fast):
+**Narrow search**:
 ```bash
    docker run --rm -v "$PWD":/image prot-env snakemake -s snakefiles/gbdt_train_narrow.smk -j 1
 ```
 
-**Wide search** (Bayesian optimisation via Optuna, thorough):
+**Wide search**:
 ```bash
    docker run --rm -v "$PWD":/image prot-env snakemake -s snakefiles/gbdt_train_wide.smk -j 1
 ```
@@ -34,7 +34,7 @@ Two search strategies are available after successful completion of `run_all.sh`.
 ## Pre-processing workflow (DIA-MS):
 
 To reproduce pre-processing pipeline on DIA-NN prmatrix:
-1. Download [input files](https://doi.org/10.6084/m9.figshare.30469304.v1) and place it into ./preprocessing_dia/input.
+1. Download [input files](https://doi.org/10.6084/m9.figshare.30469304) and place it into ./preprocessing_dia/input.
 2. Run `preprocessing_dia.smk` in a docker container (copy-paste in CLI):
 ```bash
    docker run --rm -v "$PWD":/image prot-env snakemake -s snakefiles/preprocessing_dia.smk -j 1
@@ -56,9 +56,10 @@ The following [software environment](./docker/Dockerfile) was used for developme
 ```bash
 ├── LICENSE
 ├── README.md
+├── pyproject.toml
+├── run_all.sh
 ├── code
 │   ├── device_gradientboostingmachine.py
-│   ├── device_gradientboostingmachine_optunasearchcv.py
 │   ├── device_summarystatistics.py
 │   ├── device_supportfunctions.py
 │   ├── fda_01_globalvarianceanalysis.py
@@ -73,7 +74,6 @@ The following [software environment](./docker/Dockerfile) was used for developme
 │   ├── protacs_06_limma_cluster_1p0.R
 │   ├── protacs_07_limma_cluster_10.R
 │   ├── protacs_08_limma_drug.R
-│   ├── protacs_08_limma_drug_0p1.R
 │   ├── protacs_09_de_pca.py
 │   ├── protacs_10_de_gsea.py
 │   ├── protacs_11_de_stringnetworkenrich.py
@@ -89,10 +89,7 @@ The following [software environment](./docker/Dockerfile) was used for developme
 │   ├── protacs_21_scores_v_degradation.py
 │   ├── protacs_22_stats_wetlab.py
 │   ├── protacs_23_rna_gsea.py
-│   ├── protacs_24_rna_gex.py
-│   ├── protacs_25_enz_check.py
-│   ├── protacs_26_chemotype_ctrls.py
-│   └── protacs_27_libtest.py
+│   └── protacs_24_rna_gex.py
 ├── configs
 │   └── hyperparam_space_config.json
 ├── docker
@@ -117,7 +114,7 @@ The following [software environment](./docker/Dockerfile) was used for developme
 │   ├── protacs_02_class_metaplot.pdf
 │   ├── protacs_02_degrader_metaplot.pdf
 │   ├── protacs_02_ligand_metaplot.pdf
-│   ├── protacs_03_chemicalseries_dendrogram_plot.pdf
+│   ├── protacs_03_ChemicalSeries_dendrogram_plot.pdf
 │   ├── protacs_05_volcanoes_0p1uM.png
 │   ├── protacs_06_volcanoes_1uM.png
 │   ├── protacs_07_volcanoes_10uM.png
@@ -137,16 +134,11 @@ The following [software environment](./docker/Dockerfile) was used for developme
 │   ├── protacs_12_regression_models.pdf
 │   ├── protacs_16_cv_performance_plot.pdf
 │   ├── protacs_16_pr_2_rounds.pdf
-│   ├── protacs_16_xgb_first-pass_pr.pdf
 │   ├── protacs_16_xgb_first-pass_shap_explainer.pdf
-│   ├── protacs_16_xgb_first-pass_top_features_cv_shap.pdf
-│   ├── protacs_16_xgb_second-pass_pr.pdf
 │   ├── protacs_16_xgb_second-pass_shap_explainer.pdf
 │   ├── protacs_17_cv_performance_plot.pdf
 │   ├── protacs_17_pr_2_rounds.pdf
-│   ├── protacs_17_xgb_first-pass_pr.pdf
 │   ├── protacs_17_xgb_first-pass_shap_explainer.pdf
-│   ├── protacs_17_xgb_second-pass_pr.pdf
 │   ├── protacs_17_xgb_second-pass_shap_explainer.pdf
 │   ├── protacs_18_analogues_signature_PCA.pdf
 │   ├── protacs_18_analogues_signature_barplot.pdf
@@ -167,36 +159,40 @@ The following [software environment](./docker/Dockerfile) was used for developme
 │   ├── protacs_23_rna_C4_2_gsea_dot_plot.pdf
 │   ├── protacs_23_rna_LNCaP_gsea_dot_plot.pdf
 │   ├── protacs_24_rna_C4_2_24h_HALLMARK_ANDROGEN_RESPONSE.pdf
-│   ├── protacs_24_rna_LNCaP_24h_HALLMARK_ANDROGEN_RESPONSE.pdf
-│   ├── protacs_25_enz_gp_dotplot.pdf
-│   ├── protacs_26_barplot_model_n_score.pdf
-│   ├── protacs_26_barplot_model_w_score.pdf
-│   ├── protacs_26_barplot_toxic_score.pdf
-│   ├── protacs_26_shap_decision_*.pdf
-│   └── protacs_26_shap_waterfall_*.pdf
-├── pyproject.toml
-├── run_all.sh
+│   └── protacs_24_rna_LNCaP_24h_HALLMARK_ANDROGEN_RESPONSE.pdf
+├── preprocessing_dia
+│   ├── input/
+│   └── src
+│       ├── maxLFQ.R
+│       └── preprocessingdevice.py
+├── preprocessing_rna
+│   ├── R
+│   │   ├── 01_filter_transform.R
+│   │   ├── 02_limma_all.R
+│   │   ├── 03_matrix_all.R
+│   │   ├── 04_gene2symbol.R
+│   │   ├── 05_volcanoes_all.R
+│   │   └── limma.slurm
+│   └── src
+│       ├── file_io
+│       │   ├── contrast_generator.py
+│       │   ├── etl_pipe.py
+│       │   └── meta_generator.py
+│       └── gsea
+│           ├── config.yaml
+│           ├── config_loader.py
+│           ├── create_ranked_lists.py
+│           ├── gsea_plot.py
+│           └── run_gsea.py
 ├── scoring_models
-│   ├── protacs_16_xgb_first-pass-best_params.csv
-│   ├── protacs_16_xgb_first-pass-cv_results.csv
-│   ├── protacs_16_xgb_first-pass-cv_summary.csv
 │   ├── protacs_16_xgb_first-pass-model.json
 │   ├── protacs_16_xgb_first-pass-search_space.csv
-│   ├── protacs_16_xgb_second-pass-best_params.csv
 │   ├── protacs_16_xgb_second-pass-calibrated-model.pkl
-│   ├── protacs_16_xgb_second-pass-cv_results.csv
-│   ├── protacs_16_xgb_second-pass-cv_summary.csv
 │   ├── protacs_16_xgb_second-pass-model.json
 │   ├── protacs_16_xgb_second-pass-search_space.csv
-│   ├── protacs_17_xgb_first-pass-best_params.csv
-│   ├── protacs_17_xgb_first-pass-cv_results.csv
-│   ├── protacs_17_xgb_first-pass-cv_summary.csv
 │   ├── protacs_17_xgb_first-pass-model.json
 │   ├── protacs_17_xgb_first-pass-search_space.csv
-│   ├── protacs_17_xgb_second-pass-best_params.csv
 │   ├── protacs_17_xgb_second-pass-calibrated-model.pkl
-│   ├── protacs_17_xgb_second-pass-cv_results.csv
-│   ├── protacs_17_xgb_second-pass-cv_summary.csv
 │   ├── protacs_17_xgb_second-pass-model.json
 │   └── protacs_17_xgb_second-pass-search_space.csv
 └── snakefiles

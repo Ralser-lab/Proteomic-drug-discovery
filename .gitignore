@@ -13,11 +13,14 @@ data/*
 !data/README.md
 data_old
 
-# Ignore everything in figures/ 
+# Ignore everything in figures/
 # figures/*
 preprocessing_rna/plots/
 preprocessing_dia/output/
-*roc*
+figures/*roc*
+
+# Whitelist READMEs inside otherwise-ignored directories
+!preprocessing_dia/README.md
 
 # Ignore everything in scoring_models/ except placeholder
 scoring_models/*
