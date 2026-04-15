@@ -1,7 +1,7 @@
 # Proteomic-drug-discovery
 
 Repository containing scripts to regenerate all figures, training and analytics in 
-**'Proteome-guided discovery accurately maps and mitigates toxicity mechanisms of therapeutic androgen receptor degraders'.**
+**'Proteome-guided discovery accurately maps and mitigates toxicity mechanisms of therapeutic androgen receptor degraders'.** by Basu et al.
 
 ## Reproduce manuscript findings:
 
