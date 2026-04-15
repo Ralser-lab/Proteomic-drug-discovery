@@ -8,13 +8,17 @@ Repository containing scripts to regenerate all figures, training and analytics 
 1. Clone this repository and navigate to root directory.
 2. Download [data](https://doi.org/10.6084/m9.figshare.28578113) and place it into ./data.
 3. Install [docker](https://www.docker.com/get-started) and add to command line interface (CLI) $PATH.
-4. Build a image of the computing environment using the provided [dockerfile](./docker/Dockerfile).
+4. Build an image of the computing environment using the provided [dockerfile](./docker/Dockerfile).
 5. Reproduce analysis by executing `run_all.sh` in a docker container (copy-paste in CLI):
 ```bash
    git clone https://github.com/BasuShaon/Proteomic-drug-discovery
    cd Proteomic-drug-discovery
-   docker build -t prot-env -f docker/Dockerfile . 
-   docker run --rm -v "$PWD":/image prot-env bash run_all.sh
+   docker build -t prot-env -f docker/Dockerfile .
+   docker run --rm -v "$PWD":/image -w /image prot-env bash run_all.sh
+```
+   Per-script logs are written to `./logs/` on the host. To debug interactively:
+```bash
+   docker run --rm -it -v "$PWD":/image -w /image prot-env bash
 ```
 
 ## Machine learning workflow (GBDT):
