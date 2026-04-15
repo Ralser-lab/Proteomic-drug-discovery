@@ -16,7 +16,7 @@ Repository containing scripts to regenerate all figures, training and analytics 
    docker build -t prot-env -f docker/Dockerfile .
    docker run --rm -v "$PWD":/image -w /image prot-env bash run_all.sh
 ```
-   Per-script logs are written to `./logs/` on the host. To debug interactively:
+   Per-script logs are written to `./logs/`. To debug interactively:
 ```bash
    docker run --rm -it -v "$PWD":/image -w /image prot-env bash
 ```
