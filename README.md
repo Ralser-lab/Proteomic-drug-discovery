@@ -3,6 +3,18 @@
 Repository containing scripts to regenerate all figures, training and analytics in 
 **'Proteome-guided discovery accurately maps and mitigates toxicity mechanisms of therapeutic androgen receptor degraders'** by Basu et al.
 
+## Environment
+
+**Hardware** (MacBook Pro, M2 MAX 12-core CPU, 32 GB RAM, macOS Ventura 13.3) 
+
+The following [software environment](./docker/Dockerfile) was used for development:
+
+**Python 3.11.5** (gseapy==1.0.6, joblib==1.3.2, matplotlib==3.8.1, numpy==1.25.2, openpyxl==3.1.2, optuna==4.5.0, pandas==2.1.0, scikit-learn==1.3.0, scipy==1.11.2, seaborn==0.13.2, shap==0.46.0, snakemake==9.12.0, statsmodels==0.14.0, xgboost==2.0.3) 
+
+**R 4.3.1** (ggplot2==3.5.2, dplyr==1.1.4, tidyr==1.3.1, pheatmap==1.0.13, cowplot==1.2.0, RColorBrewer==1.1-3, ggnewscale==0.5.2, ape==5.8-1, factoextra==1.0.7, ggfortify==0.4.18) 
+
+**Bioconductor 3.18** (limma==3.58.1, EnhancedVolcano==1.20.0, ComplexHeatmap==2.18.0, ggtree==3.10.1, ggtreeExtra==1.12.0) 
+
 ## Reproduce manuscript findings:
 
 1. Clone this repository and navigate to root directory.
@@ -39,18 +51,6 @@ To reproduce pre-processing pipeline on DIA-NN pr_matrix:
 ```bash
    docker run --rm -v "$PWD":/image prot-env snakemake -s snakefiles/preprocessing_dia.smk -j 1
 ```
-
-## Environment
-
-**Hardware** (MacBook Pro, M2 MAX 12-core CPU, 32 GB RAM, macOS Ventura 13.3) 
-
-The following [software environment](./docker/Dockerfile) was used for development:
-
-**Python 3.11.5** (gseapy==1.0.6, joblib==1.3.2, matplotlib==3.8.1, numpy==1.25.2, openpyxl==3.1.2, optuna==4.5.0, pandas==2.1.0, scikit-learn==1.3.0, scipy==1.11.2, seaborn==0.13.2, shap==0.46.0, snakemake==9.12.0, statsmodels==0.14.0, xgboost==2.0.3) 
-
-**R 4.3.1** (ggplot2==3.5.2, dplyr==1.1.4, tidyr==1.3.1, pheatmap==1.0.13, cowplot==1.2.0, RColorBrewer==1.1-3, ggnewscale==0.5.2, ape==5.8-1, factoextra==1.0.7, ggfortify==0.4.18) 
-
-**Bioconductor 3.18** (limma==3.58.1, EnhancedVolcano==1.20.0, ComplexHeatmap==2.18.0, ggtree==3.10.1, ggtreeExtra==1.12.0) 
 
 ## Repository Structure
 ```bash
