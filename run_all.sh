@@ -45,7 +45,7 @@ run_hyper() {
 mkdir -p data figures scoring_models logs
 pip install -e .
 
-# Regular scripts
+# Scripts
 run python3 code/fda_01_globalvarianceanalysis.py
 run Rscript code/fda_02_limma_drug.R
 run python3 code/fda_03_de_pca.py

@@ -61,7 +61,7 @@ RUN python -m pip install --no-cache-dir \
       xgboost==2.0.3 \
       openpyxl==3.1.2 \
       snakemake==9.12.0 \
-      optuna==4.5.0
+      optuna==4.7.0
 
 # 6. R helper + CRAN packages (pin package versions)
 RUN R -q -e 'install.packages(c("remotes","BiocManager"), repos="https://cloud.r-project.org", Ncpus=parallel::detectCores())'
