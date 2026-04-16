@@ -22,7 +22,12 @@ The following environment was used for development:
 git clone https://github.com/BasuShaon/Proteomic-drug-discovery
 cd Proteomic-drug-discovery
 ```
-2. Download [data](https://doi.org/10.6084/m9.figshare.28578113) and place it into `./data/`.
+2. Download [data](https://doi.org/10.6084/m9.figshare.28578113) and place it into `./data/`. Alternatively, download automatically with `curl`:
+```bash
+curl -L "https://figshare.com/ndownloader/articles/28578113/versions/1" -o data.zip
+unzip data.zip -d data/
+rm data.zip
+```
 3. Execute the main analysis pipeline:
 ```bash
 bash run_all.sh
