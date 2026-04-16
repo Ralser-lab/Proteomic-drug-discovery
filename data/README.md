@@ -7,13 +7,6 @@ This directory holds all input data required to reproduce the main analysis pipe
 Download the [data](https://doi.org/10.6084/m9.figshare.28578113) from Figshare and place all files directly into this folder (`./data/`):
 
 
-Alternatively, download automatically with `curl` (requires `curl` and `unzip`):
-```bash
-curl -L "https://figshare.com/ndownloader/articles/28578113/versions/1" -o data.zip
-unzip data.zip -d data/
-rm data.zip
-```
-
 ## Contents
 
 | File | Used by | Description |
