@@ -47,7 +47,7 @@ To reproduce pre-processing pipeline on DIA-NN pr_matrix:
 snakemake -s snakefiles/preprocessing_dia.smk -j 1
 ```
 
-## Docker-based environment run:
+## Docker-based run:
 
 1. Install [Docker](https://www.docker.com/get-started) and add to command line interface (CLI) `$PATH`.
 2. Build the container image:

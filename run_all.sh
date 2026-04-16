@@ -44,6 +44,7 @@ run_hyper() {
 
 mkdir -p data figures scoring_models logs
 pip install -e .
+Rscript install_packages.R
 
 # Scripts
 run python3 code/fda_01_globalvarianceanalysis.py

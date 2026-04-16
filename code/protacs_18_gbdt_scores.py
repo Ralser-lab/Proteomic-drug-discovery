@@ -197,16 +197,16 @@ plt.savefig(os.path.join(figout, f'{workflow}_analogues_signature_PCA.pdf'))
 plt.close()
 
 # %% PC2 top features
-# # Pick features with strongest PC2 loadings, then plot analogue means
-# pca_features = loadings.sort_values(by='PC_2').index[0:4]
-# etc_features = ['CYC1', 'NDUFA13', 'NDUFA5', 'NDUFB10']  # override with Complex I panel
+# Pick features with strongest PC2 loadings, then plot analogue means
+pca_features = loadings.sort_values(by='PC_2').index[0:4]
+etc_features = ['CYC1', 'NDUFA13', 'NDUFA5', 'NDUFB10']  # override with Complex I panel
 
-# barplot_df = analog[etc_features]
+barplot_df = analog[etc_features]
 
-# #barplot_df = (barplot_df - barplot_df.mean())/barplot_df.std()
-# barplot_df.plot(kind='bar')
-# plt.title('Analogue Signature Barplot')
-# plt.savefig(os.path.join(figout, f'{workflow}_analogues_signature_barplot.pdf'))
-# plt.ylim([-0.4,1.2])
-# # plt.show()
-# plt.close()
+#barplot_df = (barplot_df - barplot_df.mean())/barplot_df.std()
+barplot_df.plot(kind='bar')
+plt.title('Analogue Signature Barplot')
+plt.savefig(os.path.join(figout, f'{workflow}_analogues_signature_barplot.pdf'))
+plt.ylim([-0.4,1.2])
+# plt.show()
+plt.close()
