@@ -4,9 +4,8 @@ This directory holds all input data required to reproduce the main analysis pipe
 
 ## Download
 
-Download the full dataset from Figshare and place all files directly into this folder (`./data/`):
+Download the [data](https://doi.org/10.6084/m9.figshare.28578113) from Figshare and place all files directly into this folder (`./data/`):
 
-**[https://doi.org/10.6084/m9.figshare.28578113](https://doi.org/10.6084/m9.figshare.28578113)**
 
 Alternatively, download automatically with `curl` (requires `curl` and `unzip`):
 ```bash
