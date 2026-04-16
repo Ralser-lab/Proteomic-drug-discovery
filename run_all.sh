@@ -42,7 +42,7 @@ run_hyper() {
   STATUS+=("OK ($log)")
 }
 
-mkdir -p data figures scoring_models logs
+mkdir -p data figures predictors logs
 pip install -e .
 Rscript install_packages.R
 

@@ -178,7 +178,7 @@ docker run --rm -v "$PWD":/image -w /image prot-env bash run_all.sh
 │       └── preprocessingdevice.py
 ├── preprocessing_rna
 │   └── R/
-├── scoring_models
+├── predictors
 │   ├── protacs_16_xgb_first-pass-model.json
 │   ├── protacs_16_xgb_first-pass-search_space.csv
 │   ├── protacs_16_xgb_second-pass-calibrated-model.pkl

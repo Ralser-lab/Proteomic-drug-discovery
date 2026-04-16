@@ -15,8 +15,8 @@ Date: 2025-09-30
 Inputs
 ------
 - data/Rplot_Figure4.csv
-- scoring_models/protacs_16_xgb_second-pass-model.json
-- scoring_models/protacs_16_xgb_second-pass-calibrated-model.pkl.
+- predictors/protacs_16_xgb_second-pass-model.json
+- predictors/protacs_16_xgb_second-pass-calibrated-model.pkl.
 
 Outputs
 -------
@@ -51,7 +51,7 @@ workflow = 'protacs_18'
 path = os.path.dirname(__file__)
 inputout = os.path.join(path, '..', 'data')
 figout = os.path.join(path, '..','figures')
-model_dir = os.path.join(os.path.dirname(__file__), '..', 'scoring_models')
+model_dir = os.path.join(os.path.dirname(__file__), '..', 'predictors')
 modelvalues_w = pd.read_csv(os.path.join(inputout,'R2_Model_Prediction_protacs_16.csv'), index_col = 0)
 modelvalues_n = pd.read_csv(os.path.join(inputout,'R2_Model_Prediction_protacs_17.csv'), index_col = 0)
 cols_only_in_w = modelvalues_w.columns.difference(modelvalues_n.columns)

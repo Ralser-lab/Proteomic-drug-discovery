@@ -116,7 +116,7 @@ class GBDT:
         # Relative paths
         self.dpath = os.path.join(dpath, '..', 'data')
         self.dout = os.path.join(dpath, '..', 'figures')
-        self.modelout = os.path.join(dpath, '..', 'scoring_models')
+        self.modelout = os.path.join(dpath, '..', 'predictors')
         self.dout_prefix = f'{prefix}_'
         self.name = f'{name}_'
 
@@ -156,7 +156,7 @@ class GBDT:
         filename : str
             File name (with extension) to append to prefix.
         params : boolean
-            If yes, route outpath to /scoring_models
+            If yes, route outpath to /predictors
 
         Returns
         -------

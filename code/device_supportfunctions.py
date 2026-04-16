@@ -173,7 +173,7 @@ def get_relative_paths()->tuple[str, str, str]:
     
     '''
     path = os.path.join(os.path.dirname(__file__), '..', 'data')
-    model_out = os.path.join(path, '..' ,'scoring_models')
+    model_out = os.path.join(path, '..' ,'predictors')
     dpath = os.path.dirname(__file__)
     return path, model_out, dpath
     
