@@ -9,7 +9,7 @@ The following environment was used for development:
 
 **Hardware** (MacBook Pro, M2 MAX 12-core CPU, 32 GB RAM, macOS Ventura 13.3) 
 
-**Python 3.11.5** (gseapy==1.0.6, joblib==1.3.2, matplotlib==3.8.1, numpy==1.25.2, openpyxl==3.1.2, optuna==4.7.0, pandas==2.1.0, scikit-learn==1.3.0, scipy==1.11.2, seaborn==0.13.2, shap==0.46.0, snakemake==9.12.0, statsmodels==0.14.0, xgboost==2.0.3) 
+**Python 3.11.5** (gseapy==1.0.6, joblib==1.3.2, matplotlib==3.8.1, matplotlib-venn==0.11.9, numpy==1.25.2, openpyxl==3.1.2, optuna==4.7.0, pandas==2.1.0, scanpy==1.9.5, scikit-learn==1.3.0, scipy==1.11.2, seaborn==0.13.2, shap==0.46.0, snakemake==9.12.0, statsmodels==0.14.0, xgboost==2.0.3) 
 
 **R 4.3.1** (ggplot2==3.5.2, dplyr==1.1.4, tidyr==1.3.1, pheatmap==1.0.13, cowplot==1.2.0, RColorBrewer==1.1-3, ggnewscale==0.5.2, ape==5.8-1, factoextra==1.0.7, ggfortify==0.4.18) 
 
@@ -17,7 +17,11 @@ The following environment was used for development:
 
 ## Reproduce manuscript findings:
 
-1. Clone this repository and navigate to root directory.
+1. Clone this repository and navigate to root directory:
+```bash
+git clone https://github.com/BasuShaon/Proteomic-drug-discovery
+cd Proteomic-drug-discovery
+```
 2. Download [data](https://doi.org/10.6084/m9.figshare.28578113) and place it into `./data/`.
 3. Execute the main analysis pipeline:
 ```bash
