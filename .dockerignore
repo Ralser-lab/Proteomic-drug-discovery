@@ -1,8 +1,16 @@
 .git
 .gitignore
-figures/
 __pycache__/
 *.pyc
 *.egg-info/
-*.pdf
+
+# Large data directories — provided via bind-mount at runtime
+data/
+data_old/
+preprocessing_dia/
+preprocessing_rna/
+
+# Generated outputs
+figures/
 logs/
+scoring_models/

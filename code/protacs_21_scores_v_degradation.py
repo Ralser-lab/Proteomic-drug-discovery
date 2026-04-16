@@ -5,9 +5,8 @@
 Script Name: protacs_21_scores_vs_degradation.py
 Description:
     Analyze model-derived toxicity scores across chemical series
-    (clusters), identify bimodal series, export “toxic” and “safe” subsets,
-    and generate summary visualizations. Also integrates wet-lab AR
-    degradation IC50s to relate efficacy vs. predicted toxicity.
+    (clusters), and generate summary visualizations. Also integrates 
+    wet-lab AR degradation IC50s to relate efficacy vs. predicted toxicity.
 
 Author: Shaon Basu
 Date: 2025-09-30

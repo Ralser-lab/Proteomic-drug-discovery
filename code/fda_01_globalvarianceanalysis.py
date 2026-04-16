@@ -28,13 +28,17 @@ Dependencies: pandas, os
 
 # %% Import packages
 import pandas as pd
+import numpy as np
 import matplotlib
 matplotlib.use('Agg')  # Non-interactive backend for headless execution
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import seaborn as sns
+from scipy.cluster.hierarchy import leaves_list
+from sklearn.decomposition import PCA
 import os
 import importlib
-import device_summarystatistics 
+import device_summarystatistics
 
 # Set relative paths 
 data_out = os.path.dirname(__file__)

@@ -1,7 +1,7 @@
 # Proteomic-drug-discovery
 
 Repository containing scripts to regenerate all figures, training and analytics in 
-**'Proteome-guided discovery accurately maps and mitigates toxicity mechanisms of therapeutic androgen receptor degraders'.** by Basu et al.
+**'Proteome-guided discovery accurately maps and mitigates toxicity mechanisms of therapeutic androgen receptor degraders'** by Basu et al.
 
 ## Reproduce manuscript findings:
 
@@ -15,10 +15,6 @@ Repository containing scripts to regenerate all figures, training and analytics 
    cd Proteomic-drug-discovery
    docker build -t prot-env -f docker/Dockerfile .
    docker run --rm -v "$PWD":/image -w /image prot-env bash run_all.sh
-```
-   Per-script logs are written to `./logs/`. To debug interactively:
-```bash
-   docker run --rm -it -v "$PWD":/image -w /image prot-env bash
 ```
 
 ## Machine learning workflow (GBDT):
@@ -37,7 +33,7 @@ Two search strategies are available after successful completion of `run_all.sh`.
 
 ## Pre-processing workflow (DIA-MS):
 
-To reproduce pre-processing pipeline on DIA-NN prmatrix:
+To reproduce pre-processing pipeline on DIA-NN pr_matrix:
 1. Download [input files](https://doi.org/10.6084/m9.figshare.30469304) and place it into ./preprocessing_dia/input.
 2. Run `preprocessing_dia.smk` in a docker container (copy-paste in CLI):
 ```bash
