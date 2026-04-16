@@ -22,9 +22,9 @@ figures/*roc*
 # Whitelist READMEs inside otherwise-ignored directories
 !preprocessing_dia/README.md
 
-# Whitelist all scoring_models content
-!scoring_models/**
-!scoring_models/*.csv
+# Whitelist all predictors content
+!predictors/**
+!predictors/*.csv
 
 # Ignore everything in log/ except placeholder; also ignore R history
 logs/*

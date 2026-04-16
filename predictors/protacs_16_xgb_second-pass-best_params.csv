@@ -1,0 +1,12 @@
+parameter,value
+learning_rate,0.05287217047226218
+n_estimators,1750
+max_depth,1
+min_child_weight,1.2440791538508964
+gamma,3.5344108397632246
+reg_alpha,0.004581070315149213
+reg_lambda,0.15138637878630354
+subsample,0.7000665986121086
+colsample_bytree,0.7868277235102342
+tree_method,hist
+grow_policy,depthwise

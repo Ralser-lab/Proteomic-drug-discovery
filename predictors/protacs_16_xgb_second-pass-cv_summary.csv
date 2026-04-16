@@ -1,0 +1,2 @@
+metric,cv_mean,cv_sd,n_splits
+average_precision,0.8009897930142739,0.11172759185806085,5
