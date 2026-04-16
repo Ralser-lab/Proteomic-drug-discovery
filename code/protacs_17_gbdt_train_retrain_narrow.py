@@ -20,13 +20,13 @@ Inputs
 Outputs
 -------
 - figures/*.png
-- predictors/protacs_16_xgb_first-pass-model.json
-- predictors/protacs_16_xgb_first-pass-search_space.csv
-- predictors/protacs_16_xgb_first-pass-final_metrics.csv
-- predictors/protacs_16_xgb_second-pass-model.json
-- predictors/protacs_16_xgb_second-pass-search_space.csv
-- predictors/protacs_16_xgb_second-pass-final_metrics.csv
-- predictors/protacs_16_xgb_second-pass-calibrated-model.pkl
+- predictors/protacs_17_xgb_first-pass-model.json
+- predictors/protacs_17_xgb_first-pass-search_space.csv
+- predictors/protacs_17_xgb_first-pass-final_metrics.csv
+- predictors/protacs_17_xgb_second-pass-model.json
+- predictors/protacs_17_xgb_second-pass-search_space.csv
+- predictors/protacs_17_xgb_second-pass-final_metrics.csv
+- predictors/protacs_17_xgb_second-pass-calibrated-model.pkl
 
 Requirements
 ------------

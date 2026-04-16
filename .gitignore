@@ -12,6 +12,7 @@ data/*
 !data/.gitkeep
 !data/README.md
 data_old
+figures_docker/*
 
 # Ignore everything in figures/
 # figures/*
