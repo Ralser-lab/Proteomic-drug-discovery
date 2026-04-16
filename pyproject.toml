@@ -28,6 +28,8 @@ dependencies = [
   "shap==0.46.0",
   "snakemake==9.12.0",
   "statsmodels==0.14.0",
-  "xgboost==2.0.3"
+  "xgboost==2.0.3",
+  "scanpy==1.9.5",
+  "matplotlib-venn==0.11.9"
 ]
 urls = { Homepage = "https://github.com/BasuShaon/Proteomic-drug-discovery", Repository = "https://github.com/BasuShaon/Proteomic-drug-discovery" }
