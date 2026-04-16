@@ -1,6 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [tool.setuptools]
 package-dir = {"" = "code"}
 
 [project]
 name = "proteomic-drug-discovery"
 version = "0.1.0"
+description = "Reproducible analysis pipeline for proteome-guided drug discovery and toxicity mechanism mapping."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Shaon Basu" }]
+keywords = ["proteomics", "drug discovery", "machine learning", "bioinformatics", "reproducibility"]
+dependencies = [
+  "gseapy==1.0.6",
+  "joblib==1.3.2",
+  "matplotlib==3.8.1",
+  "numpy==1.25.2",
+  "openpyxl==3.1.2",
+  "optuna==4.5.0",
+  "pandas==2.1.0",
+  "scikit-learn==1.3.0",
+  "scipy==1.11.2",
+  "seaborn==0.13.2",
+  "shap==0.46.0",
+  "snakemake==9.12.0",
+  "statsmodels==0.14.0",
+  "xgboost==2.0.3"
+]
+urls = { Homepage = "https://github.com/BasuShaon/Proteomic-drug-discovery", Repository = "https://github.com/BasuShaon/Proteomic-drug-discovery" }
