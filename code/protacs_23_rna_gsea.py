@@ -37,6 +37,7 @@ import numpy as np
 from typing import Any
 from matplotlib import cm
 from matplotlib.colors import TwoSlopeNorm, Normalize, LinearSegmentedColormap
+from device_supportfunctions import GBDTUtils
 from dataclasses import dataclass
 
 HERE = os.path.dirname(__file__)
@@ -115,7 +116,6 @@ def gsea_selection_plot(
     target: str = "C4_2",
     priority_terms:list[str]|None=None,
     metric: str = "NES",
-    metric2: str = "FDR q-val",
     eps: float = np.finfo(float).eps
 ) -> Any:
         
@@ -176,14 +176,9 @@ def gsea_selection_plot(
     nes_abs = np.abs(nes)
     sizes = 20 + 80 * (nes_abs - nes_abs.min()) / (nes_abs.ptp() + eps)
 
-    # Alpha by -log10(p or q).
-    sig = -np.log10(nes_df[metric2].to_numpy() + eps)
-    alphas = (sig - sig.min()) / (sig.ptp() + eps)
-    alphas = np.clip(alphas, 0.2, 1.0)
-
-    # Color by NES, with per-point alpha via signficance.
+    # Color by NES, fully opaque.
     rgba = cmap(norm(nes))
-    rgba[:, 3] = alphas
+    rgba[:, 3] = 1.0
 
     x = nes_df["Term"].cat.codes
     y = nes_df["filepath"].cat.codes
@@ -221,13 +216,13 @@ if __name__ == '__main__':
     
     cfg = PlotterCfg()
     gsea_df = list_getter(cfg.dir_name)
-
+    GBDTUtils.configure_font()
+    
     for c in cfg.cells: 
         
         gsea_selection_plot(
                 df=gsea_df,
                 target = c,
                 metric = 'NES',
-                metric2 = 'FDR q-val',
                 priority_terms=cfg.priority_terms,
                 eps = np.finfo(float).eps)
