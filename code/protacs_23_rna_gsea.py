@@ -231,6 +231,3 @@ if __name__ == '__main__':
                 metric2 = 'FDR q-val',
                 priority_terms=cfg.priority_terms,
                 eps = np.finfo(float).eps)
-
-
-

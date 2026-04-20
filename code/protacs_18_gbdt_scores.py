@@ -6,8 +6,8 @@ Script Name: protacs_18_gbdt_scores.py
 Description:
     Post-hoc analysis of xgb model outputs (toxicity scores) with a focus on 
     series 15 compounds and the lenalidomide 5N series analogues. The script 
-    loads exported model predictions (Rplot_Figure4.csv) and trained XGBoost 
-    models, and generates supplementary tables and figures:
+    loads exported model predictions and trained XGBoost models, and generates 
+    supplementary tables and figures:
 
 Author: Shaon Basu
 Date: 2025-09-30

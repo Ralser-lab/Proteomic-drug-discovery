@@ -15,15 +15,16 @@ Date: 2025-09-30
 Inputs
 ------
 (data/)
-- Figure3_Compound1_Galactose_250204a.xlsx               # Glu/Gal viability titration
+- Figure3_Compound1_Galactose_250204a.xlsx               # Gal viability titration
+- FigureED_Glu_gal_260119a                               # Glu/Gal viability titration       
 - Figure3_compound1_constituents_gal_250604a.xlsx        # Galactose IC50: constituents
 - Figure3_Compound1_Seahorse_250204a.xlsx                # Seahorse respiration
-- Figure3_all_Complex2_250204a.xlsx                      # Complex II activity (series)
-- Figure3_Complex1_250219a.xlsx                          # Complex I activity (Figure 3)
-- Figure4_Complex1_250207a.xlsx                          # Complex I activity (Figure 5)
+- Figure3_all_Complex2_250204a.xlsx                      # Complex II activity 
+- Figure3_Complex1_250219a.xlsx                          # Complex I activity 
+- Figure4_Complex1_250207a.xlsx                          # Complex I activity 
 - Figure4_HCC_250208a.xlsx                               # Primary HCC titrations
 - Figure4_CellPanel_250314a.xlsx                         # Cell line GI50 panel
-- Figure4_XenoGraftARdeg_250207a.xlsx                    # Xenograft AR degradation
+- Figure4_XenoGraftARdeg_250207a.xlsx  
 
 Outputs
 -------
@@ -71,7 +72,95 @@ def read_sheets(path, sheet, col):
     """ Read excel sheets. """
     return pd.read_excel(path, sheet_name = sheet, index_col = col)
 
-# %% Glucose-galactose curves and IC50s for compounds 1, 2 and 3 (ED)
+# %% Galactose IC50 for compound 1 & constituents (Figure 3).
+
+# Read in wetlab sourcedata
+cpd1_constituents = pd.read_excel(os.path.join(data_path, 'Figure3_compound1_constituents_gal_250604a.xlsx')).T.iloc[1:,:]
+cpd1_constituents.columns = ['AR-binder', 'AR-HBD', 'Lenalidomide']
+cpd1_constituents = cpd1_constituents.astype('float64')
+order_vec = ['Lenalidomide', 'AR-binder', 'AR-HBD']
+cpd1_gal = np.log10(cpd1_constituents)
+
+# Perform test
+device_summarystatistics.t_test(cpd1_gal['AR-binder'], cpd1_gal['AR-HBD'])
+#device_summarystatistics.t_test(pd.concat([cpd1_gal['AR-binder'],cpd1_gal['Lenalidomide']]), cpd1_gal['AR-HBD'])
+
+# Plot and save figure
+plt.figure(figsize=(1,3))
+sns.barplot(data = cpd1_gal, order = order_vec, capsize = 0.1, palette = ['grey','red','grey']) #make the ticks better
+plt.title('Galactose IC50\nCompound 1 & Constituents', fontsize=13)
+plt.tick_params(labelbottom=False, labelleft=False)
+plt.savefig(os.path.join(fig_path,f'{workflow}_galactose.pdf'))
+plt.close()
+
+# %% Seahorse at max resp (Figure 3).
+
+# Read in wetlab source data
+seahorse = pd.read_excel(os.path.join(data_path, 'Figure3_Compound1_Seahorse_250204a.xlsx'))
+
+# Perform t-test
+device_summarystatistics.t_test(pd.concat([seahorse['Enza '],seahorse['Control']]), seahorse['Compound 1'])
+
+# Plot and save figure
+plt.figure(figsize=(1.5,3))
+sns.boxplot(seahorse, order = ['Control','Enza ', 'Compound 1'])
+sns.swarmplot(seahorse, color = 'black')
+plt.title('Seahorse Max Respiration', fontsize=13)
+plt.tick_params(axis='x', labelsize=12)
+plt.savefig(os.path.join(fig_path, f'{workflow}_seahorsemax.pdf'))
+plt.close()
+
+# %% Complex II data for all (Figure 4 and Figure 6).
+
+# Read in wetlab source data
+complex2 = pd.read_excel(os.path.join(data_path, 'Figure3_all_Complex2_250204a.xlsx'), index_col = 0)
+
+# Perform statistical tests   
+device_summarystatistics.one_test(complex2.loc['AZ14183816'], 100)
+device_summarystatistics.one_test(pd.Series(complex2.loc[['AZ14197166', 'AZ14183816']].values.flatten()), 100)
+ 
+# Plot and save figure
+plot_list = ['AZ14183816', 'AZ14196658','AZ14197166','DMSO']
+complex2.loc[plot_list].T.mean().plot(kind = 'bar',
+    yerr = complex2.loc[plot_list].T.std())
+plt.title('Complex II Activity', fontsize=13)
+plt.tick_params(axis='x', labelsize=12)
+plt.savefig(os.path.join(fig_path, f'{workflow}_complexII_all.pdf'))
+plt.close()
+
+# %% Perform statistical tests on complex I data for Figure 4.
+
+# Read in wetlab sourcedata
+complex1 = pd.read_excel(os.path.join(data_path, 'Figure3_Complex1_250219a.xlsx'), index_col = 0)
+complex1.index = np.log10([0,20,5,1,0.1,0.05,0.01,0.005]) # Numerize to log10 index
+complex1 = complex1/100 # Bring down to decimal percent
+complex1 = complex1.iloc[1:] # Drop DMSO
+ic50_values = device_summarystatistics.linear_IC50(complex1) # calculate log10(IC50) down replicates
+
+# t-test on the estimated log10(IC50s)
+device_summarystatistics.t_test(ic50_values.iloc[0:3], ic50_values.iloc[6:9])
+print((10**ic50_values.iloc[0:3]).mean()) # exponentiate to IC50
+print((10**ic50_values.iloc[6:9]).mean()) # exponentiate to IC50
+
+# %% Perform statistical tests on complex I data for Figure 6.
+
+# Read in wetlab source data
+complex1 = pd.read_excel(os.path.join(data_path, 'Figure4_Complex1_250207a.xlsx'), index_col = 0)
+complex1.index = np.log10(complex1.index) # Numerize to log10index
+complex1 = complex1/100 # Bring down to decimal percenet
+ic50_values = device_summarystatistics.linear_IC50(complex1) # Calculate log10(IC50) down replicates
+
+# t-test on the estimated log10(IC50s)
+device_summarystatistics.t_test(ic50_values.iloc[0:3], ic50_values.iloc[3:6])
+device_summarystatistics.t_test(ic50_values.iloc[0:3], ic50_values.iloc[6:9])
+device_summarystatistics.t_test(ic50_values.iloc[0:3], ic50_values.iloc[3:9])
+
+print('Compound 1 IC50s complex I activity [uM]:')
+print((10**ic50_values.iloc[0:3]).mean()) # exponentiate to IC50
+print('Analogues IC50s complex I activity [uM]:')
+print((10**ic50_values.iloc[3:9]).mean()) # exponentiate to IC50
+
+# %% Glucose-galactose curves and IC50s for compounds 1, 2 and 3 (Figure 6)
 
 # Read in all measurements for each treatment
 condition_list, condition_dfs, norm_dfs = ['cmpd1', 'cmpd2', 'cmpd3', 'untreated'], {}, {}
@@ -145,95 +234,7 @@ def IC50_test(df):
 for c in norm_dfs:
     IC50_test(norm_dfs[c])
 
-# %% Galactose IC50 for compound 1 & constituents (Figure 3).
-
-# Read in wetlab sourcedata
-cpd1_constituents = pd.read_excel(os.path.join(data_path, 'Figure3_compound1_constituents_gal_250604a.xlsx')).T.iloc[1:,:]
-cpd1_constituents.columns = ['AR-binder', 'AR-HBD', 'Lenalidomide']
-cpd1_constituents = cpd1_constituents.astype('float64')
-order_vec = ['Lenalidomide', 'AR-binder', 'AR-HBD']
-cpd1_gal = np.log10(cpd1_constituents)
-
-# Perform test
-device_summarystatistics.t_test(cpd1_gal['AR-binder'], cpd1_gal['AR-HBD'])
-#device_summarystatistics.t_test(pd.concat([cpd1_gal['AR-binder'],cpd1_gal['Lenalidomide']]), cpd1_gal['AR-HBD'])
-
-# Plot and save figure
-plt.figure(figsize=(1,3))
-sns.barplot(data = cpd1_gal, order = order_vec, capsize = 0.1, palette = ['grey','red','grey']) #make the ticks better
-plt.title('Galactose IC50\nCompound 1 & Constituents', fontsize=13)
-plt.tick_params(labelbottom=False, labelleft=False)
-plt.savefig(os.path.join(fig_path,f'{workflow}_galactose.pdf'))
-plt.close()
-
-# %% Seahorse at max resp (Figure 3).
-
-# Read in wetlab source data
-seahorse = pd.read_excel(os.path.join(data_path, 'Figure3_Compound1_Seahorse_250204a.xlsx'))
-
-# Perform t-test
-device_summarystatistics.t_test(pd.concat([seahorse['Enza '],seahorse['Control']]), seahorse['Compound 1'])
-
-# Plot and save figure
-plt.figure(figsize=(1.5,3))
-sns.boxplot(seahorse, order = ['Control','Enza ', 'Compound 1'])
-sns.swarmplot(seahorse, color = 'black')
-plt.title('Seahorse Max Respiration', fontsize=13)
-plt.tick_params(axis='x', labelsize=12)
-plt.savefig(os.path.join(fig_path, f'{workflow}_seahorsemax.pdf'))
-plt.close()
-
-# %% Complex II data for all (Figure 3 and Figure 5).
-
-# Read in wetlab source data
-complex2 = pd.read_excel(os.path.join(data_path, 'Figure3_all_Complex2_250204a.xlsx'), index_col = 0)
-
-# Perform statistical tests   
-device_summarystatistics.one_test(complex2.loc['AZ14183816'], 100)
-device_summarystatistics.one_test(pd.Series(complex2.loc[['AZ14197166', 'AZ14183816']].values.flatten()), 100)
- 
-# Plot and save figure
-plot_list = ['AZ14183816', 'AZ14196658','AZ14197166','DMSO']
-complex2.loc[plot_list].T.mean().plot(kind = 'bar',
-    yerr = complex2.loc[plot_list].T.std())
-plt.title('Complex II Activity', fontsize=13)
-plt.tick_params(axis='x', labelsize=12)
-plt.savefig(os.path.join(fig_path, f'{workflow}_complexII_all.pdf'))
-plt.close()
-
-# %% Perform statistical tests on complex I data for Figure 3.
-
-# Read in wetlab sourcedata
-complex1 = pd.read_excel(os.path.join(data_path, 'Figure3_Complex1_250219a.xlsx'), index_col = 0)
-complex1.index = np.log10([0,20,5,1,0.1,0.05,0.01,0.005]) # Numerize to log10 index
-complex1 = complex1/100 # Bring down to decimal percent
-complex1 = complex1.iloc[1:] # Drop DMSO
-ic50_values = device_summarystatistics.linear_IC50(complex1) # calculate log10(IC50) down replicates
-
-# t-test on the estimated log10(IC50s)
-device_summarystatistics.t_test(ic50_values.iloc[0:3], ic50_values.iloc[6:9])
-print((10**ic50_values.iloc[0:3]).mean()) # exponentiate to IC50
-print((10**ic50_values.iloc[6:9]).mean()) # exponentiate to IC50
-
-# %% Perform statistical tests on complex I data for Figure 5.
-
-# Read in wetlab source data
-complex1 = pd.read_excel(os.path.join(data_path, 'Figure4_Complex1_250207a.xlsx'), index_col = 0)
-complex1.index = np.log10(complex1.index) # Numerize to log10index
-complex1 = complex1/100 # Bring down to decimal percenet
-ic50_values = device_summarystatistics.linear_IC50(complex1) # Calculate log10(IC50) down replicates
-
-# t-test on the estimated log10(IC50s)
-device_summarystatistics.t_test(ic50_values.iloc[0:3], ic50_values.iloc[3:6])
-device_summarystatistics.t_test(ic50_values.iloc[0:3], ic50_values.iloc[6:9])
-device_summarystatistics.t_test(ic50_values.iloc[0:3], ic50_values.iloc[3:9])
-
-print('Compound 1 IC50s complex I activity [uM]:')
-print((10**ic50_values.iloc[0:3]).mean()) # exponentiate to IC50
-print('Analogues IC50s complex I activity [uM]:')
-print((10**ic50_values.iloc[3:9]).mean()) # exponentiate to IC50
-
-# %% Load and analyze primary HCC data (Figure 5).
+# %% Load and analyze primary HCC data (Figure 6).
 
 # Read in and format wetlab source data
 hcc_df = pd.read_excel(os.path.join(data_path, 'Figure4_HCC_250208a.xlsx'), index_col = 0)
@@ -256,7 +257,7 @@ hcc_ic50_df = pd.DataFrame({'Compound 1': hcc_ic50s[0:3].values,
 print('IC50s human hepatocarcinoma survival [uM]:')
 print((10**hcc_ic50_df).mean())
 
-# %% Load analyze and plot cell panel data (Figure 5).
+# %% Load analyze and plot cell panel data (Figure 6).
 
 # Read in and format wetlab sourcedata
 panel = pd.read_excel(
@@ -275,20 +276,20 @@ panel_long=panel.melt(id_vars=['Compound'], var_name =  'Cell', value_name='Valu
 AR_pos = ['LNCAP', 'VCAP']
 panel_pos = panel_long.loc[panel_long['Cell'].isin(AR_pos)]
 panel_neg = panel_long.loc[~panel_long['Cell'].isin(AR_pos)]
-cell_summ = panel_long.groupby(['Cell', 'Compound'])['Value'].agg(['mean', 'std']).reset_index()
+cell_summ = panel_long.groupby(['Cell', 'Compound'])['Value'].agg(['median', 'std']).reset_index()
 cell_order = ['LNCAP','VCAP','SU-8686','LU99','MiaPaCa2']
 cell_summ['Cell'] = pd.Categorical(cell_summ['Cell'], categories=cell_order, ordered=True)
 
-# Plot and save cell panel data with compound series treatment (Figure 5).
+# Plot and save cell panel data with compound series treatment (Figure 6).
 fig, ax = plt.subplots(figsize=(6, 6))
-vmin, vmax = 0.1, 30
+vmin, vmax = round(cell_summ['median'].min(), 2), 30
 norm = plt.Normalize(vmin=vmin, vmax=vmax)
 sns.scatterplot(
     data=cell_summ,
     x='Compound',
     y='Cell',
     s=300,
-    hue=cell_summ['mean'],
+    hue=cell_summ['median'],
     palette='Reds_r',
     hue_norm=norm,
     alpha=0.7,
@@ -302,7 +303,11 @@ ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
 cmap = plt.get_cmap('Reds_r')
 sm = plt.cm.ScalarMappable(norm=norm, cmap=cmap)
 sm.set_array([])
-fig.colorbar(sm, ax=ax, label='Mean GI50 (µM)', fraction=0.046, pad=0.04)
+cbar_ticks = [t for t in [vmin, 5, 10, 15, 20, 25, vmax] if vmin <= t <= vmax]
+cbar_tick_labels = [f'{t:.2g}' for t in cbar_ticks]
+cbar = fig.colorbar(sm, ax=ax, label='Median GI50 (µM)', fraction=0.046, pad=0.04,
+                    ticks=cbar_ticks)
+cbar.ax.set_yticklabels(cbar_tick_labels)
 
 ax.set_title('Cell Panel GI50', fontsize=13)
 ax.tick_params(axis='x', labelsize=12)
@@ -312,27 +317,7 @@ plt.savefig(os.path.join(fig_path, f'{workflow}_GI50_dotplot.pdf'))
 # plt.show()
 plt.close()
 
-# %% Perform statistical tests on cell-panel data (Figure 5).
-
-# Melt data for testing
-panel = panel.assign(
-                factor = pd.Index(panel.index).str.replace(
-                r'[.\d]', '', regex=True))
-panel = panel.loc[panel['factor']!='Enzalutamide']
-ARpos = panel[panel.columns[0:2]]
-ARneg = panel[panel.columns[2:panel.shape[1]-2]]
-
-# Perform t-test
-device_summarystatistics.t_test(pd.Series(ARpos.values.flatten()),
-                pd.Series(ARneg.values.flatten()))
-
-# Perform t-test
-ARneg_stat = ARneg.assign(
-    factor = ['Compound 1', 'Compound 1', 'Compound 1', 'Compound 1','Analogue', 'Analogue', 'Analogue', 'Analogue', 'Analogue', 'Analogue','Analogue','Analogue'])
-device_summarystatistics.t_test(pd.Series(ARneg_stat.loc[ARneg_stat['factor']!= 'Analogue'].iloc[:,0:3].values.flatten()),
-                pd.Series(ARneg_stat.loc[ARneg_stat['factor']== 'Analogue'].iloc[:,0:3].values.flatten()))
-
-# %% Load, analyze, plot and save mouse xenograft AR degradation data (Figure 5).
+# %% Load, analyze, plot and save mouse xenograft AR degradation data (Figure 6).
 
 # Read in wetlab source data
 degron = pd.read_excel(
@@ -351,6 +336,3 @@ plt.title('Xenograft AR Degradation', fontsize=13)
 plt.tick_params(axis='x', labelsize=12)
 plt.savefig(os.path.join(fig_path, f'{workflow}_xenograft_ARdeg.pdf'))
 plt.close()
-
-
-
