@@ -48,6 +48,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import os
+from matplotlib.colors import Normalize
 import device_summarystatistics
 from device_supportfunctions import GBDTUtils
 
@@ -257,7 +258,7 @@ hcc_ic50_df = pd.DataFrame({'Compound 1': hcc_ic50s[0:3].values,
 print('IC50s human hepatocarcinoma survival [uM]:')
 print((10**hcc_ic50_df).mean())
 
-# %% Load analyze and plot cell panel data (Figure 6).
+# %% Load analyze and plot cell panel GI50 data (Figure 6).
 
 # Read in and format wetlab sourcedata
 panel = pd.read_excel(
@@ -276,20 +277,21 @@ panel_long=panel.melt(id_vars=['Compound'], var_name =  'Cell', value_name='Valu
 AR_pos = ['LNCAP', 'VCAP']
 panel_pos = panel_long.loc[panel_long['Cell'].isin(AR_pos)]
 panel_neg = panel_long.loc[~panel_long['Cell'].isin(AR_pos)]
-cell_summ = panel_long.groupby(['Cell', 'Compound'])['Value'].agg(['median', 'std']).reset_index()
+geomean = lambda x: np.exp(np.log(x).mean())
+cell_summ = panel_long.groupby(['Cell', 'Compound'])['Value'].agg(geomean=geomean).reset_index()
 cell_order = ['LNCAP','VCAP','SU-8686','LU99','MiaPaCa2']
 cell_summ['Cell'] = pd.Categorical(cell_summ['Cell'], categories=cell_order, ordered=True)
 
 # Plot and save cell panel data with compound series treatment (Figure 6).
 fig, ax = plt.subplots(figsize=(6, 6))
-vmin, vmax = round(cell_summ['median'].min(), 2), 30
-norm = plt.Normalize(vmin=vmin, vmax=vmax)
+vmin, vmax = 0, 30
+norm = Normalize(vmin=vmin, vmax=vmax)
 sns.scatterplot(
     data=cell_summ,
     x='Compound',
     y='Cell',
     s=300,
-    hue=cell_summ['median'],
+    hue=cell_summ['geomean'],
     palette='Reds_r',
     hue_norm=norm,
     alpha=0.7,
@@ -299,13 +301,13 @@ sns.scatterplot(
 ax.set_xticks(np.arange(0, len(cell_summ['Compound'].unique()), step=1))
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
 
-# Add a continuous colorbar for mean GI50 values
+# Add a continuous colorbar for geomean GI50 values
 cmap = plt.get_cmap('Reds_r')
 sm = plt.cm.ScalarMappable(norm=norm, cmap=cmap)
 sm.set_array([])
-cbar_ticks = [t for t in [vmin, 5, 10, 15, 20, 25, vmax] if vmin <= t <= vmax]
+cbar_ticks = [t for t in [0, 5, 10, 15, 20, 25, 30] if vmin <= t <= vmax]
 cbar_tick_labels = [f'{t:.2g}' for t in cbar_ticks]
-cbar = fig.colorbar(sm, ax=ax, label='Median GI50 (µM)', fraction=0.046, pad=0.04,
+cbar = fig.colorbar(sm, ax=ax, label='Geomean GI50 (µM)', fraction=0.046, pad=0.04,
                     ticks=cbar_ticks)
 cbar.ax.set_yticklabels(cbar_tick_labels)
 
@@ -314,7 +316,7 @@ ax.tick_params(axis='x', labelsize=12)
 plt.margins(x=0.3, y=0.3)
 plt.tight_layout()
 plt.savefig(os.path.join(fig_path, f'{workflow}_GI50_dotplot.pdf'))
-# plt.show()
+plt.show()
 plt.close()
 
 # %% Load, analyze, plot and save mouse xenograft AR degradation data (Figure 6).
