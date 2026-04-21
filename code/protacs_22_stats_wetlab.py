@@ -306,6 +306,7 @@ cmap = plt.get_cmap('Reds_r')
 sm = plt.cm.ScalarMappable(norm=norm, cmap=cmap)
 sm.set_array([])
 cbar_ticks = [t for t in [0, 5, 10, 15, 20, 25, 30] if vmin <= t <= vmax]
+
 cbar_tick_labels = [f'{t:.2g}' for t in cbar_ticks]
 cbar = fig.colorbar(sm, ax=ax, label='Geomean GI50 (µM)', fraction=0.046, pad=0.04,
                     ticks=cbar_ticks)
